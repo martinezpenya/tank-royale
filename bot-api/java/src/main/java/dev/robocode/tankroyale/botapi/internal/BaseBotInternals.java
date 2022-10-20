@@ -229,6 +229,7 @@ public final class BaseBotInternals {
     }
 
     public void start() {
+        setRunning(true);
         connect();
         try {
             closedLatch.await();
@@ -264,7 +265,6 @@ public final class BaseBotInternals {
     }
 
     private void waitForNextTurn(int turnNumber) {
-
         synchronized (nextTurnMonitor) {
             while (isRunning() && turnNumber == getCurrentTick().getTurnNumber()) {
                 try {

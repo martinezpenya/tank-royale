@@ -44,6 +44,7 @@ class BaseBotConstructorTest {
         server.stop();
     }
 
+
     @Test
     void givenAllRequiredEnvVarsSet_whenCallingDefaultConstructor_thenBotIsCreated() {
         new TestBot();
