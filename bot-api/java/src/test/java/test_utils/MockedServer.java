@@ -20,6 +20,35 @@ public final class MockedServer {
 
     public static final int PORT = 7913;
 
+    public static String SESSION_ID = "123abc";
+    public static String NAME = MockedServer.class.getSimpleName();
+    public static String VERSION = "1.0.0";
+    public static String VARIANT = "Tank Royale";
+    public static Set<String> GAME_TYPES = Set.of("melee", "classic", "1v1");
+    public static int MY_ID = 1;
+    public static String GAME_TYPE = "classic";
+    public static int ARENA_WIDTH = 800;
+    public static int ARENA_HEIGHT = 600;
+    public static int NUMBER_OF_ROUNDS = 10;
+    public static double GUN_COOLING_RATE = 0.1;
+    public static int MAX_INACTIVITY_TURNS = 450;
+    public static int TURN_TIMEOUT = 30_000;
+    public static int READY_TIMEOUT = 1_000_000;
+
+    public static int BOT_ENEMY_COUNT = 7;
+    public static double BOT_ENERGY = 99.7;
+    public static double BOT_X = 44.5;
+    public static double BOT_Y = 721.34;
+    public static double BOT_DIRECTION = 120.1;
+    public static double BOT_GUN_DIRECTION = 3.45;
+    public static double BOT_RADAR_DIRECTION = 653.3;
+    public static double BOT_RADAR_SWEEP = 13.5;
+    public static double BOT_SPEED = 8.0;
+    public static double BOT_TURN_RATE = 5.1;
+    public static double BOT_GUN_TURN_RATE = 18.9;
+    public static double BOT_RADAR_TURN_RATE = 34.1;
+    public static double BOT_GUN_HEAT = 7.6;
+
     private WebSocketServerImpl server = new WebSocketServerImpl();
 
     private BotHandshake botHandshake;
@@ -116,7 +145,7 @@ public final class MockedServer {
 
         @Override
         public void onMessage(WebSocket conn, String text) {
-            System.out.println("onMessage: " + text);
+//            System.out.println("onMessage: " + text);
 
             var message = gson.fromJson(text, Message.class);
             switch (message.getType()) {
@@ -128,11 +157,13 @@ public final class MockedServer {
 
                 case BOT_READY:
                     sendRoundStarted(conn);
-                    sendTickEventForBot(conn);
+                    sendTickEventForBot(conn, 1);
                     break;
 
                 case BOT_INTENT:
                     botIntentLatch.countDown();
+                    try { Thread.sleep(10); } catch (InterruptedException ignore) {}
+                    sendTickEventForBot(conn, 2);
                     break;
             }
         }
@@ -149,27 +180,27 @@ public final class MockedServer {
         private void sendServerHandshake(WebSocket conn) {
             var serverHandshake = new ServerHandshake();
             serverHandshake.setType(SERVER_HANDSHAKE);
-            serverHandshake.setSessionId("123abc");
-            serverHandshake.setName(MockedServer.class.getSimpleName());
-            serverHandshake.setVersion("1.0.0");
-            serverHandshake.setVariant("Tank Royale");
-            serverHandshake.setGameTypes(Set.of("melee", "classic", "1v1"));
+            serverHandshake.setSessionId(SESSION_ID);
+            serverHandshake.setName(NAME);
+            serverHandshake.setVersion(VERSION);
+            serverHandshake.setVariant(VARIANT);
+            serverHandshake.setGameTypes(GAME_TYPES);
             send(conn, serverHandshake);
         }
 
         private void sendGameStartedForBot(WebSocket conn) {
             var gameStarted = new GameStartedEventForBot();
             gameStarted.setType(GAME_STARTED_EVENT_FOR_BOT);
-            gameStarted.setMyId(1);
+            gameStarted.setMyId(MY_ID);
             var gameSetup = new GameSetup();
             gameSetup.setGameType("classic");
-            gameSetup.setArenaWidth(800);
-            gameSetup.setArenaHeight(600);
-            gameSetup.setNumberOfRounds(10);
-            gameSetup.setGunCoolingRate(0.1);
-            gameSetup.setMaxInactivityTurns(450);
-            gameSetup.setTurnTimeout(30_000);
-            gameSetup.setReadyTimeout(1_000_000);
+            gameSetup.setArenaWidth(ARENA_WIDTH);
+            gameSetup.setArenaHeight(ARENA_HEIGHT);
+            gameSetup.setNumberOfRounds(NUMBER_OF_ROUNDS);
+            gameSetup.setGunCoolingRate(GUN_COOLING_RATE);
+            gameSetup.setMaxInactivityTurns(MAX_INACTIVITY_TURNS);
+            gameSetup.setTurnTimeout(TURN_TIMEOUT);
+            gameSetup.setReadyTimeout(READY_TIMEOUT);
             gameStarted.setGameSetup(gameSetup);
             send(conn, gameStarted);
         }
@@ -181,26 +212,25 @@ public final class MockedServer {
             send(conn, roundStarted);
         }
 
-        private void sendTickEventForBot(WebSocket conn) {
+        private void sendTickEventForBot(WebSocket conn, int turnNumber) {
             var tickEvent = new TickEventForBot();
             tickEvent.setType(TICK_EVENT_FOR_BOT);
             tickEvent.setRoundNumber(1);
-            tickEvent.setTurnNumber(1);
-            tickEvent.setEnemyCount(1);
+            tickEvent.setTurnNumber(turnNumber);
+            tickEvent.setEnemyCount(BOT_ENEMY_COUNT);
             var state = new BotState();
-            state.setEnergy(100.0);
-            state.setX(100.0);
-            state.setY(100.0);
-            state.setDirection(0.0);
-            state.setGunDirection(0.0);
-            state.setRadarDirection(0.0);
-            state.setRadarSweep(0.0);
-            state.setSpeed(0.0);
-            state.setTurnRate(0.0);
-            state.setTurnRate(0.0);
-            state.setGunTurnRate(0.0);
-            state.setRadarTurnRate(0.0);
-            state.setGunHeat(0.0);
+            state.setEnergy(BOT_ENERGY);
+            state.setX(BOT_X);
+            state.setY(BOT_Y);
+            state.setDirection(BOT_DIRECTION);
+            state.setGunDirection(BOT_GUN_DIRECTION);
+            state.setRadarDirection(BOT_RADAR_DIRECTION);
+            state.setRadarSweep(BOT_RADAR_SWEEP);
+            state.setSpeed(BOT_SPEED);
+            state.setTurnRate(BOT_TURN_RATE);
+            state.setGunTurnRate(BOT_GUN_TURN_RATE);
+            state.setRadarTurnRate(BOT_RADAR_TURN_RATE);
+            state.setGunHeat(BOT_GUN_HEAT);
             tickEvent.setBotState(state);
             send(conn, tickEvent);
         }
