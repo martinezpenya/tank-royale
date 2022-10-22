@@ -20,6 +20,13 @@ public final class MockedServer {
 
     public static final int PORT = 7913;
 
+    public static String SESSION_ID = "123abc";
+    public static String NAME = MockedServer.class.getSimpleName();
+    public static String VERSION = "1.0.0";
+    public static String VARIANT = "Tank Royale";
+    public static Set<String> GAME_TYPES = Set.of("melee", "classic", "1v1");
+    public static int MY_ID = 1;
+
     private WebSocketServerImpl server = new WebSocketServerImpl();
 
     private BotHandshake botHandshake;
@@ -116,7 +123,7 @@ public final class MockedServer {
 
         @Override
         public void onMessage(WebSocket conn, String text) {
-            System.out.println("onMessage: " + text);
+//            System.out.println("onMessage: " + text);
 
             var message = gson.fromJson(text, Message.class);
             switch (message.getType()) {
@@ -149,18 +156,18 @@ public final class MockedServer {
         private void sendServerHandshake(WebSocket conn) {
             var serverHandshake = new ServerHandshake();
             serverHandshake.setType(SERVER_HANDSHAKE);
-            serverHandshake.setSessionId("123abc");
-            serverHandshake.setName(MockedServer.class.getSimpleName());
-            serverHandshake.setVersion("1.0.0");
-            serverHandshake.setVariant("Tank Royale");
-            serverHandshake.setGameTypes(Set.of("melee", "classic", "1v1"));
+            serverHandshake.setSessionId(SESSION_ID);
+            serverHandshake.setName(NAME);
+            serverHandshake.setVersion(VERSION);
+            serverHandshake.setVariant(VARIANT);
+            serverHandshake.setGameTypes(GAME_TYPES);
             send(conn, serverHandshake);
         }
 
         private void sendGameStartedForBot(WebSocket conn) {
             var gameStarted = new GameStartedEventForBot();
             gameStarted.setType(GAME_STARTED_EVENT_FOR_BOT);
-            gameStarted.setMyId(1);
+            gameStarted.setMyId(MY_ID);
             var gameSetup = new GameSetup();
             gameSetup.setGameType("classic");
             gameSetup.setArenaWidth(800);
