@@ -26,7 +26,7 @@ public final class MockedServer {
 
     private CountDownLatch openedLatch = new CountDownLatch(1);
     private CountDownLatch botHandshakeLatch = new CountDownLatch(1);
-    private final CountDownLatch botIntentLatch = new CountDownLatch(1);
+    private CountDownLatch botIntentLatch = new CountDownLatch(1);
 
     private Gson gson;
 
@@ -55,6 +55,7 @@ public final class MockedServer {
     private void init() {
         openedLatch = new CountDownLatch(1);
         botHandshakeLatch = new CountDownLatch(1);
+        botIntentLatch = new CountDownLatch(1);
 
         gson = new Gson();
 
@@ -127,7 +128,7 @@ public final class MockedServer {
 
                 case BOT_READY:
                     sendRoundStarted(conn);
-                    sendTickEventForBot(conn, 1);
+                    sendTickEventForBot(conn);
                     break;
 
                 case BOT_INTENT:
@@ -180,11 +181,11 @@ public final class MockedServer {
             send(conn, roundStarted);
         }
 
-        private void sendTickEventForBot(WebSocket conn, int turn) {
+        private void sendTickEventForBot(WebSocket conn) {
             var tickEvent = new TickEventForBot();
             tickEvent.setType(TICK_EVENT_FOR_BOT);
             tickEvent.setRoundNumber(1);
-            tickEvent.setTurnNumber(turn);
+            tickEvent.setTurnNumber(1);
             tickEvent.setEnemyCount(1);
             var state = new BotState();
             state.setEnergy(100.0);

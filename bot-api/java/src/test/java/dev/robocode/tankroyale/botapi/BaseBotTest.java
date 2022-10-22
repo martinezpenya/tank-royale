@@ -1,5 +1,6 @@
 package dev.robocode.tankroyale.botapi;
 
+import dev.robocode.tankroyale.botapi.events.TickEvent;
 import jdk.jfr.Description;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -22,6 +23,11 @@ class BaseBotTest {
     static class TestBot extends BaseBot {
         TestBot() {
             super(botInfo, MockedServer.getServerUrl());
+        }
+
+        @Override
+        public void onTick(TickEvent e) {
+            go();
         }
     }
 
@@ -47,9 +53,10 @@ class BaseBotTest {
     @Test
     @Description("go()")
     void givenTestBot_whenCallingGo_thenBotIntentIsReceivedAtServer() {
+        var bot = new TestBot();
+        new Thread(bot::start).start(); // waits for onClose
         new Thread(() -> {
-            var bot = new TestBot();
-            bot.start();
+            try { Thread.sleep(500); } catch (InterruptedException ignore) {}
             bot.go();
         }).start();
         assertThat(server.awaitBotIntent(1000)).isTrue();
