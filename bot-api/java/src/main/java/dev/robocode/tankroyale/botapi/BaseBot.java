@@ -568,16 +568,16 @@ public abstract class BaseBot implements IBaseBot {
      * {@inheritDoc}
      */
     @Override
-    public final void addCustomEvent(Condition condition) {
-        __baseBotInternals.addCondition(condition);
+    public final boolean addCustomEvent(Condition condition) {
+        return __baseBotInternals.addCondition(condition);
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    public final void removeCustomEvent(Condition condition) {
-        __baseBotInternals.removeCondition(condition);
+    public final boolean removeCustomEvent(Condition condition) {
+        return __baseBotInternals.removeCondition(condition);
     }
 
     /**

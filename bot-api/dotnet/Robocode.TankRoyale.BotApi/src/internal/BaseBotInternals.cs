@@ -429,14 +429,14 @@ public sealed class BaseBotInternals
         return distance;
     }
 
-    internal void AddCondition(Events.Condition condition)
+    internal bool AddCondition(Events.Condition condition)
     {
-        Conditions.Add(condition);
+        return Conditions.Add(condition);
     }
 
-    internal void RemoveCondition(Events.Condition condition)
+    internal bool RemoveCondition(Events.Condition condition)
     {
-        Conditions.Remove(condition);
+        return Conditions.Remove(condition);
     }
 
     internal void SetStop()

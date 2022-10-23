@@ -7,7 +7,7 @@ import java.util.List;
 
 /**
  * Interface containing the core API for a bot.
- *
+ * <br>
  * <script src="../../../../prism.js"></script>
  */
 @SuppressWarnings({"UnusedDeclaration", "EmptyMethod"})
@@ -748,18 +748,20 @@ public interface IBaseBot {
      * {@link Condition#test} returns {@code true}.
      *
      * @param condition is the condition that must be met to trigger the custom event.
+     * @return {@code true} if the condition was not added already; {@code false} if the condition was already added.
      * @see #removeCustomEvent
      */
-    void addCustomEvent(Condition condition);
+    boolean addCustomEvent(Condition condition);
 
     /**
      * Removes triggering a custom event handler for a specific condition that was previously added
      * with {@link #addCustomEvent}.
      *
      * @param condition is the condition that was previously added with {@link #addCustomEvent}
+     * @return {@code true} if the condition was found; {@code false} if the condition was not found.
      * @see #addCustomEvent
      */
-    void removeCustomEvent(Condition condition);
+    boolean removeCustomEvent(Condition condition);
 
     /**
      * Set the bot to stop all movement including turning the gun and radar. The remaining movement is

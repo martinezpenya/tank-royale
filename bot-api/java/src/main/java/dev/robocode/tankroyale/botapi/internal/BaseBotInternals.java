@@ -441,12 +441,12 @@ public final class BaseBotInternals {
         return distance;
     }
 
-    public void addCondition(Condition condition) {
-        conditions.add(condition);
+    public boolean addCondition(Condition condition) {
+        return conditions.add(condition);
     }
 
-    public void removeCondition(Condition condition) {
-        conditions.remove(condition);
+    public boolean removeCondition(Condition condition) {
+        return conditions.remove(condition);
     }
 
     public void setStop() {

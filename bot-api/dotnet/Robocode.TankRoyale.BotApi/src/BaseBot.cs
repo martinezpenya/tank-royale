@@ -366,15 +366,15 @@ public abstract class BaseBot : IBaseBot
     }
 
     /// <inheritdoc/>
-    public void AddCustomEvent(Condition condition)
+    public bool AddCustomEvent(Condition condition)
     {
-        __baseBotInternals.AddCondition(condition);
+        return __baseBotInternals.AddCondition(condition);
     }
 
     /// <inheritdoc/>
-    public void RemoveCustomEvent(Condition condition)
+    public bool RemoveCustomEvent(Condition condition)
     {
-        __baseBotInternals.RemoveCondition(condition);
+        return __baseBotInternals.RemoveCondition(condition);
     }
 
     /// <inheritdoc/>

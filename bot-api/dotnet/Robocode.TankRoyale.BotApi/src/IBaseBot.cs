@@ -607,16 +607,18 @@ public interface IBaseBot
     /// when the <see cref="Condition.Test()"/> returns true.
     /// </summary>
     /// <param name="condition">Is the condition that must be met to trigger the custom event.</param>
+    /// <return><c>true</c> if the condition was not added already; <c>false</c> if the condition was already added.</return>
     /// <seealso cref="RemoveCustomEvent"/>
-    void AddCustomEvent(Condition condition);
+    bool AddCustomEvent(Condition condition);
 
     /// <summary>
     /// Removes triggering an custom event handler for a specific condition that was previously added
     /// with <see cref="AddCustomEvent(Condition)"/>.
     /// </summary>
     /// <param name="condition">is the condition that was previously added with <see cref="AddCustomEvent(Condition)"/></param>
+    /// <return><c>true</c> if the condition was found; <c>false</c> if the condition was not found.</return>
     /// <seealso cref="AddCustomEvent(Condition)"/>
-    void RemoveCustomEvent(Condition condition);
+    bool RemoveCustomEvent(Condition condition);
 
     /// <summary>
     /// Set the bot to stop all movement including turning the gun and radar. The remaining movement is
