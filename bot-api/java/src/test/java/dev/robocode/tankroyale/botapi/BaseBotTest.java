@@ -12,6 +12,9 @@ import test_utils.MockedServer;
 import static dev.robocode.tankroyale.botapi.Constants.*;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 
+// TODO: setRescan()
+// TODO: setFireAssist()
+// TODO: setInterruptible()
 
 class BaseBotTest {
 
@@ -399,8 +402,8 @@ class BaseBotTest {
     }
 
     @Test
-    @Description("getTargetSpeed()")
-    void givenMockedServer_whenCallingGetAndSetTargetSpeed_thenTargetSpeedMustBeSetValue() {
+    @Description("getTargetSpeed() and setTargetSpeed()")
+    void givenMockedServer_whenCallingSetAndGetTargetSpeed_thenTargetSpeedMustBeSetValue() {
         var bot = startAndGoAndAwaitBotIntent();
         bot.setTargetSpeed(5.75);
         bot.go();
@@ -428,7 +431,66 @@ class BaseBotTest {
         assertThat(bot.getTargetSpeed()).isEqualTo(4.0);
     }
 
+    @Test
+    @Description("setFire() when gunHeat > 0")
+    void givenMockedServer_whenCallingSetFireAndGunHeatGreaterThanZero_thenReturnFalse() {
+        server.setBotGunHeat(0.1);
+        var bot = startAndGoAndAwaitBotIntent();
+        assertThat(bot.setFire(3)).isFalse();
+    }
 
+    @Test
+    @Description("setFire() when gunHeat is 0")
+    void givenMockedServer_whenCallingSetFireAndGunHeatIsZero_thenReturnTrue() {
+        server.setBotGunHeat(0);
+        var bot = startAndGoAndAwaitBotIntent();
+        assertThat(bot.setFire(3)).isTrue();
+    }
+
+    @Test
+    @Description("getFirepower()")
+    void givenMockedServer_whenCallingGetFirepowerAfterSetFire_thenReturnSameValueAsFired() {
+        server.setBotGunHeat(0);
+        var bot = startAndGoAndAwaitBotIntent();
+        bot.setFire(3);
+        assertThat(bot.getFirepower()).isEqualTo(3);
+    }
+
+    @Test
+    @Description("setAdjustGunForBodyTurn() and isAdjustGunForBodyTurn()")
+    void givenMockedServer_whenCallingSetAndGetAdjustGunForBodyTurn_thenReturnSameValueAsSet() {
+        var bot = startBot();
+
+        bot.setAdjustGunForBodyTurn(false);
+        assertThat(bot.isAdjustGunForBodyTurn()).isFalse();
+
+        bot.setAdjustGunForBodyTurn(true);
+        assertThat(bot.isAdjustGunForBodyTurn()).isTrue();
+    }
+
+    @Test
+    @Description("setAdjustRadarForBodyTurn() and isAdjustRadarForBodyTurn()")
+    void givenMockedServer_whenCallingSetAndGetAdjustRadarForBodyTurn_thenReturnSameValueAsSet() {
+        var bot = startBot();
+
+        bot.setAdjustRadarForBodyTurn(false);
+        assertThat(bot.isAdjustRadarForBodyTurn()).isFalse();
+
+        bot.setAdjustRadarForBodyTurn(true);
+        assertThat(bot.isAdjustRadarForBodyTurn()).isTrue();
+    }
+
+    @Test
+    @Description("setAdjustRadarForGunTurn() and isAdjustRadarForGunTurn()")
+    void givenMockedServer_whenCallingSetAndGetAdjustRadarForGunTurn_thenReturnSameValueAsSet() {
+        var bot = startBot();
+
+        bot.setAdjustRadarForGunTurn(false);
+        assertThat(bot.isAdjustRadarForGunTurn()).isFalse();
+
+        bot.setAdjustRadarForGunTurn(true);
+        assertThat(bot.isAdjustRadarForGunTurn()).isTrue();
+    }
 
     private static BaseBot startBot() {
         var bot = new  TestBot();
