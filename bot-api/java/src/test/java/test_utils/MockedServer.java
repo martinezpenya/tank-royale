@@ -10,6 +10,7 @@ import java.net.InetSocketAddress;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.nio.ByteBuffer;
+import java.util.List;
 import java.util.Set;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
@@ -49,9 +50,13 @@ public final class MockedServer {
     public static double BOT_RADAR_TURN_RATE = 34.1;
     public static double BOT_GUN_HEAT = 7.6;
 
+    private double botEnergy = BOT_ENERGY;
+    private double botGunHeat = BOT_GUN_HEAT;
+
     private WebSocketServerImpl server = new WebSocketServerImpl();
 
     private BotHandshake botHandshake;
+    private BotIntent botIntent;
 
     private CountDownLatch openedLatch = new CountDownLatch(1);
     private CountDownLatch botHandshakeLatch = new CountDownLatch(1);
@@ -91,6 +96,12 @@ public final class MockedServer {
         server = new WebSocketServerImpl();
     }
 
+    public void setBotEnergy(double botEnergy) {
+        this.botEnergy = botEnergy;
+    }
+
+    public void setBotGunHeat(double botGunHeat) { this.botGunHeat = botGunHeat; }
+
     public boolean awaitConnection(int milliSeconds) {
         try {
             return openedLatch.await(milliSeconds, TimeUnit.MILLISECONDS);
@@ -118,7 +129,6 @@ public final class MockedServer {
         return false;
     }
 
-
     public BotHandshake getBotHandshake() {
         return botHandshake;
     }
@@ -143,9 +153,11 @@ public final class MockedServer {
         public void onClose(WebSocket conn, int code, String reason, boolean remote) {
         }
 
+        int turnNumber = 1;
+
         @Override
         public void onMessage(WebSocket conn, String text) {
-//            System.out.println("onMessage: " + text);
+            System.out.println("onMessage: " + text);
 
             var message = gson.fromJson(text, Message.class);
             switch (message.getType()) {
@@ -157,13 +169,17 @@ public final class MockedServer {
 
                 case BOT_READY:
                     sendRoundStarted(conn);
-                    sendTickEventForBot(conn, 1);
+                    sendTickEventForBot(conn, turnNumber++);
                     break;
 
                 case BOT_INTENT:
                     botIntentLatch.countDown();
-                    try { Thread.sleep(10); } catch (InterruptedException ignore) {}
-                    sendTickEventForBot(conn, 2);
+                    botIntent = gson.fromJson(text, BotIntent.class);
+                    try {
+                        Thread.sleep(10);
+                    } catch (InterruptedException ignore) {
+                    }
+                    sendTickEventForBot(conn, turnNumber++);
                     break;
             }
         }
@@ -218,8 +234,9 @@ public final class MockedServer {
             tickEvent.setRoundNumber(1);
             tickEvent.setTurnNumber(turnNumber);
             tickEvent.setEnemyCount(BOT_ENEMY_COUNT);
+
             var state = new BotState();
-            state.setEnergy(BOT_ENERGY);
+            state.setEnergy(botEnergy);
             state.setX(BOT_X);
             state.setY(BOT_Y);
             state.setDirection(BOT_DIRECTION);
@@ -230,13 +247,53 @@ public final class MockedServer {
             state.setTurnRate(BOT_TURN_RATE);
             state.setGunTurnRate(BOT_GUN_TURN_RATE);
             state.setRadarTurnRate(BOT_RADAR_TURN_RATE);
-            state.setGunHeat(BOT_GUN_HEAT);
+            state.setGunHeat(botGunHeat);
             tickEvent.setBotState(state);
+
+            if (botIntent != null) {
+                if (botIntent.getTurnRate() != null) {
+                    state.setTurnRate(botIntent.getTurnRate());
+                }
+                if (botIntent.getGunTurnRate() != null) {
+                    state.setGunTurnRate(botIntent.getGunTurnRate());
+                }
+                if (botIntent.getRadarTurnRate() != null) {
+                    state.setRadarTurnRate(botIntent.getRadarTurnRate());
+                }
+            }
+
+            var bulletState1 = new BulletState();
+            var bulletState2 = new BulletState();
+            fillBulletState(bulletState1, 1);
+            fillBulletState(bulletState2, 2);
+            tickEvent.setBulletStates(List.of(bulletState1, bulletState2));
+
+            var event = new ScannedBotEvent();
+            event.setType(SCANNED_BOT_EVENT);
+            event.setDirection(45.0);
+            event.setX(134.56);
+            event.setY(256.7);
+            event.setEnergy(56.9);
+            event.setSpeed(9.6);
+            event.setTurnNumber(1);
+            event.setScannedBotId(2);
+            event.setScannedByBotId(1);
+            tickEvent.setEvents(List.of(event));
+
             send(conn, tickEvent);
         }
 
         private void send(WebSocket conn, Message message) {
             conn.send(gson.toJson(message));
+        }
+
+        private void fillBulletState(BulletState bulletState, int id) {
+            bulletState.setBulletId(id);
+            bulletState.setX(0.0);
+            bulletState.setY(0.0);
+            bulletState.setOwnerId(0);
+            bulletState.setDirection(0.0);
+            bulletState.setPower(0.0);
         }
     }
 }
