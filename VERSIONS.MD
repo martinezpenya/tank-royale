@@ -1,5 +1,11 @@
 # Versions
 
+## 📦 0.17.5 - Maintenance 
+
+- Bot API:
+    - addCondition() and removeCondition() now returns a boolean value instead of void.
+    - Condition can take an optional lambda expression as input parameter as alternative to overriding the test() method.  
+
 ## 📦 0.17.4 - Maintenance - 16-Oct-2022
 
 #### 🚀 Improvements
