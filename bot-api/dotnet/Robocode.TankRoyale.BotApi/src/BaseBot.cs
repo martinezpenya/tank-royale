@@ -442,13 +442,16 @@ public abstract class BaseBot : IBaseBot
     }
 
     /// <inheritdoc/>
-    public double CalcMaxTurnRate(double speed) => Constants.MaxTurnRate - 0.75 * Math.Abs(speed);
+    public double CalcMaxTurnRate(double speed) =>
+        Constants.MaxTurnRate - 0.75 * Math.Abs(Math.Clamp(speed, -Constants.MaxSpeed, Constants.MaxSpeed));
 
     /// <inheritdoc/>
-    public virtual double CalcBulletSpeed(double firepower) => 20 - 3 * firepower;
+    public virtual double CalcBulletSpeed(double firepower) =>
+        20 - 3 * Math.Clamp(firepower, -Constants.MinFirepower, Constants.MaxFirepower);
 
     /// <inheritdoc/>
-    public virtual double CalcGunHeat(double firepower) => 1 + (firepower / 5);
+    public virtual double CalcGunHeat(double firepower) =>
+        1 + (Math.Clamp(firepower, -Constants.MinFirepower, Constants.MaxFirepower) / 5);
 
     /// <inheritdoc/>
     public virtual double CalcBearing(double direction) => NormalizeRelativeAngle(direction - Direction);

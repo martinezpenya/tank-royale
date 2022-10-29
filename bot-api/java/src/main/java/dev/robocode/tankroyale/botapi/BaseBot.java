@@ -9,7 +9,8 @@ import java.net.URI;
 import java.util.Collection;
 import java.util.List;
 
-import static dev.robocode.tankroyale.botapi.Constants.MAX_TURN_RATE;
+import static dev.robocode.tankroyale.botapi.Constants.*;
+import static dev.robocode.tankroyale.botapi.util.MathUtil.clamp;
 
 /**
  * Abstract bot class that takes care of communication between the bot and the server, and sends
@@ -721,7 +722,7 @@ public abstract class BaseBot implements IBaseBot {
      */
     @Override
     public final double calcMaxTurnRate(double speed) {
-        return MAX_TURN_RATE - 0.75 * Math.abs(speed);
+        return MAX_TURN_RATE - 0.75 * Math.abs(clamp(speed, -MAX_SPEED, MAX_SPEED));
     }
 
     /**
@@ -729,7 +730,7 @@ public abstract class BaseBot implements IBaseBot {
      */
     @Override
     public final double calcBulletSpeed(double firepower) {
-        return 20 - 3 * firepower;
+        return 20 - 3 * clamp(firepower, MIN_FIREPOWER, MAX_FIREPOWER);
     }
 
     /**
@@ -737,7 +738,7 @@ public abstract class BaseBot implements IBaseBot {
      */
     @Override
     public final double calcGunHeat(double firepower) {
-        return 1 + (firepower / 5);
+        return 1 + (clamp(firepower, MIN_FIREPOWER, MAX_FIREPOWER) / 5);
     }
 
     /**

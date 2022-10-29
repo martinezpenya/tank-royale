@@ -1,16 +1,21 @@
 package dev.robocode.tankroyale.botapi;
 
-import dev.robocode.tankroyale.botapi.events.Condition;
-import dev.robocode.tankroyale.botapi.events.ScannedBotEvent;
-import dev.robocode.tankroyale.botapi.events.TickEvent;
+import dev.robocode.tankroyale.botapi.events.*;
 import jdk.jfr.Description;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.CsvSource;
+import org.junit.jupiter.params.provider.MethodSource;
 import test_utils.MockedServer;
 
+import java.util.concurrent.ThreadLocalRandom;
+import java.util.stream.Stream;
+
 import static dev.robocode.tankroyale.botapi.Constants.*;
+import static dev.robocode.tankroyale.botapi.events.DefaultEventPriority.*;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 
 // TODO: setRescan() in dept. Must call onScannedBot
@@ -134,9 +139,10 @@ class BaseBotTest {
 
     @Test
     @Description("getTurnLeft()")
-    @Disabled // FIXME
     void givenMockedServer_whenCallingGetTurnLeft_thenTurnLeftMustBeLesserThanTurnTimeout() {
         var bot = startAndAwaitGameStarted();
+        bot.go(); // skip first turn due to initialization, which could take longer than the turn timeout
+        awaitBotIntent();
         assertThat(bot.getTimeLeft()).isBetween(0, MockedServer.TURN_TIMEOUT);
     }
 
@@ -641,6 +647,105 @@ class BaseBotTest {
         var bot = startBot();
         assertThat(bot.getGunColor()).isNull();
     }
+
+    @ParameterizedTest
+    @CsvSource({
+            "-10,  4",
+            "-8.1, 4",
+            "-8,   4",
+            "-6,   5.5",
+            "-5.5, 5.875",
+            "-5,   6.25",
+            "-1,   9.25",
+            "-0.1, 9.925",
+            "0,    10",
+            "0.1,  9.925",
+            "2,    8.5",
+            "4,    7",
+            "8,    4",
+            "8.1,  4",
+            "20,   4"
+    })
+    @Description("calcMaxTurnRate()")
+    void givenSpeed_whenCallingCalcMaxTurnRate_thenReturnCorrectMaxTurnRate(double speed, double maxTurnRate) {
+        var bot = startBot();
+        assertThat(bot.calcMaxTurnRate(speed)).isEqualTo(maxTurnRate);
+    }
+
+    @ParameterizedTest
+    @CsvSource({
+            "-1,  19.7",
+            "0,   19.7",
+            "0.1, 19.7",
+            "0.2, 19.4",
+            "1,   17",
+            "2,   14",
+            "2.5, 12.5",
+            "3,   11",
+            "3.1, 11",
+            "10,  11"
+    })
+    @Description("calcBulletSpeed()")
+    void givenFirepower_whenCallingCalcBulletSpeed_thenReturnCorrectBulletSpeed(double firepower, double bulletSpeed) {
+        var bot = startBot();
+        assertThat(bot.calcBulletSpeed(firepower)).isEqualTo(bulletSpeed);
+    }
+
+    @ParameterizedTest
+    @CsvSource({
+            "-1,  1.02",
+            "0,   1.02",
+            "0.1, 1.02",
+            "0.2, 1.04",
+            "1,   1.2",
+            "2,   1.4",
+            "3,   1.6",
+            "3.1, 1.6",
+            "10,  1.6"
+    })
+    @Description("calcGunHeat()")
+    void givenFirepower_whenCallingCalcGunHeat_thenReturnCorrectGunHeat(double firepower, double gunHeat) {
+        var bot = startBot();
+        assertThat(bot.calcGunHeat(firepower)).isEqualTo(gunHeat);
+    }
+
+    @ParameterizedTest
+    @Description("getEventPriority")
+    @MethodSource("eventPrioritySource")
+    void givenAllEventClass_whenCallingGetEventPriority_thenReturnCorrectPriorityValueForThatEventClass(Class<BotEvent> eventClass, int eventPriority) {
+        var bot = startBot();
+        assertThat(bot.getEventPriority(eventClass)).isEqualTo(eventPriority);
+    }
+
+    @ParameterizedTest
+    @Description("setEventPriority")
+    @MethodSource("eventPrioritySource")
+    void givenAllEventClass_whenCallingSetEventPriority_thenReturnSameEventPriority(Class<BotEvent> eventClass) {
+        var bot = startBot();
+        int eventPriority = ThreadLocalRandom.current().nextInt(-1000, 1000);
+        bot.setEventPriority(eventClass, eventPriority);
+        assertThat(bot.getEventPriority(eventClass)).isEqualTo(eventPriority);
+    }
+
+    private static Stream<Arguments> eventPrioritySource() {
+        return Stream.of(
+                Arguments.of(WonRoundEvent.class, WON_ROUND),
+                Arguments.of(SkippedTurnEvent.class, SKIPPED_TURN),
+                Arguments.of(TickEvent.class, TICK),
+                Arguments.of(CustomEvent.class, CUSTOM),
+                Arguments.of(BotDeathEvent.class, BOT_DEATH),
+                Arguments.of(BulletHitWallEvent.class, BULLET_HIT_WALL),
+                Arguments.of(BulletHitBulletEvent.class, BULLET_HIT_BULLET),
+                Arguments.of(BulletHitBotEvent.class, BULLET_HIT_BOT),
+                Arguments.of(BulletFiredEvent.class, BULLET_FIRED),
+                Arguments.of(HitByBulletEvent.class, HIT_BY_BULLET),
+                Arguments.of(HitWallEvent.class, HIT_WALL),
+                Arguments.of(HitBotEvent.class, HIT_BOT),
+                Arguments.of(ScannedBotEvent.class, SCANNED_BOT),
+                Arguments.of(DeathEvent.class, DEATH)
+        );
+    }
+
 
     private static BaseBot startBot() {
         var bot = new TestBot();
