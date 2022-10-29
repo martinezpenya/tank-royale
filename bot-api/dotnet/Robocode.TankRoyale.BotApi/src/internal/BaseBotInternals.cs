@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Threading;
 using Newtonsoft.Json;
 using S = Robocode.TankRoyale.Schema;
@@ -350,6 +351,16 @@ public sealed class BaseBotInternals
         return true;
     }
 
+    internal double GunHeat => tickEvent == null ? 0 : tickEvent.BotState.GunHeat;
+
+    internal double Speed => tickEvent == null ? 0 : tickEvent.BotState.Speed;
+
+    internal double TurnRate => tickEvent == null ? 0 : tickEvent.BotState.TurnRate;
+
+    internal double GunTurnRate => tickEvent == null ? 0 : tickEvent.BotState.GunTurnRate;
+
+    internal double RadarTurnRate => tickEvent == null ? 0 : tickEvent.BotState.RadarTurnRate;
+
     internal double MaxSpeed
     {
         get => maxSpeed;
@@ -481,9 +492,55 @@ public sealed class BaseBotInternals
         return eventPriorities[eventType];
     }
 
-    public void SetPriority(Type eventType, int priority) {
+    internal void SetPriority(Type eventType, int priority) {
         eventPriorities[eventType] = priority;
     }
+
+    internal Color BodyColor
+    {
+        get => tickEvent?.BotState.BodyColor;
+        set => botIntent.BodyColor = toIntentColor(value);
+    }
+
+    internal Color TurretColor
+    {
+        get => tickEvent?.BotState.TurretColor;
+        set => botIntent.TurretColor = toIntentColor(value);
+    }
+
+    internal Color RadarColor
+    {
+        get => tickEvent?.BotState.RadarColor;
+        set => botIntent.RadarColor = toIntentColor(value);
+    }
+
+    internal Color BulletColor
+    {
+        get => tickEvent?.BotState.BulletColor;
+        set => botIntent.BulletColor = toIntentColor(value);
+    }
+
+    internal Color ScanColor
+    {
+        get => tickEvent?.BotState.ScanColor;
+        set => botIntent.ScanColor = toIntentColor(value);
+    }
+
+    internal Color TracksColor
+    {
+        get => tickEvent?.BotState.TracksColor;
+        set => botIntent.TracksColor = toIntentColor(value);
+    }
+
+    internal Color GunColor
+    {
+        get => tickEvent?.BotState.GunColor;
+        set => botIntent.GunColor = toIntentColor(value);
+    }
+    
+    private static string toIntentColor(Color color) => color == null ? null : "#" + color.ToHex();
+
+    internal IEnumerable<BulletState> BulletStates => tickEvent?.BulletStates ?? ImmutableHashSet<BulletState>.Empty;
 
     private S.ServerHandshake ServerHandshake
     {

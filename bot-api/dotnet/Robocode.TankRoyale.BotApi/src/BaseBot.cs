@@ -176,13 +176,13 @@ public abstract class BaseBot : IBaseBot
     public double RadarDirection => __baseBotInternals.CurrentTick.BotState.RadarDirection;
 
     /// <inheritdoc/>
-    public double Speed => __baseBotInternals.CurrentTick.BotState.Speed;
+    public double Speed => __baseBotInternals.Speed;
 
     /// <inheritdoc/>
-    public double GunHeat => __baseBotInternals.CurrentTick.BotState.GunHeat;
+    public double GunHeat => __baseBotInternals.GunHeat;
 
     /// <inheritdoc/>
-    public IEnumerable<BulletState> BulletStates => __baseBotInternals.CurrentTick.BulletStates;
+    public IEnumerable<BulletState> BulletStates => __baseBotInternals.BulletStates;
 
     /// <inheritdoc/>
     public IList<BotEvent> Events => __baseBotInternals.Events;
@@ -205,7 +205,7 @@ public abstract class BaseBot : IBaseBot
 
             __baseBotInternals.BotIntent.TurnRate = value;
         }
-        get => __baseBotInternals.CurrentTick.BotState.TurnRate;
+        get => __baseBotInternals.TurnRate;
     }
 
     /// <inheritdoc/>
@@ -235,7 +235,7 @@ public abstract class BaseBot : IBaseBot
 
             __baseBotInternals.BotIntent.GunTurnRate = value;
         }
-        get => __baseBotInternals.CurrentTick.BotState.GunTurnRate;
+        get => __baseBotInternals.GunTurnRate;
     }
 
     /// <inheritdoc/>
@@ -265,7 +265,7 @@ public abstract class BaseBot : IBaseBot
 
             __baseBotInternals.BotIntent.RadarTurnRate = value;
         }
-        get => __baseBotInternals.CurrentTick.BotState.RadarTurnRate;
+        get => __baseBotInternals.RadarTurnRate;
     }
 
     /// <inheritdoc/>
@@ -395,50 +395,50 @@ public abstract class BaseBot : IBaseBot
     /// <inheritdoc/>
     public Color BodyColor
     {
-        get => __baseBotInternals.CurrentTick.BotState.BodyColor;
-        set => __baseBotInternals.BotIntent.BodyColor = ToIntentColor(value);
+        get => __baseBotInternals.BodyColor;
+        set => __baseBotInternals.BodyColor = value;
     }
 
     /// <inheritdoc/>
     public Color TurretColor
     {
-        get => __baseBotInternals.CurrentTick.BotState.TurretColor;
-        set => __baseBotInternals.BotIntent.TurretColor = ToIntentColor(value);
+        get => __baseBotInternals.TurretColor;
+        set => __baseBotInternals.TurretColor = value;
     }
 
     /// <inheritdoc/>
     public Color RadarColor
     {
-        get => __baseBotInternals.CurrentTick.BotState.RadarColor;
-        set => __baseBotInternals.BotIntent.RadarColor = ToIntentColor(value);
+        get => __baseBotInternals.RadarColor;
+        set => __baseBotInternals.RadarColor = value;
     }
 
     /// <inheritdoc/>
     public Color BulletColor
     {
-        get => __baseBotInternals.CurrentTick.BotState.BulletColor;
-        set => __baseBotInternals.BotIntent.BulletColor = ToIntentColor(value);
+        get => __baseBotInternals.BulletColor;
+        set => __baseBotInternals.BulletColor = value;
     }
 
     /// <inheritdoc/>
     public Color ScanColor
     {
-        get => __baseBotInternals.CurrentTick.BotState.ScanColor;
-        set => __baseBotInternals.BotIntent.ScanColor = ToIntentColor(value);
+        get => __baseBotInternals.ScanColor;
+        set => __baseBotInternals.ScanColor = value;
     }
 
     /// <inheritdoc/>
     public Color TracksColor
     {
-        get => __baseBotInternals.CurrentTick.BotState.TracksColor;
-        set => __baseBotInternals.BotIntent.TracksColor = ToIntentColor(value);
+        get => __baseBotInternals.TracksColor;
+        set => __baseBotInternals.TracksColor = value;
     }
 
     /// <inheritdoc/>
     public Color GunColor
     {
-        get => __baseBotInternals.CurrentTick.BotState.GunColor;
-        set => __baseBotInternals.BotIntent.GunColor = ToIntentColor(value);
+        get => __baseBotInternals.GunColor;
+        set => __baseBotInternals.GunColor = value;
     }
 
     /// <inheritdoc/>
@@ -626,10 +626,5 @@ public abstract class BaseBot : IBaseBot
     /// <inheritdoc/>
     public virtual void OnCustomEvent(CustomEvent customEvent)
     {
-    }
-
-    private static string ToIntentColor(Color color)
-    {
-        return color == null ? null : "#" + color.ToHex();
     }
 }

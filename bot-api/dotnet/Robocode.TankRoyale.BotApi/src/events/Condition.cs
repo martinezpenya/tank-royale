@@ -120,7 +120,7 @@ public class Condition
     /// Alternatively, you can use the one of the constructors that take a <see cref="Func{TResult}"/> instead.
     /// </summary>
     /// <return><c>true</c> if the condition is met; <c>false</c> otherwise.</return>
-    public bool Test()
+    public virtual bool Test()
     {
         if (testFunc == null)
             return false;

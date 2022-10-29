@@ -7,6 +7,7 @@ import com.google.gson.JsonObject;
 import com.google.gson.typeadapters.RuntimeTypeAdapterFactory;
 import dev.robocode.tankroyale.botapi.*;
 import dev.robocode.tankroyale.botapi.BotInfo;
+import dev.robocode.tankroyale.botapi.BulletState;
 import dev.robocode.tankroyale.botapi.GameSetup;
 import dev.robocode.tankroyale.botapi.events.BotDeathEvent;
 import dev.robocode.tankroyale.botapi.events.BulletFiredEvent;
@@ -361,6 +362,26 @@ public final class BaseBotInternals {
         return true;
     }
 
+    public double getGunHeat() {
+        return tickEvent == null ? 0 : tickEvent.getBotState().getGunHeat();
+    }
+
+    public double getSpeed() {
+        return tickEvent == null ? 0 : tickEvent.getBotState().getSpeed();
+    }
+
+    public double getTurnRate() {
+        return tickEvent == null ? 0 : tickEvent.getBotState().getTurnRate();
+    }
+
+    public double getGunTurnRate() {
+        return tickEvent == null ? 0 : tickEvent.getBotState().getGunTurnRate();
+    }
+
+    public double getRadarTurnRate() {
+        return tickEvent == null ? 0 : tickEvent.getBotState().getRadarTurnRate();
+    }
+
     public double getMaxSpeed() {
         return maxSpeed;
     }
@@ -496,6 +517,70 @@ public final class BaseBotInternals {
 
     public void setPriority(Class<BotEvent> eventClass, int priority) {
         eventPriorities.put(eventClass, priority);
+    }
+
+    public Color getBodyColor() {
+        return tickEvent == null ? null : tickEvent.getBotState().getBodyColor();
+    }
+
+    public Color getTurretColor() {
+        return tickEvent == null ? null : tickEvent.getBotState().getTurretColor();
+    }
+
+    public Color getRadarColor() {
+        return tickEvent == null ? null : tickEvent.getBotState().getRadarColor();
+    }
+
+    public Color getBulletColor() {
+        return tickEvent == null ? null : tickEvent.getBotState().getBulletColor();
+    }
+
+    public Color getScanColor() {
+        return tickEvent == null ? null : tickEvent.getBotState().getScanColor();
+    }
+
+    public Color getTracksColor() {
+        return tickEvent == null ? null : tickEvent.getBotState().getTracksColor();
+    }
+
+    public Color getGunColor() {
+        return tickEvent == null ? null : tickEvent.getBotState().getGunColor();
+    }
+
+    public void setBodyColor(Color color) {
+        botIntent.setBodyColor(toIntentColor(color));
+    }
+
+    public void setTurretColor(Color color) {
+        botIntent.setTurretColor(toIntentColor(color));
+    }
+
+    public void setRadarColor(Color color) {
+        botIntent.setRadarColor(toIntentColor(color));
+    }
+
+    public void setBulletColor(Color color) {
+        botIntent.setBulletColor(toIntentColor(color));
+    }
+
+    public void setScanColor(Color color) {
+        botIntent.setScanColor(toIntentColor(color));
+    }
+
+    public void setTracksColor(Color color) {
+        botIntent.setTracksColor(toIntentColor(color));
+    }
+
+    public void setGunColor(Color color) {
+        botIntent.setGunColor(toIntentColor(color));
+    }
+
+    private static String toIntentColor(Color color) {
+        return color == null ? null : "#" + color.toHex();
+    }
+
+    public Collection<BulletState> getBulletStates() {
+        return tickEvent == null ? Collections.emptySet() : tickEvent.getBulletStates();
     }
 
     private ServerHandshake getServerHandshake() {

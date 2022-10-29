@@ -58,9 +58,11 @@ public final class MockedServer {
     private BotHandshake botHandshake;
     private BotIntent botIntent;
 
-    private CountDownLatch openedLatch = new CountDownLatch(1);
-    private CountDownLatch botHandshakeLatch = new CountDownLatch(1);
-    private CountDownLatch botIntentLatch = new CountDownLatch(1);
+    private CountDownLatch openedLatch;
+    private CountDownLatch botHandshakeLatch;
+    private CountDownLatch gameStartedLatch;
+    private CountDownLatch tickEventLatch;
+    private CountDownLatch botIntentLatch;
 
     private Gson gson;
 
@@ -89,6 +91,8 @@ public final class MockedServer {
     private void init() {
         openedLatch = new CountDownLatch(1);
         botHandshakeLatch = new CountDownLatch(1);
+        gameStartedLatch = new CountDownLatch(1);
+        tickEventLatch = new CountDownLatch(1);
         botIntentLatch = new CountDownLatch(1);
 
         gson = new Gson();
@@ -116,6 +120,24 @@ public final class MockedServer {
             return botHandshakeLatch.await(milliSeconds, TimeUnit.MILLISECONDS);
         } catch (InterruptedException e) {
             System.err.println("awaitBotHandshake() was interrupted");
+        }
+        return false;
+    }
+
+    public boolean awaitGameStarted(int milliSeconds) {
+        try {
+            return gameStartedLatch.await(milliSeconds, TimeUnit.MILLISECONDS);
+        } catch (InterruptedException e) {
+            System.err.println("awaitGameStarted() was interrupted");
+        }
+        return false;
+    }
+
+    public boolean awaitTickEvent(int milliSeconds) {
+        try {
+            return tickEventLatch.await(milliSeconds, TimeUnit.MILLISECONDS);
+        } catch (InterruptedException e) {
+            System.err.println("awaitTickEvent() was interrupted");
         }
         return false;
     }
@@ -164,21 +186,27 @@ public final class MockedServer {
                 case BOT_HANDSHAKE:
                     botHandshake = gson.fromJson(text, BotHandshake.class);
                     botHandshakeLatch.countDown();
+
                     sendGameStartedForBot(conn);
+                    gameStartedLatch.countDown();
                     break;
 
                 case BOT_READY:
                     sendRoundStarted(conn);
+
                     sendTickEventForBot(conn, turnNumber++);
+                    tickEventLatch.countDown();
                     break;
 
                 case BOT_INTENT:
                     botIntentLatch.countDown();
+
                     botIntent = gson.fromJson(text, BotIntent.class);
                     try {
-                        Thread.sleep(10);
+                        Thread.sleep(5);
                     } catch (InterruptedException ignore) {
                     }
+
                     sendTickEventForBot(conn, turnNumber++);
                     break;
             }

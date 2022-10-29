@@ -294,7 +294,7 @@ public abstract class BaseBot implements IBaseBot {
      */
     @Override
     public final double getSpeed() {
-        return __baseBotInternals.getCurrentTick().getBotState().getSpeed();
+        return __baseBotInternals.getSpeed();
     }
 
     /**
@@ -302,7 +302,7 @@ public abstract class BaseBot implements IBaseBot {
      */
     @Override
     public final double getGunHeat() {
-        return __baseBotInternals.getCurrentTick().getBotState().getGunHeat();
+        return __baseBotInternals.getGunHeat();
     }
 
     /**
@@ -310,7 +310,7 @@ public abstract class BaseBot implements IBaseBot {
      */
     @Override
     public final Collection<BulletState> getBulletStates() {
-        return __baseBotInternals.getCurrentTick().getBulletStates();
+        return __baseBotInternals.getBulletStates();
     }
 
     /**
@@ -334,7 +334,7 @@ public abstract class BaseBot implements IBaseBot {
      */
     @Override
     public final double getTurnRate() {
-        return __baseBotInternals.getCurrentTick().getBotState().getTurnRate();
+        return __baseBotInternals.getTurnRate();
     }
 
     /**
@@ -369,7 +369,7 @@ public abstract class BaseBot implements IBaseBot {
      */
     @Override
     public final double getGunTurnRate() {
-        return __baseBotInternals.getCurrentTick().getBotState().getGunTurnRate();
+        return __baseBotInternals.getGunTurnRate();
     }
 
     /**
@@ -404,7 +404,7 @@ public abstract class BaseBot implements IBaseBot {
      */
     @Override
     public final double getRadarTurnRate() {
-        return __baseBotInternals.getCurrentTick().getBotState().getRadarTurnRate();
+        return __baseBotInternals.getRadarTurnRate();
     }
 
     /**
@@ -609,15 +609,15 @@ public abstract class BaseBot implements IBaseBot {
      */
     @Override
     public final Color getBodyColor() {
-        return __baseBotInternals.getCurrentTick().getBotState().getBodyColor();
+        return __baseBotInternals.getBodyColor();
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    public final void setBodyColor(Color bodyColor) {
-        __baseBotInternals.getBotIntent().setBodyColor(toIntentColor(bodyColor));
+    public final void setBodyColor(Color color) {
+        __baseBotInternals.setBodyColor(color);
     }
 
     /**
@@ -625,15 +625,15 @@ public abstract class BaseBot implements IBaseBot {
      */
     @Override
     public final Color getTurretColor() {
-        return __baseBotInternals.getCurrentTick().getBotState().getTurretColor();
+        return __baseBotInternals.getTurretColor();
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    public final void setTurretColor(Color turretColor) {
-        __baseBotInternals.getBotIntent().setTurretColor(toIntentColor(turretColor));
+    public final void setTurretColor(Color color) {
+        __baseBotInternals.setTurretColor(color);
     }
 
     /**
@@ -641,15 +641,15 @@ public abstract class BaseBot implements IBaseBot {
      */
     @Override
     public final Color getRadarColor() {
-        return __baseBotInternals.getCurrentTick().getBotState().getRadarColor();
+        return __baseBotInternals.getRadarColor();
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    public final void setRadarColor(Color radarColor) {
-        __baseBotInternals.getBotIntent().setRadarColor(toIntentColor(radarColor));
+    public final void setRadarColor(Color color) {
+        __baseBotInternals.setRadarColor(color);
     }
 
     /**
@@ -657,15 +657,15 @@ public abstract class BaseBot implements IBaseBot {
      */
     @Override
     public final Color getBulletColor() {
-        return __baseBotInternals.getCurrentTick().getBotState().getBulletColor();
+        return __baseBotInternals.getBulletColor();
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    public final void setBulletColor(Color bulletColor) {
-        __baseBotInternals.getBotIntent().setBulletColor(toIntentColor(bulletColor));
+    public final void setBulletColor(Color color) {
+        __baseBotInternals.setBulletColor(color);
     }
 
     /**
@@ -673,15 +673,15 @@ public abstract class BaseBot implements IBaseBot {
      */
     @Override
     public final Color getScanColor() {
-        return __baseBotInternals.getCurrentTick().getBotState().getScanColor();
+        return __baseBotInternals.getScanColor();
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    public final void setScanColor(Color scanColor) {
-        __baseBotInternals.getBotIntent().setScanColor(toIntentColor(scanColor));
+    public final void setScanColor(Color color) {
+        __baseBotInternals.setScanColor(color);
     }
 
     /**
@@ -689,15 +689,15 @@ public abstract class BaseBot implements IBaseBot {
      */
     @Override
     public final Color getTracksColor() {
-        return __baseBotInternals.getCurrentTick().getBotState().getTracksColor();
+        return __baseBotInternals.getTracksColor();
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    public final void setTracksColor(Color tracksColor) {
-        __baseBotInternals.getBotIntent().setTracksColor(toIntentColor(tracksColor));
+    public final void setTracksColor(Color color) {
+        __baseBotInternals.setTracksColor(color);
     }
 
     /**
@@ -705,15 +705,15 @@ public abstract class BaseBot implements IBaseBot {
      */
     @Override
     public final Color getGunColor() {
-        return __baseBotInternals.getCurrentTick().getBotState().getGunColor();
+        return __baseBotInternals.getGunColor();
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    public final void setGunColor(Color gunColor) {
-        __baseBotInternals.getBotIntent().setGunColor(toIntentColor(gunColor));
+    public final void setGunColor(Color color) {
+        __baseBotInternals.setGunColor(color);
     }
 
     /**
@@ -754,9 +754,5 @@ public abstract class BaseBot implements IBaseBot {
     @Override
     public void setEventPriority(Class<BotEvent> eventClass, int priority) {
         __baseBotInternals.setPriority(eventClass, priority);
-    }
-
-    private static String toIntentColor(Color color) {
-        return color == null ? null : "#" + color.toHex();
     }
 }
