@@ -58,6 +58,8 @@ public final class MockedServer {
     private BotHandshake botHandshake;
     private BotIntent botIntent;
 
+    private int turnNumber = 1;
+
     private CountDownLatch openedLatch;
     private CountDownLatch botHandshakeLatch;
     private CountDownLatch gameStartedLatch;
@@ -82,7 +84,7 @@ public final class MockedServer {
     public void stop() {
         try {
             server.stop();
-            TimeUnit.MILLISECONDS.sleep(100);
+            Thread.sleep(100);
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
@@ -175,11 +177,9 @@ public final class MockedServer {
         public void onClose(WebSocket conn, int code, String reason, boolean remote) {
         }
 
-        int turnNumber = 1;
-
         @Override
         public void onMessage(WebSocket conn, String text) {
-            System.out.println("onMessage: " + text);
+//            System.out.println("onMessage: " + text);
 
             var message = gson.fromJson(text, Message.class);
             switch (message.getType()) {
@@ -237,7 +237,7 @@ public final class MockedServer {
             gameStarted.setType(GAME_STARTED_EVENT_FOR_BOT);
             gameStarted.setMyId(MY_ID);
             var gameSetup = new GameSetup();
-            gameSetup.setGameType("classic");
+            gameSetup.setGameType(GAME_TYPE);
             gameSetup.setArenaWidth(ARENA_WIDTH);
             gameSetup.setArenaHeight(ARENA_HEIGHT);
             gameSetup.setNumberOfRounds(NUMBER_OF_ROUNDS);
@@ -290,10 +290,8 @@ public final class MockedServer {
                 }
             }
 
-            var bulletState1 = new BulletState();
-            var bulletState2 = new BulletState();
-            fillBulletState(bulletState1, 1);
-            fillBulletState(bulletState2, 2);
+            var bulletState1 = createBulletState(1);
+            var bulletState2 = createBulletState(2);
             tickEvent.setBulletStates(List.of(bulletState1, bulletState2));
 
             var event = new ScannedBotEvent();
@@ -315,13 +313,15 @@ public final class MockedServer {
             conn.send(gson.toJson(message));
         }
 
-        private void fillBulletState(BulletState bulletState, int id) {
+        private BulletState createBulletState(int id) {
+            var bulletState = new BulletState();
             bulletState.setBulletId(id);
             bulletState.setX(0.0);
             bulletState.setY(0.0);
             bulletState.setOwnerId(0);
             bulletState.setDirection(0.0);
             bulletState.setPower(0.0);
+            return bulletState;
         }
     }
 }
