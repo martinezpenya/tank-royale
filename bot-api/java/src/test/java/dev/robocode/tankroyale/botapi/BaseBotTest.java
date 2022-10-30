@@ -51,11 +51,10 @@ class BaseBotTest {
         server.stop();
     }
 
-
     @Test
     @Description("start()")
     void givenTestBot_whenCallingStart_thenBotConnectsToServer() {
-        startBot();
+        start();
         assertThat(server.awaitConnection(1000)).isTrue();
     }
 
@@ -230,7 +229,7 @@ class BaseBotTest {
     @Test
     @Description("getSpeed()")
     void givenMockedServer_whenCallingGetSpeed_thenSpeedIsEqualToMockedValue() {
-        var bot = startBot();
+        var bot = start();
         assertThat(bot.getSpeed()).isZero();
 
         awaitTickEvent();
@@ -240,7 +239,7 @@ class BaseBotTest {
     @Test
     @Description("getGunHeat()")
     void givenMockedServer_whenCallingGetGunHeat_thenGunHeatIsEqualToMockedValue() {
-        var bot = startBot();
+        var bot = start();
         assertThat(bot.getGunHeat()).isZero();
 
         awaitTickEvent();
@@ -250,7 +249,7 @@ class BaseBotTest {
     @Test
     @Description("getBulletStates()")
     void givenMockedServer_whenCallingGetBulletStates_thenBulletStatesIsEqualToMockedValue() {
-        var bot = startBot();
+        var bot = start();
         assertThat(bot.getBulletStates().size()).isEqualTo(0);
 
         awaitTickEvent();
@@ -265,7 +264,7 @@ class BaseBotTest {
     @Test
     @Description("getEvents()")
     void givenMockedServer_whenCallingGetEvents_thenEventsIsEqualToMockedValue() {
-        var bot = startBot();
+        var bot = start();
         assertThat(bot.getEvents().size()).isEqualTo(0);
 
         awaitTickEvent();
@@ -280,7 +279,7 @@ class BaseBotTest {
     @Test
     @Description("clearEvents()")
     void givenMockedServer_whenCallingClearEvents_thenEventsMustBeEmpty() {
-        var bot = startBot();
+        var bot = start();
 
         bot.clearEvents();
         var events = bot.getEvents();
@@ -291,7 +290,7 @@ class BaseBotTest {
     @Test
     @Description("getTurnRate()")
     void givenMockedServer_whenCallingGetTurnRate_thenTurnRateIsEqualToMockedValue() {
-        var bot = startBot();
+        var bot = start();
         assertThat(bot.getTurnRate()).isZero();
 
         awaitTickEvent();
@@ -325,7 +324,7 @@ class BaseBotTest {
     @Test
     @Description("getMaxTurnRate()")
     void givenMockedServer_whenCallingGetMaxTurnRate_thenMaxTurnRateMustBeEqualToDefaultValue() {
-        var bot = startBot();
+        var bot = start();
         assertThat(bot.getMaxTurnRate()).isEqualTo(MAX_TURN_RATE);
     }
 
@@ -346,7 +345,7 @@ class BaseBotTest {
     @Test
     @Description("getGunTurnRate()")
     void givenMockedServer_whenCallingGetGunTurnRate_thenGunTurnRateIsEqualToMockedValue() {
-        var bot = startBot();
+        var bot = start();
         assertThat(bot.getGunTurnRate()).isZero();
 
         awaitTickEvent();
@@ -380,7 +379,7 @@ class BaseBotTest {
     @Test
     @Description("getMaxTurnRate()")
     void givenMockedServer_whenCallingGetMaxGunTurnRate_thenMaxGunTurnRateMustBeEqualToDefaultValue() {
-        var bot = startBot();
+        var bot = start();
         assertThat(bot.getMaxGunTurnRate()).isEqualTo(MAX_GUN_TURN_RATE);
     }
 
@@ -401,7 +400,7 @@ class BaseBotTest {
     @Test
     @Description("getRadarTurnRate()")
     void givenMockedServer_whenCallingGetRadarTurnRate_thenRadarTurnRateIsEqualToMockedValue() {
-        var bot = startBot();
+        var bot = start();
         assertThat(bot.getRadarTurnRate()).isZero();
 
         awaitTickEvent();
@@ -435,7 +434,7 @@ class BaseBotTest {
     @Test
     @Description("getMaxRadarTurnRate()")
     void givenMockedServer_whenCallingGetMaxRadarTurnRate_thenMaxRadarTurnRateMustBeEqualToDefaultValue() {
-        var bot = startBot();
+        var bot = start();
         assertThat(bot.getMaxRadarTurnRate()).isEqualTo(MAX_RADAR_TURN_RATE);
     }
 
@@ -469,7 +468,7 @@ class BaseBotTest {
     @Test
     @Description("getMaxSpeed()")
     void givenMockedServer_whenCallingGetMaxSpeed_thenMaxSpeedMustBeEqualToDefaultValue() {
-        var bot = startBot();
+        var bot = start();
         assertThat(bot.getMaxSpeed()).isEqualTo(MAX_SPEED);
     }
 
@@ -515,7 +514,7 @@ class BaseBotTest {
     @Test
     @Description("setAdjustGunForBodyTurn() and isAdjustGunForBodyTurn()")
     void givenMockedServer_whenCallingSetAndGetAdjustGunForBodyTurn_thenReturnSameValueAsSet() {
-        var bot = startBot();
+        var bot = start();
 
         bot.setAdjustGunForBodyTurn(false);
         assertThat(bot.isAdjustGunForBodyTurn()).isFalse();
@@ -527,7 +526,7 @@ class BaseBotTest {
     @Test
     @Description("setAdjustRadarForBodyTurn() and isAdjustRadarForBodyTurn()")
     void givenMockedServer_whenCallingSetAndGetAdjustRadarForBodyTurn_thenReturnSameValueAsSet() {
-        var bot = startBot();
+        var bot = start();
 
         bot.setAdjustRadarForBodyTurn(false);
         assertThat(bot.isAdjustRadarForBodyTurn()).isFalse();
@@ -539,7 +538,7 @@ class BaseBotTest {
     @Test
     @Description("setAdjustRadarForGunTurn() and isAdjustRadarForGunTurn()")
     void givenMockedServer_whenCallingSetAndGetAdjustRadarForGunTurn_thenReturnSameValueAsSet() {
-        var bot = startBot();
+        var bot = start();
 
         bot.setAdjustRadarForGunTurn(false);
         assertThat(bot.isAdjustRadarForGunTurn()).isFalse();
@@ -551,7 +550,7 @@ class BaseBotTest {
     @Test
     @Description("addCondition()")
     void givenMockedServer_whenCallingAddCondition_thenReturnTrueFirstTimeFalseNextTime() {
-        var bot = startBot();
+        var bot = start();
 
         var condition1 = new Condition();
         var condition2 = new Condition(() -> true);
@@ -572,7 +571,7 @@ class BaseBotTest {
     @Test
     @Description("removeCondition()")
     void givenMockedServerAndAddedCondition_whenCallingRemoveCondition_thenReturnTrueFirstTimeFalseNextTime() {
-        var bot = startBot();
+        var bot = start();
 
         var nonAddedCondition = new Condition();
 
@@ -588,7 +587,7 @@ class BaseBotTest {
     @Test
     @Description("setStop(), setResume(), isStopped()")
     void givenMockedServer_whenCallingSetStopAndSetResume_thenIsStoppedMustReflectStoppedStatus() {
-        var bot = startBot();
+        var bot = start();
 
         assertThat(bot.isStopped()).isFalse();
 
@@ -602,49 +601,49 @@ class BaseBotTest {
     @Test
     @Description("getBodyColor() must return default color")
     void givenMockedServer_whenCallingGetBodyColor_thenNullIsReturned() {
-        var bot = startBot();
+        var bot = start();
         assertThat(bot.getBodyColor()).isNull();
     }
 
     @Test
     @Description("getTurretColor() must return default color")
     void givenMockedServer_whenCallingGetTurretColor_thenNullIsReturned() {
-        var bot = startBot();
+        var bot = start();
         assertThat(bot.getTurretColor()).isNull();
     }
 
     @Test
     @Description("getRadarColor() must return default color")
     void givenMockedServer_whenCallingGetRadarColor_thenNullIsReturned() {
-        var bot = startBot();
+        var bot = start();
         assertThat(bot.getRadarColor()).isNull();
     }
 
     @Test
     @Description("getBulletColor() must return default color")
     void givenMockedServer_whenCallingGetBulletColor_thenNullIsReturned() {
-        var bot = startBot();
+        var bot = start();
         assertThat(bot.getBulletColor()).isNull();
     }
 
     @Test
     @Description("getScanColor() must return default color")
     void givenMockedServer_whenCallingGetScanColor_thenNullIsReturned() {
-        var bot = startBot();
+        var bot = start();
         assertThat(bot.getScanColor()).isNull();
     }
 
     @Test
     @Description("getTracksColor() must return default color")
     void givenMockedServer_whenCallingGetTracksColor_thenNullIsReturned() {
-        var bot = startBot();
+        var bot = start();
         assertThat(bot.getTracksColor()).isNull();
     }
 
     @Test
     @Description("getGunColor() must return default color")
     void givenMockedServer_whenCallingGetGunColor_thenNullIsReturned() {
-        var bot = startBot();
+        var bot = start();
         assertThat(bot.getGunColor()).isNull();
     }
 
@@ -668,7 +667,7 @@ class BaseBotTest {
     })
     @Description("calcMaxTurnRate()")
     void givenSpeed_whenCallingCalcMaxTurnRate_thenReturnCorrectMaxTurnRate(double speed, double maxTurnRate) {
-        var bot = startBot();
+        var bot = start();
         assertThat(bot.calcMaxTurnRate(speed)).isEqualTo(maxTurnRate);
     }
 
@@ -687,7 +686,7 @@ class BaseBotTest {
     })
     @Description("calcBulletSpeed()")
     void givenFirepower_whenCallingCalcBulletSpeed_thenReturnCorrectBulletSpeed(double firepower, double bulletSpeed) {
-        var bot = startBot();
+        var bot = start();
         assertThat(bot.calcBulletSpeed(firepower)).isEqualTo(bulletSpeed);
     }
 
@@ -705,7 +704,7 @@ class BaseBotTest {
     })
     @Description("calcGunHeat()")
     void givenFirepower_whenCallingCalcGunHeat_thenReturnCorrectGunHeat(double firepower, double gunHeat) {
-        var bot = startBot();
+        var bot = start();
         assertThat(bot.calcGunHeat(firepower)).isEqualTo(gunHeat);
     }
 
@@ -713,7 +712,7 @@ class BaseBotTest {
     @Description("getEventPriority")
     @MethodSource("eventPrioritySource")
     void givenAllEventClass_whenCallingGetEventPriority_thenReturnCorrectPriorityValueForThatEventClass(Class<BotEvent> eventClass, int eventPriority) {
-        var bot = startBot();
+        var bot = start();
         assertThat(bot.getEventPriority(eventClass)).isEqualTo(eventPriority);
     }
 
@@ -721,7 +720,7 @@ class BaseBotTest {
     @Description("setEventPriority")
     @MethodSource("eventPrioritySource")
     void givenAllEventClass_whenCallingSetEventPriority_thenReturnSameEventPriority(Class<BotEvent> eventClass) {
-        var bot = startBot();
+        var bot = start();
         int eventPriority = ThreadLocalRandom.current().nextInt(-1000, 1000);
         bot.setEventPriority(eventClass, eventPriority);
         assertThat(bot.getEventPriority(eventClass)).isEqualTo(eventPriority);
@@ -747,32 +746,32 @@ class BaseBotTest {
     }
 
 
-    private static BaseBot startBot() {
+    private static BaseBot start() {
         var bot = new TestBot();
         new Thread(bot::start).start();
         return bot;
     }
 
     private static BaseBot startAndGo() {
-        var bot = startBot();
+        var bot = start();
         bot.go();
         return bot;
     }
 
     private BaseBot startAndAwaitHandshake() {
-        var bot = startBot();
+        var bot = start();
         awaitBotHandshake();
         return bot;
     }
 
     private BaseBot startAndAwaitTickEvent() {
-        var bot = startBot();
+        var bot = start();
         awaitTickEvent();
         return bot;
     }
 
     private BaseBot startAndAwaitGameStarted() {
-        var bot = startBot();
+        var bot = start();
         awaitGameStarted();
         return bot;
     }
