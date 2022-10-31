@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Security.Policy;
 using System.Threading;
 using Fleck;
 using Newtonsoft.Json;
@@ -52,21 +51,21 @@ public class MockedServer
 
     private int _turnNumber = 1;
 
-    private readonly EventWaitHandle _openedEvent = new ManualResetEvent(false);
-    private readonly EventWaitHandle _botHandshakeEvent = new ManualResetEvent(false);
-    private readonly EventWaitHandle _gameStartedEvent = new ManualResetEvent(false);
-    private readonly EventWaitHandle _tickEvent = new ManualResetEvent(false);
-    private readonly EventWaitHandle _botIntentEvent = new ManualResetEvent(false);
+    private readonly EventWaitHandle _openedEvent = new AutoResetEvent(false);
+    private readonly EventWaitHandle _botHandshakeEvent = new AutoResetEvent(false);
+    private readonly EventWaitHandle _gameStartedEvent = new AutoResetEvent(false);
+    private readonly EventWaitHandle _tickEvent = new AutoResetEvent(false);
+    private readonly EventWaitHandle _botIntentEvent = new AutoResetEvent(false);
 
-    public static Url serverUrl => new Url($"ws://0.0.0.0:{Port}");
+    public static Uri ServerUrl => new($"ws://127.0.0.1:{Port}");
 
     public void Start()
     {
-        _server = new WebSocketServer(serverUrl.Value, false);
+        _server = new WebSocketServer(ServerUrl.AbsoluteUri, false);
         _server.Start(conn =>
         {
             conn.OnOpen = () => OnOpen(conn);
-            conn.OnMessage = text => OnMessage(conn, text);
+            conn.OnMessage = message => OnMessage(conn, message);
             conn.OnError = OnError;
         });
     }
@@ -143,7 +142,7 @@ public class MockedServer
         return false;
     }
 
-    public bool AwaitBotIntentEvent(int milliSeconds)
+    public bool AwaitBotIntent(int milliSeconds)
     {
         try
         {
@@ -166,18 +165,18 @@ public class MockedServer
         SendServerHandshake(conn);
     }
 
-    private void OnMessage(IWebSocketConnection conn, string text)
+    private void OnMessage(IWebSocketConnection conn, string messageJson)
     {
-        Console.WriteLine("OnMessage: " + text);
+        Console.WriteLine("OnMessage: " + messageJson);
 
-        var message = JsonConvert.DeserializeObject<Message>(text);
+        var message = JsonConvert.DeserializeObject<Message>(messageJson);
         if (message == null) return;
-        var msgType = (MessageType)Enum.Parse(typeof(MessageType), message.Type);
 
+        var msgType = (MessageType)Enum.Parse(typeof(MessageType), message.Type);
         switch (msgType)
         {
             case MessageType.BotHandshake:
-                _botHandshake = JsonConvert.DeserializeObject<BotHandshake>(text);
+                _botHandshake = JsonConvert.DeserializeObject<BotHandshake>(messageJson);
                 _botHandshakeEvent.Set();
 
                 SendGameStartedForBot(conn);
@@ -194,7 +193,7 @@ public class MockedServer
             case MessageType.BotIntent:
                 _botIntentEvent.Set();
 
-                _botIntent = JsonConvert.DeserializeObject<BotIntent>(text);
+                _botIntent = JsonConvert.DeserializeObject<BotIntent>(messageJson);
                 Thread.Sleep(5);
 
                 SendTickEventForBot(conn, _turnNumber++);
@@ -211,7 +210,7 @@ public class MockedServer
     {
         var serverHandshake = new ServerHandshake
         {
-            Type = EnumUtil.GetEnumMemberAttrValue(MessageType.BotHandshake),
+            Type = EnumUtil.GetEnumMemberAttrValue(MessageType.ServerHandshake),
             SessionId = SessionId,
             Name = Name,
             Version = Version,
@@ -225,7 +224,7 @@ public class MockedServer
     {
         var gameStarted = new GameStartedEventForBot
         {
-            Type = EnumUtil.GetEnumMemberAttrValue(MessageType.GameEndedEventForBot),
+            Type = EnumUtil.GetEnumMemberAttrValue(MessageType.GameStartedEventForBot),
             MyId = MyId
         };
         var gameSetup = new Schema.GameSetup
@@ -263,9 +262,9 @@ public class MockedServer
             EnemyCount = BotEnemyCcount
         };
 
-        double turnRate = BotTurnRate;
-        double gunTurnRate = BotGunTurnRate;
-        double radarTurnRate = BotRadarTurnRate;
+        var turnRate = BotTurnRate;
+        var gunTurnRate = BotGunTurnRate;
+        var radarTurnRate = BotRadarTurnRate;
 
         if (_botIntent != null)
         {
