@@ -597,9 +597,6 @@ public sealed class BaseBotInternals
 
     private void HandleTextMessage(string json)
     {
-        if (json == "{\"type\":\"GameAbortedEvent\"}") // FIXME
-            return; // Work-around: Cannot be parsed due to 'type' for GameAbortedEvent?!
-
         var jsonMsg = JsonConvert.DeserializeObject<Dictionary<string, object>>(json);
         try
         {
