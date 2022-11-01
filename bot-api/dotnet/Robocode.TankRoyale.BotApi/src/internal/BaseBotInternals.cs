@@ -49,10 +49,10 @@ public sealed class BaseBotInternals
 
     private IStopResumeListener stopResumeListener;
 
-    private readonly double maxSpeed;
-    private readonly double maxTurnRate;
-    private readonly double maxGunTurnRate;
-    private readonly double maxRadarTurnRate;
+    private double maxSpeed;
+    private double maxTurnRate;
+    private double maxGunTurnRate;
+    private double maxRadarTurnRate;
 
     private double? savedTargetSpeed;
     private double? savedTurnRate;
@@ -364,25 +364,25 @@ public sealed class BaseBotInternals
     internal double MaxSpeed
     {
         get => maxSpeed;
-        set => Math.Clamp(value, 0, Constants.MaxSpeed);
+        set => maxSpeed = Math.Clamp(value, 0, Constants.MaxSpeed);
     }
 
     internal double MaxTurnRate
     {
         get => maxTurnRate;
-        set => Math.Clamp(value, 0, Constants.MaxTurnRate);
+        set => maxTurnRate = Math.Clamp(value, 0, Constants.MaxTurnRate);
     }
 
     internal double MaxGunTurnRate
     {
         get => maxGunTurnRate;
-        set => Math.Clamp(value, 0, Constants.MaxGunTurnRate);
+        set => maxGunTurnRate = Math.Clamp(value, 0, Constants.MaxGunTurnRate);
     }
 
     internal double MaxRadarTurnRate
     {
         get => maxRadarTurnRate;
-        set => Math.Clamp(value, 0, Constants.MaxRadarTurnRate);
+        set => maxRadarTurnRate = Math.Clamp(value, 0, Constants.MaxRadarTurnRate);
     }
 
     /// <summary>
