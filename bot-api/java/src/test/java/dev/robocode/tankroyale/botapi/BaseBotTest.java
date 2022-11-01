@@ -124,7 +124,7 @@ class BaseBotTest {
 
     @Test
     @Description("getMaxInactivityTurns()")
-    void givenMockedServer_whenCallingMaxInactivityTurns_thenMaxInactivityTurnsIsEqualToMockedValue() {
+    void givenMockedServer_whenCallingGetMaxInactivityTurns_thenMaxInactivityTurnsIsEqualToMockedValue() {
         var bot = startAndAwaitGameStarted();
         assertThat(bot.getMaxInactivityTurns()).isEqualTo(MockedServer.MAX_INACTIVITY_TURNS);
     }
@@ -137,8 +137,8 @@ class BaseBotTest {
     }
 
     @Test
-    @Description("getTurnLeft()")
-    void givenMockedServer_whenCallingGetTurnLeft_thenTurnLeftMustBeLesserThanTurnTimeout() {
+    @Description("getTimeLeft()")
+    void givenMockedServer_whenCallingGetTimeLeft_thenTimeLeftMustBeLesserThanTurnTimeout() {
         var bot = startAndAwaitGameStarted();
         bot.go(); // skip first turn due to initialization, which could take longer than the turn timeout
         awaitBotIntent();
@@ -147,14 +147,14 @@ class BaseBotTest {
 
     @Test
     @Description("getRoundNumber()")
-    void givenMockedServer_whenCallingGetRoundNumber_thenRoundNumberMustBe1() {
+    void givenMockedServer_whenCallingGetRoundNumber_thenRoundNumberMustBeTheFirst() {
         var bot = startAndAwaitGameStarted();
         assertThat(bot.getRoundNumber()).isEqualTo(1);
     }
 
     @Test
     @Description("getTurnNumber()")
-    void givenMockedServer_whenCallingGetTurnNumber_thenTurnNumberMustBe1() {
+    void givenMockedServer_whenCallingGetTurnNumber_thenTurnNumberMustBeTheFirst() {
         var bot = startAndAwaitGameStarted();
         assertThat(bot.getTurnNumber()).isEqualTo(1);
     }
@@ -174,19 +174,19 @@ class BaseBotTest {
     }
 
     @Test
-    @Description("isDisabled() is false")
+    @Description("isDisabled() = false")
     void givenMockedServerAndSettingEnergyToNonZero_whenCallingIsDisabled_thenDisabledValueMustBeFalse() {
-        var bot = startAndGo();
+        var bot = start();
         server.setBotEnergy(0.1);
         awaitTickEvent();
         assertThat(bot.isDisabled()).isFalse();
     }
 
     @Test
-    @Description("isDisabled() is true")
+    @Description("isDisabled() = true")
     void givenMockedServerAndSettingEnergyToZero_whenCallingIsDisabled_thenDisabledValueMustBeTrue() {
-        var bot = startAndGo();
-        server.setBotEnergy(0.0);
+        var bot = start();
+        server.setBotEnergy(0);
         awaitTickEvent();
         assertThat(bot.isDisabled()).isTrue();
     }
@@ -250,7 +250,7 @@ class BaseBotTest {
     @Description("getBulletStates()")
     void givenMockedServer_whenCallingGetBulletStates_thenBulletStatesIsEqualToMockedValue() {
         var bot = start();
-        assertThat(bot.getBulletStates().size()).isEqualTo(0);
+        assertThat(bot.getBulletStates().size()).isZero();
 
         awaitTickEvent();
 
@@ -265,7 +265,7 @@ class BaseBotTest {
     @Description("getEvents()")
     void givenMockedServer_whenCallingGetEvents_thenEventsIsEqualToMockedValue() {
         var bot = start();
-        assertThat(bot.getEvents().size()).isEqualTo(0);
+        assertThat(bot.getEvents().size()).isZero();
 
         awaitTickEvent();
 
