@@ -30,7 +30,7 @@ class BaseBotTest {
 
     static final BotInfo botInfo = BotInfo.builder()
             .setName("TestBot")
-            .setVersion("1.0")
+            .setVersion("1")
             .addAuthor("Author")
             .build();
 
@@ -313,7 +313,7 @@ class BaseBotTest {
     @Description("setTurnRate() > max turn rate")
     void givenMockedServer_whenCallingSetTurnRateLowerGreaterThanMax_thenTurnRateMustBeSetToMaxValue() {
         var bot = startAndAwaitTickEvent();
-        bot.setTurnRate(MAX_TURN_RATE + 1.0);
+        bot.setTurnRate(MAX_TURN_RATE + 1);
 
         bot.go();
         awaitBotIntent();
@@ -332,14 +332,14 @@ class BaseBotTest {
     @Description("setMaxTurnRate()")
     void givenMockedServer_whenCallingSetMaxTurnRate_thenMaxTurnRateMustBeUpdatedToNewValue() {
         var bot = startAndAwaitTickEvent();
-        bot.setMaxTurnRate(5.0);
-        bot.setTurnRate(7.0);
+        bot.setMaxTurnRate(5);
+        bot.setTurnRate(7);
 
         bot.go();
         awaitBotIntent();
 
-        assertThat(bot.getMaxTurnRate()).isEqualTo(5.0);
-        assertThat(bot.getTurnRate()).isEqualTo(5.0);
+        assertThat(bot.getMaxTurnRate()).isEqualTo(5);
+        assertThat(bot.getTurnRate()).isEqualTo(5);
     }
 
     @Test
@@ -368,7 +368,7 @@ class BaseBotTest {
     @Description("setGunTurnRate() > max gun turn rate")
     void givenMockedServer_whenCallingSetGunTurnRateLowerGreaterThanMax_thenGunTurnRateMustBeSetToMaxValue() {
         var bot = startAndAwaitTickEvent();
-        bot.setGunTurnRate(MAX_GUN_TURN_RATE + 1.0);
+        bot.setGunTurnRate(MAX_GUN_TURN_RATE + 1);
 
         bot.go();
         awaitBotIntent();
@@ -387,14 +387,14 @@ class BaseBotTest {
     @Description("setMaxTurnRate()")
     void givenMockedServer_whenCallingSetGunMaxTurnRate_thenMaxGunTurnRateMustBeUpdatedToNewValue() {
         var bot = startAndAwaitTickEvent();
-        bot.setMaxGunTurnRate(15.0);
-        bot.setGunTurnRate(17.0);
+        bot.setMaxGunTurnRate(15);
+        bot.setGunTurnRate(17);
 
         bot.go();
         awaitBotIntent();
 
-        assertThat(bot.getMaxGunTurnRate()).isEqualTo(15.0);
-        assertThat(bot.getGunTurnRate()).isEqualTo(15.0);
+        assertThat(bot.getMaxGunTurnRate()).isEqualTo(15);
+        assertThat(bot.getGunTurnRate()).isEqualTo(15);
     }
 
     @Test
@@ -423,7 +423,7 @@ class BaseBotTest {
     @Description("setRadarTurnRate() > max radar turn rate")
     void givenMockedServer_whenCallingSetRadarTurnRateLowerGreaterThanMax_thenRadarTurnRateMustBeSetToMaxValue() {
         var bot = startAndAwaitTickEvent();
-        bot.setRadarTurnRate(MAX_RADAR_TURN_RATE + 1.0);
+        bot.setRadarTurnRate(MAX_RADAR_TURN_RATE + 1);
 
         bot.go();
         awaitBotIntent();
@@ -442,14 +442,14 @@ class BaseBotTest {
     @Description("setMaxRadarTurnRate()")
     void givenMockedServer_whenCallingSetMaxRadarTurnRate_thenMaxRadarTurnRateMustBeUpdatedToNewValue() {
         var bot = startAndAwaitTickEvent();
-        bot.setMaxRadarTurnRate(25.0);
-        bot.setRadarTurnRate(27.0);
+        bot.setMaxRadarTurnRate(25);
+        bot.setRadarTurnRate(27);
 
         bot.go();
         awaitBotIntent();
 
-        assertThat(bot.getMaxRadarTurnRate()).isEqualTo(25.0);
-        assertThat(bot.getRadarTurnRate()).isEqualTo(25.0);
+        assertThat(bot.getMaxRadarTurnRate()).isEqualTo(25);
+        assertThat(bot.getRadarTurnRate()).isEqualTo(25);
     }
 
     @Test
@@ -476,14 +476,14 @@ class BaseBotTest {
     @Description("setMaxSpeed()")
     void givenMockedServer_whenCallingSetMaxSpeed_thenMaxSpeedMustBeUpdatedToNewValue() {
         var bot = startAndAwaitTickEvent();
-        bot.setMaxSpeed(4.0);
-        bot.setTargetSpeed(6.0);
+        bot.setMaxSpeed(4);
+        bot.setTargetSpeed(6);
 
         bot.go();
         awaitBotIntent();
 
-        assertThat(bot.getMaxSpeed()).isEqualTo(4.0);
-        assertThat(bot.getTargetSpeed()).isEqualTo(4.0);
+        assertThat(bot.getMaxSpeed()).isEqualTo(4);
+        assertThat(bot.getTargetSpeed()).isEqualTo(4);
     }
 
     @Test
@@ -495,7 +495,7 @@ class BaseBotTest {
     }
 
     @Test
-    @Description("setFire() when gunHeat is 0")
+    @Description("setFire() when gunHeat = 0")
     void givenMockedServer_whenCallingSetFireAndGunHeatIsZero_thenReturnTrue() {
         server.setBotGunHeat(0);
         var bot = startAndAwaitTickEvent();
@@ -507,8 +507,8 @@ class BaseBotTest {
     void givenMockedServer_whenCallingGetFirepowerAfterSetFire_thenReturnSameValueAsFired() {
         server.setBotGunHeat(0);
         var bot = startAndAwaitTickEvent();
-        bot.setFire(3);
-        assertThat(bot.getFirepower()).isEqualTo(3);
+        bot.setFire(2.5);
+        assertThat(bot.getFirepower()).isEqualTo(2.5);
     }
 
     @Test
@@ -749,12 +749,6 @@ class BaseBotTest {
     private static BaseBot start() {
         var bot = new TestBot();
         new Thread(bot::start).start();
-        return bot;
-    }
-
-    private static BaseBot startAndGo() {
-        var bot = start();
-        bot.go();
         return bot;
     }
 
