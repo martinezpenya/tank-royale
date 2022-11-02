@@ -73,7 +73,6 @@ public class MockedServer
     public void Stop()
     {
         _server.Dispose();
-        // TODO: Sleep for 100 millis?
     }
 
     public void SetBotEnergy(double botEnergy)
