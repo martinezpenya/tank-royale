@@ -499,46 +499,46 @@ public sealed class BaseBotInternals
     internal Color BodyColor
     {
         get => tickEvent?.BotState.BodyColor;
-        set => botIntent.BodyColor = toIntentColor(value);
+        set => botIntent.BodyColor = ToIntentColor(value);
     }
 
     internal Color TurretColor
     {
         get => tickEvent?.BotState.TurretColor;
-        set => botIntent.TurretColor = toIntentColor(value);
+        set => botIntent.TurretColor = ToIntentColor(value);
     }
 
     internal Color RadarColor
     {
         get => tickEvent?.BotState.RadarColor;
-        set => botIntent.RadarColor = toIntentColor(value);
+        set => botIntent.RadarColor = ToIntentColor(value);
     }
 
     internal Color BulletColor
     {
         get => tickEvent?.BotState.BulletColor;
-        set => botIntent.BulletColor = toIntentColor(value);
+        set => botIntent.BulletColor = ToIntentColor(value);
     }
 
     internal Color ScanColor
     {
         get => tickEvent?.BotState.ScanColor;
-        set => botIntent.ScanColor = toIntentColor(value);
+        set => botIntent.ScanColor = ToIntentColor(value);
     }
 
     internal Color TracksColor
     {
         get => tickEvent?.BotState.TracksColor;
-        set => botIntent.TracksColor = toIntentColor(value);
+        set => botIntent.TracksColor = ToIntentColor(value);
     }
 
     internal Color GunColor
     {
         get => tickEvent?.BotState.GunColor;
-        set => botIntent.GunColor = toIntentColor(value);
+        set => botIntent.GunColor = ToIntentColor(value);
     }
     
-    private static string toIntentColor(Color color) => color == null ? null : "#" + color.ToHex();
+    private static string ToIntentColor(Color color) => color == null ? null : "#" + color.ToHex();
 
     internal IEnumerable<BulletState> BulletStates => tickEvent?.BulletStates ?? ImmutableHashSet<BulletState>.Empty;
 
