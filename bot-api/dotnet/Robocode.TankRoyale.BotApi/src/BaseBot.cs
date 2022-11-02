@@ -447,11 +447,11 @@ public abstract class BaseBot : IBaseBot
 
     /// <inheritdoc/>
     public virtual double CalcBulletSpeed(double firepower) =>
-        20 - 3 * Math.Clamp(firepower, -Constants.MinFirepower, Constants.MaxFirepower);
+        20 - 3 * Math.Clamp(firepower, Constants.MinFirepower, Constants.MaxFirepower);
 
     /// <inheritdoc/>
     public virtual double CalcGunHeat(double firepower) =>
-        1 + (Math.Clamp(firepower, -Constants.MinFirepower, Constants.MaxFirepower) / 5);
+        1 + (Math.Clamp(firepower, Constants.MinFirepower, Constants.MaxFirepower) / 5);
 
     /// <inheritdoc/>
     public virtual double CalcBearing(double direction) => NormalizeRelativeAngle(direction - Direction);
