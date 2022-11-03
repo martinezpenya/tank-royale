@@ -10,22 +10,31 @@ using static Robocode.TankRoyale.BotApi.Tests.Test_utils.EnvironmentVariables;
 
 namespace Robocode.TankRoyale.BotApi.Tests;
 
-public class BaseBotConstructorTest
+public class BaseBotConstructorTest : AbstractBotTest
 {
-    private MockedServer _server;
-
-    [SetUp]
-    public void SetUp()
+    private class TestBot : BaseBot
     {
-        SetAllEnvVarsToDefaultValues();
-        _server = new MockedServer();
-        _server.Start();
+        public TestBot()
+        {
+        }
+
+        public TestBot(BotInfo botInfo) : base(botInfo)
+        {
+        }
+
+        public TestBot(BotInfo botInfo, Uri serverUrl) : base(botInfo, serverUrl)
+        {
+        }
+        
+        public TestBot(BotInfo botInfo, Uri serverUrl, string serverSecret) : base(botInfo, serverUrl, serverSecret)
+        {
+        }
     }
 
-    [TearDown]
-    public void Teardown()
+    [SetUp]
+    public new void SetUp()
     {
-        _server.Stop();
+        SetAllEnvVarsToDefaultValues();
     }
 
     [Test]
@@ -78,8 +87,7 @@ public class BaseBotConstructorTest
     [Test]
     public void GivenAllRequiredEnvVarsSet_callingDefaultConstructorFromThread_thenBotIsCreatedAndConnectingToServer()
     {
-        StartBotFromThread();
-        Assert.That(_server.AwaitConnection(5_000), Is.True);
+        StartAndAwaitHandshake();
     }
 
     [Test]
@@ -93,12 +101,8 @@ public class BaseBotConstructorTest
     [Test]
     public void GivenAllRequiredEnvVarsSet_callingDefaultConstructorFromThread_thenBotHandshakeMustBeCorrect()
     {
-        ClearEnvVar(BotCountryCodes);
-
-        StartBotFromThread();
-        Assert.That(_server.AwaitBotHandshake(5_000), Is.True);
-
-        var botHandshake = _server.GetBotHandshake();
+        StartAndAwaitHandshake();
+        var botHandshake = Server.Handshake;
 
         var regexCsv = new Regex("\\s*,\\s*");
 
@@ -108,7 +112,7 @@ public class BaseBotConstructorTest
         Assert.That(botHandshake.Authors, Is.EqualTo(regexCsv.Split((string)GetEnvVar(BotAuthors))));
         Assert.That(botHandshake.GameTypes, Is.EqualTo(regexCsv.Split((string)GetEnvVar(BotGameTypes))));
         Assert.That(botHandshake.CountryCodes.ToList().ConvertAll(cc => cc.ToLower()),
-            Is.EqualTo(new List<string> { CountryCode.GetLocalCountryCode().ToLower() }));
+            Is.EqualTo(regexCsv.Split((string)GetEnvVar(BotCountryCodes))));
         Assert.That(botHandshake.Description, Is.EqualTo(GetEnvVar(BotDescription)));
         Assert.That(botHandshake.Homepage, Is.EqualTo(GetEnvVar(BotHomepage)));
         Assert.That(botHandshake.Platform, Is.EqualTo(GetEnvVar(BotPlatform)));
@@ -119,7 +123,7 @@ public class BaseBotConstructorTest
     public void GivenNoEnvVarsSet_callingDefaultConstructorWithBotInfoFromThread_thenBotHandshakeMustBeCorrect()
     {
         ClearAllEnvVars();
-        new TestBot(CreateBotInfo());
+        new TestBot(BotInfo);
         // passed when this point is reached
     }
 
@@ -127,8 +131,8 @@ public class BaseBotConstructorTest
     public void GivenServerUrlWithValidPortAsParameter_whenCallingConstructor_thenBotIsConnectingToServer()
     {
         var bot = new TestBot(null, new Uri("ws://localhost:" + MockedServer.Port));
-        StartBotFromThread(bot);
-        Assert.That(_server.AwaitBotHandshake(5000), Is.True);
+        RunAsync(bot);
+        Assert.That(Server.AwaitConnection(10_000), Is.True);
     }
 
     [Test]
@@ -143,57 +147,14 @@ public class BaseBotConstructorTest
     {
         var secret = Guid.NewGuid().ToString();
         var bot = new TestBot(null, new Uri("ws://localhost:" + MockedServer.Port), secret);
-        StartBotFromThread(bot);
-        Assert.That(_server.AwaitBotHandshake(5_000), Is.True);
-        var botHandshake = _server.GetBotHandshake();
-        Assert.That(botHandshake.Secret, Is.EqualTo(secret));
-    }
-
-    private static void StartBotFromThread()
-    {
-        StartBotFromThread(new TestBot());
-    }
-
-    private static void StartBotFromThread(IBaseBot bot)
-    {
-        new Thread(bot.Start).Start();
+        RunAsync(bot);
+        AwaitBotHandshake();
+        var handshake = Server.Handshake;
+        
+        Assert.That(handshake, Is.Not.Null);
+        Assert.That(handshake.Secret, Is.EqualTo(secret));
     }
 
     private bool ExceptionContainsEnvVarName(BotException botException, string envVarName) =>
         botException != null && botException.Message.ToUpper().Contains(envVarName);
-
-    private static BotInfo CreateBotInfo()
-    {
-        return new BotInfo(
-            "TestBot",
-            "1.0",
-            new List<string> { "Author1", "Author2" },
-            "description",
-            "https://testbot.robocode.dev",
-            new List<string> { "gb", "US" },
-            new List<string> { "classic", "melee", "1v1" },
-            ".Net 6",
-            "C# 10",
-            InitialPosition.FromString("10, 20, 30")
-        );
-    }
-
-    private class TestBot : BaseBot
-    {
-        public TestBot()
-        {
-        }
-
-        public TestBot(BotInfo botInfo) : base(botInfo)
-        {
-        }
-
-        public TestBot(BotInfo botInfo, Uri serverUrl) : base(botInfo, serverUrl)
-        {
-        }
-        
-        public TestBot(BotInfo botInfo, Uri serverUrl, string serverSecret) : base(botInfo, serverUrl, serverSecret)
-        {
-        }
-    }
 }

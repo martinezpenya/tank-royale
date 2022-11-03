@@ -53,20 +53,21 @@ public final class MockedServer {
     private double botEnergy = BOT_ENERGY;
     private double botGunHeat = BOT_GUN_HEAT;
 
-    private WebSocketServerImpl server = new WebSocketServerImpl();
+    private final WebSocketServerImpl server = new WebSocketServerImpl();
+
+    private final CountDownLatch openedLatch = new CountDownLatch(1);
+    private final CountDownLatch botHandshakeLatch = new CountDownLatch(1);
+    private final CountDownLatch gameStartedLatch = new CountDownLatch(1);
+    private final CountDownLatch tickEventLatch = new CountDownLatch(1);
+    private final CountDownLatch botIntentLatch = new CountDownLatch(1);
+
+    private final Gson gson = new Gson();
 
     private BotHandshake botHandshake;
     private BotIntent botIntent;
 
     private int turnNumber = 1;
 
-    private CountDownLatch openedLatch;
-    private CountDownLatch botHandshakeLatch;
-    private CountDownLatch gameStartedLatch;
-    private CountDownLatch tickEventLatch;
-    private CountDownLatch botIntentLatch;
-
-    private Gson gson;
 
     public static URI getServerUrl() {
         try {
@@ -77,7 +78,6 @@ public final class MockedServer {
     }
 
     public void start() {
-        init();
         server.start();
     }
 
@@ -90,23 +90,13 @@ public final class MockedServer {
         }
     }
 
-    private void init() {
-        openedLatch = new CountDownLatch(1);
-        botHandshakeLatch = new CountDownLatch(1);
-        gameStartedLatch = new CountDownLatch(1);
-        tickEventLatch = new CountDownLatch(1);
-        botIntentLatch = new CountDownLatch(1);
-
-        gson = new Gson();
-
-        server = new WebSocketServerImpl();
-    }
-
     public void setBotEnergy(double botEnergy) {
         this.botEnergy = botEnergy;
     }
 
-    public void setBotGunHeat(double botGunHeat) { this.botGunHeat = botGunHeat; }
+    public void setBotGunHeat(double botGunHeat) {
+        this.botGunHeat = botGunHeat;
+    }
 
     public boolean awaitConnection(int milliSeconds) {
         try {

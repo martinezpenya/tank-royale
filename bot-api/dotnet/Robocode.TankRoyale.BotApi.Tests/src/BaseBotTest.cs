@@ -1,50 +1,20 @@
 ﻿using System;
 using System.Linq;
-using System.Threading;
+using System.Threading.Tasks;
 using NUnit.Framework;
 using Robocode.TankRoyale.BotApi.Events;
 using Robocode.TankRoyale.BotApi.Tests.Test_utils;
-using static Robocode.TankRoyale.BotApi.Tests.Test_utils.EnvironmentVariables;
 
 namespace Robocode.TankRoyale.BotApi.Tests;
 
-public class BaseBotTest
+public class BaseBotTest : AbstractBotTest
 {
-    private MockedServer _server;
-
-    private static readonly BotInfo botInfo = BotInfo.Builder()
-        .SetName("TestBot")
-        .SetVersion("1")
-        .AddAuthor("Author")
-        .Build();
-
-    class TestBot : BaseBot
-    {
-        public TestBot() : base(botInfo, MockedServer.ServerUrl)
-        {
-        }
-    }
-
-    [SetUp]
-    public void SetUp()
-    {
-        SetAllEnvVarsToDefaultValues();
-        _server = new MockedServer();
-        _server.Start();
-    }
-
-    [TearDown]
-    public void Teardown()
-    {
-        _server.Stop();
-    }
-
     // Start()
     [Test]
     public void GivenTestBot_whenCallingStart_thenBotConnectsToServer()
     {
         Start();
-        Assert.That(_server.AwaitConnection(1000), Is.True);
+        AwaitBotHandshake();
     }
 
     // Go()
@@ -184,7 +154,7 @@ public class BaseBotTest
     public void GivenMockedServerAndSettingEnergyToNonZero_whenCallingIsDisabled_thenDisabledValueMustBeFalse()
     {
         var bot = Start();
-        _server.SetBotEnergy(0.1);
+        Server.SetBotEnergy(0.1);
         AwaitTickEvent();
         Assert.That(bot.IsDisabled, Is.False);
     }
@@ -194,7 +164,7 @@ public class BaseBotTest
     public void GivenMockedServerAndSettingEnergyToZero_whenCallingIsDisabled_thenDisabledValueMustBeTrue()
     {
         var bot = Start();
-        _server.SetBotEnergy(0);
+        Server.SetBotEnergy(0);
         AwaitTickEvent();
         Assert.That(bot.IsDisabled, Is.True);
     }
@@ -270,7 +240,7 @@ public class BaseBotTest
 
         AwaitTickEvent();
 
-        Assert.That(bot.BulletStates, !Is.Null);
+        Assert.That(bot.BulletStates, Is.Not.Null);
         Assert.That(bot.BulletStates.Count(), Is.EqualTo(2));
         Assert.That(bot.BulletStates.Any(bullet => bullet.BulletId == 1), Is.True);
         Assert.That(bot.BulletStates.Any(bullet => bullet.BulletId == 2), Is.True);
@@ -286,7 +256,7 @@ public class BaseBotTest
         AwaitTickEvent();
 
         var events = bot.Events;
-        Assert.That(events, !Is.Null);
+        Assert.That(events, Is.Not.Null);
         Assert.That(events.Count(), Is.EqualTo(2));
         Assert.That(events.Any(botEvent => botEvent is TickEvent), Is.True);
         Assert.That(events.Any(botEvent => botEvent is ScannedBotEvent), Is.True);
@@ -522,7 +492,7 @@ public class BaseBotTest
     [Test]
     public void GivenMockedServer_whenCallingSetFireAndGunHeatGreaterThanZero_thenReturnFalse()
     {
-        _server.SetBotGunHeat(0.1);
+        Server.SetBotGunHeat(0.1);
         var bot = StartAndAwaitTickEvent();
         Assert.That(bot.SetFire(3), Is.False);
     }
@@ -531,7 +501,7 @@ public class BaseBotTest
     [Test]
     public void GivenMockedServer_whenCallingSetFireAndGunHeatIsZero_thenReturnTrue()
     {
-        _server.SetBotGunHeat(0);
+        Server.SetBotGunHeat(0);
         var bot = StartAndAwaitTickEvent();
         Assert.That(bot.SetFire(3), Is.True);
     }
@@ -540,7 +510,7 @@ public class BaseBotTest
     [Test]
     public void GivenMockedServer_whenCallingFirepowerAfterSetFire_thenReturnSameValueAsFired()
     {
-        _server.SetBotGunHeat(0);
+        Server.SetBotGunHeat(0);
         var bot = StartAndAwaitTickEvent();
         bot.SetFire(2.5);
         Assert.That(bot.Firepower, Is.EqualTo(2.5));
@@ -783,61 +753,5 @@ public class BaseBotTest
         var eventPriority = new Random().Next(-1000, 1000);
         bot.SetEventPriority(eventType, eventPriority);
         Assert.That(bot.GetEventPriority(eventType), Is.EqualTo(eventPriority));
-    }
-    
-    
-    private static BaseBot Start()
-    {
-        var bot = new TestBot();
-        new Thread(bot.Start).Start();
-        return bot;
-    }
-
-    private BaseBot StartAndAwaitHandshake()
-    {
-        var bot = Start();
-        AwaitBotHandshake();
-        return bot;
-    }
-
-    private BaseBot StartAndAwaitTickEvent()
-    {
-        var bot = Start();
-        AwaitTickEvent();
-        return bot;
-    }
-
-    private BaseBot StartAndAwaitGameStarted()
-    {
-        var bot = Start();
-        AwaitGameStarted();
-        return bot;
-    }
-
-    private void AwaitBotHandshake()
-    {
-        _server.AwaitBotHandshake(500);
-    }
-
-    private void AwaitGameStarted()
-    {
-        Assert.That(_server.AwaitGameStarted(500), Is.True);
-        Sleep(); // must be processed within the bot api first
-    }
-
-    private void AwaitTickEvent()
-    {
-        Assert.That(_server.AwaitTickEvent(500), Is.True);
-        Sleep(); // must be processed within the bot api first
-    }
-
-    private void AwaitBotIntent()
-    {
-        Assert.That(_server.AwaitBotIntent(500), Is.True);
-    }
-
-    private void Sleep()
-    {
-        Thread.Sleep(100);
     }
 }

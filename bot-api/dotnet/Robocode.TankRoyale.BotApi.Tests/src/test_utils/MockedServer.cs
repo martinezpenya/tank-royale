@@ -10,6 +10,7 @@ namespace Robocode.TankRoyale.BotApi.Tests.Test_utils;
 
 public class MockedServer
 {
+    public static Uri ServerUrl => new($"ws://127.0.0.1:{Port}");
     public const int Port = 7913;
 
     public static string SessionId = "123abc";
@@ -46,18 +47,17 @@ public class MockedServer
 
     private WebSocketServer _server;
 
-    private BotHandshake _botHandshake;
-    private BotIntent _botIntent;
-
-    private int _turnNumber = 1;
-
     private readonly EventWaitHandle _openedEvent = new AutoResetEvent(false);
     private readonly EventWaitHandle _botHandshakeEvent = new AutoResetEvent(false);
     private readonly EventWaitHandle _gameStartedEvent = new AutoResetEvent(false);
     private readonly EventWaitHandle _tickEvent = new AutoResetEvent(false);
     private readonly EventWaitHandle _botIntentEvent = new AutoResetEvent(false);
 
-    public static Uri ServerUrl => new($"ws://127.0.0.1:{Port}");
+    private BotHandshake _botHandshake;
+    private BotIntent _botIntent;
+
+    private int _turnNumber = 1;
+
 
     public void Start()
     {
@@ -155,7 +155,7 @@ public class MockedServer
         return false;
     }
 
-    public BotHandshake GetBotHandshake() => _botHandshake;
+    public BotHandshake Handshake => _botHandshake;
 
 
     private void OnOpen(IWebSocketConnection conn)

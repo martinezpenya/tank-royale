@@ -2,8 +2,6 @@ package dev.robocode.tankroyale.botapi;
 
 import dev.robocode.tankroyale.botapi.events.*;
 import jdk.jfr.Description;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
@@ -24,32 +22,7 @@ import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 // TODO: addCondition() check that condition is actually triggering an onCustomEvent + removeCondition stops it again
 // TODO: setStop(), setResume(), isStopped() in dept
 
-class BaseBotTest {
-
-    MockedServer server;
-
-    static final BotInfo botInfo = BotInfo.builder()
-            .setName("TestBot")
-            .setVersion("1")
-            .addAuthor("Author")
-            .build();
-
-    static class TestBot extends BaseBot {
-        TestBot() {
-            super(botInfo, MockedServer.getServerUrl());
-        }
-    }
-
-    @BeforeEach
-    void setUp() {
-        server = new MockedServer();
-        server.start();
-    }
-
-    @AfterEach
-    void tearDown() {
-        server.stop();
-    }
+class BaseBotTest extends AbstractBotTest {
 
     @Test
     @Description("start()")
@@ -743,56 +716,5 @@ class BaseBotTest {
                 Arguments.of(ScannedBotEvent.class, SCANNED_BOT),
                 Arguments.of(DeathEvent.class, DEATH)
         );
-    }
-
-
-    private static BaseBot start() {
-        var bot = new TestBot();
-        new Thread(bot::start).start();
-        return bot;
-    }
-
-    private BaseBot startAndAwaitHandshake() {
-        var bot = start();
-        awaitBotHandshake();
-        return bot;
-    }
-
-    private BaseBot startAndAwaitTickEvent() {
-        var bot = start();
-        awaitTickEvent();
-        return bot;
-    }
-
-    private BaseBot startAndAwaitGameStarted() {
-        var bot = start();
-        awaitGameStarted();
-        return bot;
-    }
-
-    private void awaitBotHandshake() {
-        server.awaitBotHandshake(500);
-    }
-
-    private void awaitGameStarted() {
-        assertThat(server.awaitGameStarted(500)).isTrue();
-        sleep(); // must be processed within the bot api first
-    }
-
-    private void awaitTickEvent() {
-        assertThat(server.awaitTickEvent(500)).isTrue();
-        sleep(); // must be processed within the bot api first
-    }
-
-    private void awaitBotIntent() {
-       assertThat(server.awaitBotIntent(1000)).isTrue();
-    }
-
-    private void sleep() {
-        try {
-            Thread.sleep(100);
-        } catch (InterruptedException e) {
-            throw new RuntimeException(e);
-        }
     }
 }
