@@ -59,12 +59,15 @@ public class MockedServer
     private int _turnNumber = 1;
 
 
+    private ISet<IWebSocketConnection> clients = new HashSet<IWebSocketConnection>();
+
     public void Start()
     {
         _server = new WebSocketServer(ServerUrl.AbsoluteUri, false);
         _server.Start(conn =>
         {
             conn.OnOpen = () => OnOpen(conn);
+            conn.OnClose = () => OnClose(conn);
             conn.OnMessage = message => OnMessage(conn, message);
             conn.OnError = OnError;
         });
@@ -72,6 +75,9 @@ public class MockedServer
 
     public void Stop()
     {
+        foreach (var client in clients) client.Close();
+        clients.Clear();
+
         _server.Dispose();
     }
 
@@ -160,8 +166,15 @@ public class MockedServer
 
     private void OnOpen(IWebSocketConnection conn)
     {
+        clients.Add(conn);
+        
         _openedEvent.Set();
         SendServerHandshake(conn);
+    }
+    
+    private void OnClose(IWebSocketConnection conn)
+    {
+        clients.Remove(conn);
     }
 
     private void OnMessage(IWebSocketConnection conn, string messageJson)

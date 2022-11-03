@@ -83,10 +83,10 @@ public class AbstractBotTest
         Assert.That(Server.AwaitBotHandshake(10_000), Is.True);
     }
 
-    protected void AwaitGameStarted()
+    private void AwaitGameStarted()
     {
         Sleep(); // must be processed within the bot api first
-        Assert.That(Server.AwaitGameStarted(10_000), Is.True);
+        Assert.That(Server.AwaitGameStarted(20_000), Is.True);
     }
 
     protected void AwaitTickEvent()
