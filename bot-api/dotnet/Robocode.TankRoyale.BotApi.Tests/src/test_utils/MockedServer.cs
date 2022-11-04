@@ -210,9 +210,9 @@ public class MockedServer
                 _botIntentEvent.Set();
 
                 _botIntent = JsonConvert.DeserializeObject<BotIntent>(messageJson);
-                Thread.Sleep(5);
 
                 SendTickEventForBot(conn, _turnNumber++);
+                _tickEvent.Set();
                 break;
         }
     }
