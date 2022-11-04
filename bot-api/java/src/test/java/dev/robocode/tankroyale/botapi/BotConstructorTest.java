@@ -9,25 +9,18 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.Arrays;
 import java.util.UUID;
-import java.util.stream.Collectors;
 
-import static test_utils.EnvironmentVariables.*;
 import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static test_utils.EnvironmentVariables.*;
 
 @SetEnvironmentVariable(key = SERVER_URL, value = "ws://localhost:" + MockedServer.PORT)
 @SetEnvironmentVariable(key = BOT_NAME, value = "TestBot")
 @SetEnvironmentVariable(key = BOT_VERSION, value = "1.0")
 @SetEnvironmentVariable(key = BOT_AUTHORS, value = "Author 1, Author 2")
-@SetEnvironmentVariable(key = BOT_GAME_TYPES, value = "classic, 1v1, melee")
-@SetEnvironmentVariable(key = BOT_DESCRIPTION, value = "Short description")
-@SetEnvironmentVariable(key = BOT_HOMEPAGE, value = "https://testbot.robocode.dev")
-@SetEnvironmentVariable(key = BOT_COUNTRY_CODES, value = "gb, US")
-@SetEnvironmentVariable(key = BOT_PLATFORM, value = "JVM 19")
-@SetEnvironmentVariable(key = BOT_PROG_LANG, value = "Java 19")
-class BaseBotConstructorTest extends AbstractBotTest {
+class BotConstructorTest extends AbstractBotTest {
 
-    static class TestBot extends BaseBot {
+    static class TestBot extends Bot {
 
         TestBot() {
             super();
@@ -103,13 +96,6 @@ class BaseBotConstructorTest extends AbstractBotTest {
         assertThat(botHandshake.getName()).isEqualTo(env.get(BOT_NAME));
         assertThat(botHandshake.getVersion()).isEqualTo(env.get(BOT_VERSION));
         assertThat(botHandshake.getAuthors()).containsAll(Arrays.asList(env.get(BOT_AUTHORS).split("\\s*,\\s*")));
-        assertThat(botHandshake.getGameTypes()).containsAll(Arrays.asList(env.get(BOT_GAME_TYPES).split("\\s*,\\s*")));
-        assertThat(botHandshake.getCountryCodes().stream().map(String::toLowerCase).collect(Collectors.toList()))
-                .containsAll(Arrays.stream(env.get(BOT_COUNTRY_CODES).split(",")).map(String::toLowerCase).map(String::trim).collect(Collectors.toList()));
-        assertThat(botHandshake.getDescription()).isEqualTo(env.get(BOT_DESCRIPTION));
-        assertThat(botHandshake.getHomepage()).isEqualTo(env.get(BOT_HOMEPAGE));
-        assertThat(botHandshake.getPlatform()).isEqualTo(env.get(BOT_PLATFORM));
-        assertThat(botHandshake.getProgrammingLang()).isEqualTo(env.get(BOT_PROG_LANG));
     }
 
     @Test
@@ -117,12 +103,6 @@ class BaseBotConstructorTest extends AbstractBotTest {
     @ClearEnvironmentVariable(key = BOT_NAME)
     @ClearEnvironmentVariable(key = BOT_VERSION)
     @ClearEnvironmentVariable(key = BOT_AUTHORS)
-    @ClearEnvironmentVariable(key = BOT_GAME_TYPES)
-    @ClearEnvironmentVariable(key = BOT_DESCRIPTION)
-    @ClearEnvironmentVariable(key = BOT_HOMEPAGE)
-    @ClearEnvironmentVariable(key = BOT_COUNTRY_CODES)
-    @ClearEnvironmentVariable(key = BOT_PLATFORM)
-    @ClearEnvironmentVariable(key = BOT_PROG_LANG)
     void givenNoEnvVarsSet_callingDefaultConstructorWithBotInfoFromThread_thenBotHandshakeMustBeCorrect() {
         new TestBot(botInfo);
         // passed when this point is reached

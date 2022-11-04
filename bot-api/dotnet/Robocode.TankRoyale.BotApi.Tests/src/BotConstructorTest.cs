@@ -7,9 +7,9 @@ using static Robocode.TankRoyale.BotApi.Tests.Test_utils.EnvironmentVariables;
 
 namespace Robocode.TankRoyale.BotApi.Tests;
 
-public class BaseBotConstructorTest : AbstractBotTest
+public class BotConstructorTest : AbstractBotTest
 {
-    private class TestBot : BaseBot
+    private class TestBot : Bot
     {
         public TestBot()
         {

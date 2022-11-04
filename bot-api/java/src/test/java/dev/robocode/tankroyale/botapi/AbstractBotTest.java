@@ -97,4 +97,8 @@ abstract class AbstractBotTest {
             throw new RuntimeException(e);
         }
     }
+
+    protected static boolean exceptionContainsEnvVarName(BotException botException, String envVarName) {
+        return botException.getMessage().toUpperCase().contains(envVarName);
+    }
 }

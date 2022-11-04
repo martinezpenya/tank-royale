@@ -104,4 +104,7 @@ public class AbstractBotTest
     {
         Thread.Sleep(500);
     }
+    
+    protected static bool ExceptionContainsEnvVarName(BotException botException, string envVarName) =>
+        botException != null && botException.Message.ToUpper().Contains(envVarName);
 }
