@@ -46,6 +46,7 @@ public class MockedServer
     private double _botGunHeat = BotGunHeat;
 
     private WebSocketServer _server;
+    private readonly ISet<IWebSocketConnection> _clients = new HashSet<IWebSocketConnection>();
 
     private readonly EventWaitHandle _openedEvent = new AutoResetEvent(false);
     private readonly EventWaitHandle _botHandshakeEvent = new AutoResetEvent(false);
@@ -53,13 +54,10 @@ public class MockedServer
     private readonly EventWaitHandle _tickEvent = new AutoResetEvent(false);
     private readonly EventWaitHandle _botIntentEvent = new AutoResetEvent(false);
 
-    private BotHandshake _botHandshake;
     private BotIntent _botIntent;
 
     private int _turnNumber = 1;
-
-
-    private ISet<IWebSocketConnection> clients = new HashSet<IWebSocketConnection>();
+    
 
     public void Start()
     {
@@ -75,10 +73,16 @@ public class MockedServer
 
     public void Stop()
     {
-        foreach (var client in clients) client.Close();
-        clients.Clear();
+        foreach (var client in _clients) client.Close();
+        _clients.Clear();
 
         _server.Dispose();
+
+        _openedEvent.Dispose();
+        _botHandshakeEvent.Dispose();
+        _gameStartedEvent.Dispose();
+        _tickEvent.Dispose();
+        _botIntentEvent.Dispose();
     }
 
     public void SetBotEnergy(double botEnergy)
@@ -161,12 +165,12 @@ public class MockedServer
         return false;
     }
 
-    public BotHandshake Handshake => _botHandshake;
+    public BotHandshake Handshake { get; private set; }
 
 
     private void OnOpen(IWebSocketConnection conn)
     {
-        clients.Add(conn);
+        _clients.Add(conn);
         
         _openedEvent.Set();
         SendServerHandshake(conn);
@@ -174,7 +178,7 @@ public class MockedServer
     
     private void OnClose(IWebSocketConnection conn)
     {
-        clients.Remove(conn);
+        _clients.Remove(conn);
     }
 
     private void OnMessage(IWebSocketConnection conn, string messageJson)
@@ -188,7 +192,7 @@ public class MockedServer
         switch (msgType)
         {
             case MessageType.BotHandshake:
-                _botHandshake = JsonConvert.DeserializeObject<BotHandshake>(messageJson);
+                Handshake = JsonConvert.DeserializeObject<BotHandshake>(messageJson);
                 _botHandshakeEvent.Set();
 
                 SendGameStartedForBot(conn);
@@ -218,7 +222,7 @@ public class MockedServer
         throw new InvalidOperationException("MockedServer error", ex);
     }
 
-    private void SendServerHandshake(IWebSocketConnection conn)
+    private static void SendServerHandshake(IWebSocketConnection conn)
     {
         var serverHandshake = new ServerHandshake
         {
@@ -232,7 +236,7 @@ public class MockedServer
         Send(conn, serverHandshake);
     }
 
-    private void SendGameStartedForBot(IWebSocketConnection conn)
+    private static void SendGameStartedForBot(IWebSocketConnection conn)
     {
         var gameStarted = new GameStartedEventForBot
         {
@@ -254,7 +258,7 @@ public class MockedServer
         Send(conn, gameStarted);
     }
 
-    private void SendRoundStarted(IWebSocketConnection conn)
+    private static void SendRoundStarted(IWebSocketConnection conn)
     {
         var roundStarted = new RoundStartedEvent
         {
@@ -326,7 +330,7 @@ public class MockedServer
         Send(conn, tickEvent);
     }
 
-    private void Send(IWebSocketConnection conn, Object obj)
+    private static void Send(IWebSocketConnection conn, Object obj)
     {
         conn.Send(JsonConvert.SerializeObject(obj));
     }
