@@ -1,71 +1,103 @@
 package dev.robocode.tankroyale.botapi;
 
 
+import jdk.jfr.Description;
 import org.junit.jupiter.api.Test;
-import org.junitpioneer.jupiter.ClearEnvironmentVariable;
-import org.junitpioneer.jupiter.SetEnvironmentVariable;
-
-import java.net.URI;
+import test_utils.MockedServer;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static test_utils.EnvironmentVariables.*;
 
-@SetEnvironmentVariable(key = BOT_NAME, value = "TestBot")
-@SetEnvironmentVariable(key = BOT_VERSION, value = "1.0")
-@SetEnvironmentVariable(key = BOT_AUTHORS, value = "Author 1, Author 2")
 class BotTest extends AbstractBotTest {
 
-    static class TestBot extends Bot {
-
+    protected static class TestBot extends Bot {
         TestBot() {
-            super();
-        }
-
-        TestBot(BotInfo botInfo) {
-            super(botInfo);
-        }
-
-        TestBot(BotInfo botInfo, URI serverUrl) {
-            super(botInfo, serverUrl);
-        }
-
-        TestBot(BotInfo botInfo, URI serverUrl, String serverSecret) {
-            super(botInfo, serverUrl, serverSecret);
+            super(botInfo, MockedServer.getServerUrl());
         }
     }
 
     @Test
-    void givenAllRequiredEnvVarsSet_whenCallingDefaultConstructor_thenBotIsCreated() {
-        new TestBot();
-        // passed when this point is reached
+    @Description("setTurnRate()")
+    void givenMockedServer_whenCallingSetTurnRate_thenTurnRateMustBeUpdatedToNewValue() {
+        var bot = start();
+        assertThat(bot.getTurnRate()).isZero();
+        awaitTickEvent();
+
+        bot.setTurnRate(7.5);
+        bot.go();
+
+        awaitTickEvent();
+        assertThat(bot.getTurnRate()).isEqualTo(7.5);
     }
 
     @Test
-    @ClearEnvironmentVariable(key = SERVER_URL)
-    void givenMissingServerUrlEnvVar_whenCallingDefaultConstructor_thenBotIsCreated() {
-        new TestBot();
-        // passed when this point is reached
+    @Description("setGunTurnRate()")
+    void givenMockedServer_whenCallingSetGunTurnRate_thenGunTurnRateMustBeUpdatedToNewValue() {
+        var bot = start();
+        assertThat(bot.getGunTurnRate()).isZero();
+        awaitTickEvent();
+
+        bot.setGunTurnRate(17.25);
+        bot.go();
+
+        awaitTickEvent();
+        assertThat(bot.getGunTurnRate()).isEqualTo(17.25);
     }
 
     @Test
-    @ClearEnvironmentVariable(key = BOT_NAME)
-    void givenMissingBotNameEnvVar_whenCallingDefaultConstructor_thenBotExceptionIsThrownWithMissingEnvVarInfo() {
-        var botException = assertThrows(BotException.class, TestBot::new);
-        assertThat(exceptionContainsEnvVarName(botException, BOT_NAME)).isTrue();
+    @Description("setRadarTurnRate()")
+    void givenMockedServer_whenCallingSetRadarTurnRate_thenRadarTurnRateMustBeUpdatedToNewValue() {
+        var bot = start();
+        assertThat(bot.getRadarTurnRate()).isZero();
+        awaitTickEvent();
+
+        bot.setRadarTurnRate(32.125);
+        bot.go();
+
+        awaitTickEvent();
+        assertThat(bot.getRadarTurnRate()).isEqualTo(32.125);
     }
 
     @Test
-    @ClearEnvironmentVariable(key = BOT_VERSION)
-    void givenMissingBotVersionEnvVar_whenCallingDefaultConstructor_thenBotExceptionIsThrownWithMissingEnvVarInfo() {
-        var botException = assertThrows(BotException.class, TestBot::new);
-        assertThat(exceptionContainsEnvVarName(botException, BOT_VERSION)).isTrue();
+    @Description("isRunning()")
+    void givenMockedServer_whenCallingIsRunning_thenReturnTrueWhenBotIsRunning() {
+        var bot = start();
+        assertThat(bot.isRunning()).isFalse();
+
+        awaitTickEvent();
+        assertThat(bot.isRunning()).isTrue();
     }
 
     @Test
-    @ClearEnvironmentVariable(key = BOT_AUTHORS)
-    void givenMissingBotAuthorsEnvVar_whenCallingDefaultConstructor_thenBotExceptionIsThrownWithMissingEnvVarInfo() {
-        var botException = assertThrows(BotException.class, TestBot::new);
-        assertThat(exceptionContainsEnvVarName(botException, BOT_AUTHORS)).isTrue();
+    @Description("setTargetSpeed()")
+    void givenMockedServer_whenCallingSetTargetSpeed_thenTargetSpeedMustBeUpdatedToNewValue() {
+        var bot = start();
+        awaitTickEvent();
+        assertThat(bot.getTargetSpeed()).isZero();
+
+        bot.setTargetSpeed(7.25);
+        bot.go();
+
+        awaitTickEvent();
+        assertThat(bot.getTargetSpeed()).isEqualTo(7.25);
+    }
+
+    @Test
+    @Description("setForward()")
+    void givenMockedServer_whenCallingSetForward_thenForwardMustBeUpdatedToNewValue() {
+        var bot = start();
+        assertThat(bot.getSpeed()).isZero();
+
+        awaitTickEvent();
+        bot.setForward(1000);
+        bot.go();
+
+        awaitTickEvent();
+        assertThat(bot.getDistanceRemaining()).isEqualTo(1000);
+    }
+
+    protected static Bot start() {
+        var bot = new TestBot();
+        runAsync(bot);
+        return bot;
     }
 }
