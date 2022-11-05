@@ -189,9 +189,9 @@ public final class MockedServer {
                     break;
 
                 case BOT_INTENT:
+                    botIntent = gson.fromJson(text, BotIntent.class);
                     botIntentLatch.countDown();
 
-                    botIntent = gson.fromJson(text, BotIntent.class);
                     try {
                         Thread.sleep(5);
                     } catch (InterruptedException ignore) {
