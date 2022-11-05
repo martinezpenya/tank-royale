@@ -13,6 +13,11 @@ public final class BotInternals implements IStopResumeListener {
 
     private Thread thread;
 
+    private boolean overrideTurnRate;
+    private boolean overrideGunTurnRate;
+    private boolean overrideRadarTurnRate;
+    private boolean overrideTargetSpeed;
+
     private double previousDirection;
     private double previousGunDirection;
     private double previousRadarDirection;
@@ -165,6 +170,7 @@ public final class BotInternals implements IStopResumeListener {
     }
 
     public void setTurnRate(double turnRate) {
+        overrideTurnRate = false;
         if (Double.isNaN(turnRate)) {
             throw new IllegalArgumentException("turnRate cannot be NaN");
         }
@@ -173,6 +179,7 @@ public final class BotInternals implements IStopResumeListener {
     }
 
     public void setGunTurnRate(double gunTurnRate) {
+        overrideGunTurnRate = false;
         if (Double.isNaN(gunTurnRate)) {
             throw new IllegalArgumentException("gunTurnRate cannot be NaN");
         }
@@ -181,6 +188,7 @@ public final class BotInternals implements IStopResumeListener {
     }
 
     public void setRadarTurnRate(double radarTurnRate) {
+        overrideRadarTurnRate = false;
         if (Double.isNaN(radarTurnRate)) {
             throw new IllegalArgumentException("radarTurnRate cannot be NaN");
         }
@@ -247,6 +255,7 @@ public final class BotInternals implements IStopResumeListener {
     }
 
     public void setTargetSpeed(double targetSpeed) {
+        overrideTargetSpeed = false;
         if (Double.isNaN(targetSpeed)) {
             throw new IllegalArgumentException("targetSpeed cannot be NaN");
         }
@@ -264,6 +273,7 @@ public final class BotInternals implements IStopResumeListener {
     }
 
     public void setForward(double distance) {
+        overrideTargetSpeed = true;
         if (Double.isNaN(distance)) {
             throw new IllegalArgumentException("distance cannot be NaN");
         }
@@ -285,6 +295,7 @@ public final class BotInternals implements IStopResumeListener {
     }
 
     public void setTurnLeft(double degrees) {
+        overrideTurnRate = true;
         if (Double.isNaN(degrees)) {
             throw new IllegalArgumentException("degrees cannot be NaN");
         }
@@ -304,6 +315,7 @@ public final class BotInternals implements IStopResumeListener {
     }
 
     public void setTurnGunLeft(double degrees) {
+        overrideGunTurnRate = true;
         if (Double.isNaN(degrees)) {
             throw new IllegalArgumentException("degrees cannot be NaN");
         }
@@ -323,6 +335,7 @@ public final class BotInternals implements IStopResumeListener {
     }
 
     public void setTurnRadarLeft(double degrees) {
+        overrideRadarTurnRate = true;
         if (Double.isNaN(degrees)) {
             throw new IllegalArgumentException("degrees cannot be NaN");
         }
@@ -392,8 +405,10 @@ public final class BotInternals implements IStopResumeListener {
     }
 
     private void updateTurnRemaining() {
+        if (!overrideTurnRate) {
+            return;
+        }
         synchronized (turnMonitor) {
-
             double delta = bot.calcDeltaAngle(bot.getDirection(), previousDirection);
             previousDirection = bot.getDirection();
 
@@ -410,8 +425,10 @@ public final class BotInternals implements IStopResumeListener {
     }
 
     private void updateGunTurnRemaining() {
+        if (!overrideGunTurnRate) {
+            return;
+        }
         synchronized (gunTurnMonitor) {
-
             double delta = bot.calcDeltaAngle(bot.getGunDirection(), previousGunDirection);
             previousGunDirection = bot.getGunDirection();
 
@@ -428,8 +445,10 @@ public final class BotInternals implements IStopResumeListener {
     }
 
     private void updateRadarTurnRemaining() {
+        if (!overrideRadarTurnRate) {
+            return;
+        }
         synchronized (radarTurnMonitor) {
-
             double delta = bot.calcDeltaAngle(bot.getRadarDirection(), previousRadarDirection);
             previousRadarDirection = bot.getRadarDirection();
 
@@ -446,8 +465,10 @@ public final class BotInternals implements IStopResumeListener {
     }
 
     private void updateMovement() {
+        if (!overrideTargetSpeed) {
+            return;
+        }
         synchronized (movementMonitor) {
-
             if (Double.isInfinite(distanceRemaining)) {
                 baseBotInternals.getBotIntent().setTargetSpeed(
                         (double) (distanceRemaining == Double.POSITIVE_INFINITY ? MAX_SPEED : -MAX_SPEED));
