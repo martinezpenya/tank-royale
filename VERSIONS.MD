@@ -1,16 +1,20 @@
 # Versions
 
-## 📦 0.17.5 - Maintenance 
+## 📦 0.17.5 - Maintenance
 
 #### 🪲 Bug Fixes
+
 - Bot API for .Net:
-    - Major bug: Setting the max speed and max turn rates for the body, gun, and radar did not work.
+    - Setting the max speed and max turn rates for the body, gun, and radar did not work.
+    - Fixed issue with moving and turning, which could override the set target speed and turn rates, when these had been
+      set explicitly on the API.
 
 #### 🚀 Improvements
 
 - Bot API:
     - addCondition() and removeCondition() now returns a boolean value instead of void.
-    - Condition can take an optional lambda expression as input parameter as alternative to overriding the test() method.
+    - Condition can take an optional lambda expression as input parameter as alternative to overriding the test()
+      method.
     - Added more test units, which did show bugs within the Bot API for both Java and .Net.
 
 ## 📦 0.17.4 - Maintenance - 16-Oct-2022

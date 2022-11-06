@@ -13,6 +13,11 @@ internal sealed class BotInternals : IStopResumeListener
 
     private Thread thread;
 
+    private bool overrideTurnRate;
+    private bool overrideGunTurnRate;
+    private bool overrideRadarTurnRate;
+    private bool overrideTargetSpeed;
+
     private double previousDirection;
     private double previousGunDirection;
     private double previousRadarDirection;
@@ -190,27 +195,39 @@ internal sealed class BotInternals : IStopResumeListener
 
     internal bool IsRunning => baseBotInternals.IsRunning;
 
-    public void SetTurnRate(double turnRate) {
-        if (IsNaN(turnRate)) {
+    public void SetTurnRate(double turnRate)
+    {
+        overrideTurnRate = false;
+        if (IsNaN(turnRate))
+        {
             throw new ArgumentException("turnRate cannot be NaN");
         }
+
         baseBotInternals.BotIntent.TurnRate = turnRate;
         TurnRemaining = ToInfiniteValue(turnRate);
     }
 
-    public void SetGunTurnRate(double gunTurnRate) {
-        if (IsNaN(gunTurnRate)) {
+    public void SetGunTurnRate(double gunTurnRate)
+    {
+        overrideGunTurnRate = false;
+        if (IsNaN(gunTurnRate))
+        {
             throw new ArgumentException("gunTurnRate cannot be NaN");
         }
+
         baseBotInternals.BotIntent.GunTurnRate = gunTurnRate;
         GunTurnRemaining = ToInfiniteValue(gunTurnRate);
     }
 
-    public void SetRadarTurnRate(double radarTurnRate) {
-        if (IsNaN(radarTurnRate)) {
+    public void SetRadarTurnRate(double radarTurnRate)
+    {
+        overrideRadarTurnRate = false;
+        if (IsNaN(radarTurnRate))
+        {
             throw new ArgumentException("radarTurnRate cannot be NaN");
         }
-        baseBotInternals.BotIntent.RadarTurnRate  = radarTurnRate;
+
+        baseBotInternals.BotIntent.RadarTurnRate = radarTurnRate;
         RadarTurnRemaining = ToInfiniteValue(radarTurnRate);
     }
 
@@ -298,6 +315,7 @@ internal sealed class BotInternals : IStopResumeListener
 
     internal void SetTargetSpeed(double targetSpeed)
     {
+        overrideTargetSpeed = false;
         DistanceRemaining = targetSpeed switch
         {
             NaN => throw new ArgumentException("targetSpeed cannot be NaN"),
@@ -311,6 +329,7 @@ internal sealed class BotInternals : IStopResumeListener
 
     internal void SetForward(double distance)
     {
+        overrideTargetSpeed = true;
         if (IsNaN(distance))
             throw new ArgumentException("distance cannot be NaN");
 
@@ -336,6 +355,7 @@ internal sealed class BotInternals : IStopResumeListener
 
     internal void SetTurnLeft(double degrees)
     {
+        overrideTurnRate = true;
         if (IsNaN(degrees))
             throw new ArgumentException("degrees cannot be NaN");
 
@@ -359,6 +379,7 @@ internal sealed class BotInternals : IStopResumeListener
 
     internal void SetTurnGunLeft(double degrees)
     {
+        overrideGunTurnRate = true;
         if (IsNaN(degrees))
             throw new ArgumentException("degrees cannot be NaN");
 
@@ -382,6 +403,7 @@ internal sealed class BotInternals : IStopResumeListener
 
     internal void SetTurnRadarLeft(double degrees)
     {
+        overrideRadarTurnRate = true;
         if (IsNaN(degrees))
             throw new ArgumentException("degrees cannot be NaN");
 
@@ -462,6 +484,9 @@ internal sealed class BotInternals : IStopResumeListener
 
     private void UpdateTurnRemaining()
     {
+        if (!overrideTurnRate)
+            return;
+
         lock (turnLock)
         {
             var delta = bot.CalcDeltaAngle(bot.Direction, previousDirection);
@@ -482,6 +507,9 @@ internal sealed class BotInternals : IStopResumeListener
 
     private void UpdateGunTurnRemaining()
     {
+        if (!overrideGunTurnRate)
+            return;
+
         lock (gunTurnLock)
         {
             var delta = bot.CalcDeltaAngle(bot.GunDirection, previousGunDirection);
@@ -502,6 +530,9 @@ internal sealed class BotInternals : IStopResumeListener
 
     private void UpdateRadarTurnRemaining()
     {
+        if (!overrideRadarTurnRate)
+            return;
+
         lock (radarTurnLock)
         {
             var delta = bot.CalcDeltaAngle(bot.RadarDirection, previousRadarDirection);
@@ -522,6 +553,9 @@ internal sealed class BotInternals : IStopResumeListener
 
     private void UpdateMovement()
     {
+        if (!overrideTargetSpeed)
+            return;
+
         lock (movementLock)
         {
             if (IsInfinity(DistanceRemaining))
