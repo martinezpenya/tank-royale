@@ -331,15 +331,6 @@ public sealed class BaseBotInternals
 
     internal double TurnRate
     {
-        set
-        {
-            if (IsNaN(value))
-            {
-                throw new ArgumentException("TurnRate cannot be NaN");
-            }
-
-            BotIntent.TurnRate = Math.Clamp(value, -maxTurnRate, maxTurnRate);
-        }
         get
         {
             // if the turn rate was modified during the turn
@@ -350,19 +341,19 @@ public sealed class BaseBotInternals
 
             return tickEvent == null ? 0 : tickEvent.BotState.TurnRate;
         }
-    }
-
-    internal double GunTurnRate
-    {
         set
         {
             if (IsNaN(value))
             {
-                throw new ArgumentException("GunTurnRate cannot be NaN");
+                throw new ArgumentException("TurnRate cannot be NaN");
             }
 
-            BotIntent.GunTurnRate = Math.Clamp(value, -maxGunTurnRate, maxGunTurnRate);
+            BotIntent.TurnRate = Math.Clamp(value, -maxTurnRate, maxTurnRate);
         }
+    }
+
+    internal double GunTurnRate
+    {
         get
         {
             // if the turn rate was modified during the turn
@@ -373,19 +364,19 @@ public sealed class BaseBotInternals
 
             return tickEvent == null ? 0 : tickEvent.BotState.GunTurnRate;
         }
-    }
-
-    internal double RadarTurnRate
-    {
         set
         {
             if (IsNaN(value))
             {
-                throw new ArgumentException("RadarTurnRate cannot be NaN");
+                throw new ArgumentException("GunTurnRate cannot be NaN");
             }
 
-            BotIntent.RadarTurnRate = Math.Clamp(value, -maxRadarTurnRate, maxRadarTurnRate);
+            BotIntent.GunTurnRate = Math.Clamp(value, -maxGunTurnRate, maxGunTurnRate);
         }
+    }
+
+    internal double RadarTurnRate
+    {
         get
         {
             // if the turn rate was modified during the turn
@@ -396,10 +387,20 @@ public sealed class BaseBotInternals
 
             return tickEvent == null ? 0 : tickEvent.BotState.RadarTurnRate;
         }
+        set
+        {
+            if (IsNaN(value))
+            {
+                throw new ArgumentException("RadarTurnRate cannot be NaN");
+            }
+
+            BotIntent.RadarTurnRate = Math.Clamp(value, -maxRadarTurnRate, maxRadarTurnRate);
+        }
     }
 
     internal double TargetSpeed
     {
+        get => BotIntent.TargetSpeed ?? 0d;
         set
         {
             if (IsNaN(value))
@@ -409,7 +410,6 @@ public sealed class BaseBotInternals
 
             BotIntent.TargetSpeed = Math.Clamp(value, -maxSpeed, maxSpeed);
         }
-        get => BotIntent.TargetSpeed ?? 0d;
     }
     
     internal double MaxSpeed
