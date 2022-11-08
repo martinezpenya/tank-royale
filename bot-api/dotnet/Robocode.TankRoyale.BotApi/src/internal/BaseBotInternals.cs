@@ -411,29 +411,57 @@ public sealed class BaseBotInternals
             BotIntent.TargetSpeed = Math.Clamp(value, -maxSpeed, maxSpeed);
         }
     }
-    
-    internal double MaxSpeed
-    {
-        get => maxSpeed;
-        set => maxSpeed = Math.Clamp(value, 0, Constants.MaxSpeed);
-    }
 
     internal double MaxTurnRate
     {
         get => maxTurnRate;
-        set => maxTurnRate = Math.Clamp(value, 0, Constants.MaxTurnRate);
+        set
+        {
+            if (IsNaN(value))
+            {
+                throw new ArgumentException("MaxTurnRate cannot be NaN");
+            }
+            maxTurnRate = Math.Clamp(value, 0, Constants.MaxTurnRate);
+        }
     }
 
     internal double MaxGunTurnRate
     {
         get => maxGunTurnRate;
-        set => maxGunTurnRate = Math.Clamp(value, 0, Constants.MaxGunTurnRate);
+        set
+        {
+            if (IsNaN(value))
+            {
+                throw new ArgumentException("MaxGunTurnRate cannot be NaN");
+            }
+            maxGunTurnRate = Math.Clamp(value, 0, Constants.MaxGunTurnRate);
+        }
     }
 
     internal double MaxRadarTurnRate
     {
         get => maxRadarTurnRate;
-        set => maxRadarTurnRate = Math.Clamp(value, 0, Constants.MaxRadarTurnRate);
+        set
+        {
+            if (IsNaN(value))
+            {
+                throw new ArgumentException("MaxRadarTurnRate cannot be NaN");
+            }
+            maxRadarTurnRate = Math.Clamp(value, 0, Constants.MaxRadarTurnRate);
+        }
+    }
+
+    internal double MaxSpeed
+    {
+        get => maxSpeed;
+        set
+        {
+            if (IsNaN(value))
+            {
+                throw new ArgumentException("MaxSpeed cannot be NaN");
+            }
+            maxSpeed = Math.Clamp(value, 0, Constants.MaxSpeed);
+        }
     }
 
     /// <summary>

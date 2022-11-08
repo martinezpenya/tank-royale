@@ -203,15 +203,7 @@ public abstract class BaseBot : IBaseBot
     /// <inheritdoc/>
     public double MaxTurnRate
     {
-        set
-        {
-            if (IsNaN(value))
-            {
-                throw new ArgumentException("MaxTurnRate cannot be NaN");
-            }
-
-            __baseBotInternals.MaxTurnRate = value;
-        }
+        set => __baseBotInternals.MaxTurnRate = value;
         get => __baseBotInternals.MaxTurnRate;
     }
 
@@ -225,15 +217,7 @@ public abstract class BaseBot : IBaseBot
     /// <inheritdoc/>
     public double MaxGunTurnRate
     {
-        set
-        {
-            if (IsNaN(value))
-            {
-                throw new ArgumentException("MaxGunTurnRate cannot be NaN");
-            }
-
-            __baseBotInternals.MaxGunTurnRate = value;
-        }
+        set => __baseBotInternals.MaxGunTurnRate = value;
         get => __baseBotInternals.MaxGunTurnRate;
     }
 
@@ -247,15 +231,7 @@ public abstract class BaseBot : IBaseBot
     /// <inheritdoc/>
     public double MaxRadarTurnRate
     {
-        set
-        {
-            if (IsNaN(value))
-            {
-                throw new ArgumentException("MaxRadarTurnRate cannot be NaN");
-            }
-
-            __baseBotInternals.MaxRadarTurnRate = value;
-        }
+        set => __baseBotInternals.MaxRadarTurnRate = value;
         get => __baseBotInternals.MaxRadarTurnRate;
     }
 
@@ -269,15 +245,7 @@ public abstract class BaseBot : IBaseBot
     /// <inheritdoc/>
     public double MaxSpeed
     {
-        set
-        {
-            if (IsNaN(value))
-            {
-                throw new ArgumentException("MaxSpeed cannot be NaN");
-            }
-
-            __baseBotInternals.MaxSpeed = value;
-        }
+        set => __baseBotInternals.MaxSpeed = value;
         get => __baseBotInternals.MaxSpeed;
     }
 
