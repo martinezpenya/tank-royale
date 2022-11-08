@@ -465,10 +465,16 @@ public final class BotInternals implements IStopResumeListener {
     }
 
     private void updateMovement() {
-        if (!overrideTargetSpeed) {
-            return;
-        }
         synchronized (movementMonitor) {
+            if (!overrideTargetSpeed) {
+//                System.out.println("distanceRemaining -= bot.getSpeed(): distanceRemaining: " + distanceRemaining + ", bot.speed: " + bot.getSpeed());
+                if (abs(distanceRemaining) < abs(bot.getSpeed())) {
+                    distanceRemaining = 0;
+                } else {
+                    distanceRemaining -= bot.getSpeed();
+                }
+                return;
+            }
             if (Double.isInfinite(distanceRemaining)) {
                 baseBotInternals.getBotIntent().setTargetSpeed(
                         (double) (distanceRemaining == Double.POSITIVE_INFINITY ? MAX_SPEED : -MAX_SPEED));
