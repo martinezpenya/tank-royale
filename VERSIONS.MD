@@ -8,6 +8,8 @@
     - Setting the max speed and max turn rates for the body, gun, and radar did not work.
     - Fixed issue with moving and turning, which could override the set target speed and turn rates, when these had been
       set explicitly on the API.
+    - Reading the turn rates and target speed for the current turn did not reflect if the turn rate and/or target speed
+      had been set for the current turn.
 
 #### 🚀 Improvements
 

@@ -261,7 +261,6 @@ public final class BaseBotInternals {
     }
 
     private void sendIntent() {
-        limitTargetSpeedAndTurnRates();
         socket.sendText(gson.toJson(botIntent), true);
     }
 
@@ -284,25 +283,6 @@ public final class BaseBotInternals {
             // Do nothing (event handler was stopped by this exception)
         } catch (Exception e) {
             e.printStackTrace();
-        }
-    }
-
-    private void limitTargetSpeedAndTurnRates() {
-        Double targetSpeed = botIntent.getTargetSpeed();
-        if (targetSpeed != null) {
-            botIntent.setTargetSpeed(clamp(targetSpeed, -maxSpeed, maxSpeed));
-        }
-        Double turnRate = botIntent.getTurnRate();
-        if (turnRate != null) {
-            botIntent.setTurnRate(clamp(turnRate, -maxTurnRate, maxTurnRate));
-        }
-        Double gunTurnRate = botIntent.getGunTurnRate();
-        if (gunTurnRate != null) {
-            botIntent.setGunTurnRate(clamp(gunTurnRate, -maxGunTurnRate, maxGunTurnRate));
-        }
-        Double radarTurnRate = botIntent.getRadarTurnRate();
-        if (radarTurnRate != null) {
-            botIntent.setRadarTurnRate(clamp(radarTurnRate, -maxRadarTurnRate, maxRadarTurnRate));
         }
     }
 
@@ -370,15 +350,52 @@ public final class BaseBotInternals {
         return tickEvent == null ? 0 : tickEvent.getBotState().getSpeed();
     }
 
+    public void setTurnRate(double turnRate) {
+        if (Double.isNaN(turnRate)) {
+            throw new IllegalArgumentException("turnRate cannot be NaN");
+        }
+        botIntent.setTurnRate(clamp(turnRate, -maxTurnRate, maxTurnRate));
+    }
+
+    public void setGunTurnRate(double gunTurnRate) {
+        if (Double.isNaN(gunTurnRate)) {
+            throw new IllegalArgumentException("gunTurnRate cannot be NaN");
+        }
+        botIntent.setGunTurnRate(clamp(gunTurnRate, -maxGunTurnRate, maxGunTurnRate));
+    }
+
+    public void setRadarTurnRate(double radarTurnRate) {
+        if (Double.isNaN(radarTurnRate)) {
+            throw new IllegalArgumentException("radarTurnRate cannot be NaN");
+        }
+        botIntent.setRadarTurnRate(clamp(radarTurnRate, -maxRadarTurnRate, maxRadarTurnRate));
+    }
+
+    public void setTargetSpeed(double targetSpeed) {
+        if (Double.isNaN(targetSpeed)) {
+            throw new IllegalArgumentException("targetSpeed cannot be NaN");
+        }
+        botIntent.setTargetSpeed(clamp(targetSpeed, -maxSpeed, maxSpeed));
+    }
+
     public double getTurnRate() {
+        if (botIntent.getTurnRate() != null) { // if the turn rate was modified during the turn
+            return botIntent.getTurnRate();
+        }
         return tickEvent == null ? 0 : tickEvent.getBotState().getTurnRate();
     }
 
     public double getGunTurnRate() {
+        if (botIntent.getGunTurnRate() != null) { // if the turn rate was modified during the turn
+            return botIntent.getGunTurnRate();
+        }
         return tickEvent == null ? 0 : tickEvent.getBotState().getGunTurnRate();
     }
 
     public double getRadarTurnRate() {
+        if (botIntent.getRadarTurnRate() != null) { // if the turn rate was modified during the turn
+            return botIntent.getRadarTurnRate();
+        }
         return tickEvent == null ? 0 : tickEvent.getBotState().getRadarTurnRate();
     }
 

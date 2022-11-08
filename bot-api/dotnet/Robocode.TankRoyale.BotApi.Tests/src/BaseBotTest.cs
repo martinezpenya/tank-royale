@@ -288,6 +288,7 @@ public class BaseBotTest : AbstractBotTest
     {
         var bot = StartAndAwaitTickEvent();
         bot.TurnRate = 7.25;
+        Assert.That(bot.TurnRate, Is.EqualTo(7.25));
 
         bot.Go();
         AwaitBotIntent();
@@ -301,6 +302,7 @@ public class BaseBotTest : AbstractBotTest
     {
         var bot = StartAndAwaitTickEvent();
         bot.TurnRate = Constants.MaxTurnRate + 1;
+        Assert.That(bot.TurnRate, Is.EqualTo(Constants.MaxTurnRate));
 
         bot.Go();
         AwaitBotIntent();
@@ -323,6 +325,9 @@ public class BaseBotTest : AbstractBotTest
         var bot = StartAndAwaitTickEvent();
         bot.MaxTurnRate = 5;
         bot.TurnRate = 7;
+
+        Assert.That(bot.MaxTurnRate, Is.EqualTo(5));
+        Assert.That(bot.TurnRate, Is.EqualTo(5));
 
         bot.Go();
         AwaitBotIntent();
@@ -348,6 +353,7 @@ public class BaseBotTest : AbstractBotTest
     {
         var bot = StartAndAwaitTickEvent();
         bot.GunTurnRate = 17.25;
+        Assert.That(bot.GunTurnRate, Is.EqualTo(17.25));
 
         bot.Go();
         AwaitBotIntent();
@@ -361,6 +367,7 @@ public class BaseBotTest : AbstractBotTest
     {
         var bot = StartAndAwaitTickEvent();
         bot.GunTurnRate = Constants.MaxGunTurnRate + 1;
+        Assert.That(bot.GunTurnRate, Is.EqualTo(Constants.MaxGunTurnRate));
 
         bot.Go();
         AwaitBotIntent();
@@ -383,6 +390,9 @@ public class BaseBotTest : AbstractBotTest
         var bot = StartAndAwaitTickEvent();
         bot.MaxGunTurnRate = 15;
         bot.GunTurnRate = 17;
+
+        Assert.That(bot.MaxGunTurnRate, Is.EqualTo(15));
+        Assert.That(bot.GunTurnRate, Is.EqualTo(15));
 
         bot.Go();
         AwaitBotIntent();
@@ -408,6 +418,7 @@ public class BaseBotTest : AbstractBotTest
     {
         var bot = StartAndAwaitTickEvent();
         bot.RadarTurnRate = 37.25;
+        Assert.That(bot.RadarTurnRate, Is.EqualTo(37.25));
 
         bot.Go();
         AwaitBotIntent();
@@ -421,6 +432,7 @@ public class BaseBotTest : AbstractBotTest
     {
         var bot = StartAndAwaitTickEvent();
         bot.RadarTurnRate = Constants.MaxRadarTurnRate + 1;
+        Assert.That(bot.RadarTurnRate, Is.EqualTo(Constants.MaxRadarTurnRate));
 
         bot.Go();
         AwaitBotIntent();
@@ -444,6 +456,9 @@ public class BaseBotTest : AbstractBotTest
         bot.MaxRadarTurnRate = 25;
         bot.RadarTurnRate = 27;
 
+        Assert.That(bot.MaxRadarTurnRate, Is.EqualTo(25));
+        Assert.That(bot.RadarTurnRate, Is.EqualTo(25));
+
         bot.Go();
         AwaitBotIntent();
 
@@ -457,6 +472,7 @@ public class BaseBotTest : AbstractBotTest
     {
         var bot = StartAndAwaitTickEvent();
         bot.TargetSpeed = 5.75;
+        Assert.That(bot.TargetSpeed, Is.EqualTo(5.75));
 
         bot.Go();
         AwaitBotIntent();
@@ -479,6 +495,9 @@ public class BaseBotTest : AbstractBotTest
         var bot = StartAndAwaitTickEvent();
         bot.MaxSpeed = 4;
         bot.TargetSpeed = 6;
+
+        Assert.That(bot.MaxSpeed, Is.EqualTo(4));
+        Assert.That(bot.TargetSpeed, Is.EqualTo(4));
 
         bot.Go();
         AwaitBotIntent();

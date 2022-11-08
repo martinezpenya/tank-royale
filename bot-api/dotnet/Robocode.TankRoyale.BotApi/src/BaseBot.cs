@@ -196,15 +196,7 @@ public abstract class BaseBot : IBaseBot
     /// <inheritdoc/>
     public virtual double TurnRate
     {
-        set
-        {
-            if (IsNaN(value))
-            {
-                throw new ArgumentException("TurnRate cannot be NaN");
-            }
-
-            __baseBotInternals.BotIntent.TurnRate = value;
-        }
+        set => __baseBotInternals.TurnRate = value;
         get => __baseBotInternals.TurnRate;
     }
 
@@ -226,15 +218,7 @@ public abstract class BaseBot : IBaseBot
     /// <inheritdoc/>
     public virtual double GunTurnRate
     {
-        set
-        {
-            if (IsNaN(value))
-            {
-                throw new ArgumentException("GunTurnRate cannot be NaN");
-            }
-
-            __baseBotInternals.BotIntent.GunTurnRate = value;
-        }
+        set => __baseBotInternals.GunTurnRate = value;
         get => __baseBotInternals.GunTurnRate;
     }
 
@@ -256,15 +240,7 @@ public abstract class BaseBot : IBaseBot
     /// <inheritdoc/>
     public virtual double RadarTurnRate
     {
-        set
-        {
-            if (IsNaN(value))
-            {
-                throw new ArgumentException("RadarTurnRate cannot be NaN");
-            }
-
-            __baseBotInternals.BotIntent.RadarTurnRate = value;
-        }
+        set => __baseBotInternals.RadarTurnRate = value;
         get => __baseBotInternals.RadarTurnRate;
     }
 
@@ -286,16 +262,8 @@ public abstract class BaseBot : IBaseBot
     /// <inheritdoc/>
     public double TargetSpeed
     {
-        set
-        {
-            if (IsNaN(value))
-            {
-                throw new ArgumentException("TargetSpeed cannot be NaN");
-            }
-
-            __baseBotInternals.BotIntent.TargetSpeed = value;
-        }
-        get => __baseBotInternals.BotIntent.TargetSpeed ?? 0d;
+        set => __baseBotInternals.TargetSpeed = value;
+        get => __baseBotInternals.TargetSpeed;
     }
 
     /// <inheritdoc/>

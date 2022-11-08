@@ -343,10 +343,7 @@ public abstract class BaseBot implements IBaseBot {
      */
     @Override
     public void setTurnRate(double turnRate) {
-        if (Double.isNaN(turnRate)) {
-            throw new IllegalArgumentException("turnRate cannot be NaN");
-        }
-        __baseBotInternals.getBotIntent().setTurnRate(turnRate);
+        __baseBotInternals.setTurnRate(turnRate);
     }
 
     /**
@@ -378,10 +375,7 @@ public abstract class BaseBot implements IBaseBot {
      */
     @Override
     public void setGunTurnRate(double gunTurnRate) {
-        if (Double.isNaN(gunTurnRate)) {
-            throw new IllegalArgumentException("gunTurnRate cannot be NaN");
-        }
-        __baseBotInternals.getBotIntent().setGunTurnRate(gunTurnRate);
+        __baseBotInternals.setGunTurnRate(gunTurnRate);
     }
 
     /**
@@ -413,10 +407,7 @@ public abstract class BaseBot implements IBaseBot {
      */
     @Override
     public void setRadarTurnRate(double radarTurnRate) {
-        if (Double.isNaN(radarTurnRate)) {
-            throw new IllegalArgumentException("radarTurnRate cannot be NaN");
-        }
-        __baseBotInternals.getBotIntent().setRadarTurnRate(radarTurnRate);
+        __baseBotInternals.setRadarTurnRate(radarTurnRate);
     }
 
     /**
@@ -449,10 +440,7 @@ public abstract class BaseBot implements IBaseBot {
      */
     @Override
     public void setTargetSpeed(double targetSpeed) {
-        if (Double.isNaN(targetSpeed)) {
-            throw new IllegalArgumentException("targetSpeed cannot be NaN");
-        }
-        __baseBotInternals.getBotIntent().setTargetSpeed(targetSpeed);
+        __baseBotInternals.setTargetSpeed(targetSpeed);
     }
 
     /**

@@ -32,7 +32,6 @@ public sealed class BaseBotInternals
 
     private readonly IBaseBot baseBot;
     private readonly BotInfo botInfo;
-    private readonly S.BotIntent botIntent = NewBotIntent();
 
     private int myId;
     private GameSetup gameSetup;
@@ -64,7 +63,7 @@ public sealed class BaseBotInternals
     private bool eventHandlingDisabled;
 
     private readonly IDictionary<Type, int> eventPriorities = new Dictionary<Type, int>();
-    
+
     internal BaseBotInternals(IBaseBot baseBot, BotInfo botInfo, Uri serverUrl, string serverSecret)
     {
         this.baseBot = baseBot;
@@ -135,7 +134,7 @@ public sealed class BaseBotInternals
     {
         eventHandlingDisabled = !enable;
     }
-    
+
     public void SetStopResumeHandler(IStopResumeListener listener)
     {
         stopResumeListener = listener;
@@ -150,12 +149,13 @@ public sealed class BaseBotInternals
         return botIntent;
     }
 
-    private void ResetMovement() {
-        botIntent.TurnRate = null;
-        botIntent.GunTurnRate = null;
-        botIntent.RadarTurnRate = null;
-        botIntent.TargetSpeed = null;
-        botIntent.Firepower = null;
+    private void ResetMovement()
+    {
+        BotIntent.TurnRate = null;
+        BotIntent.GunTurnRate = null;
+        BotIntent.RadarTurnRate = null;
+        BotIntent.TargetSpeed = null;
+        BotIntent.Firepower = null;
     }
 
     internal BotEventHandlers BotEventHandlers { get; }
@@ -198,7 +198,7 @@ public sealed class BaseBotInternals
 
     private void OnBulletFired(E.BulletFiredEvent e)
     {
-        botIntent.Firepower = 0; // Reset firepower so the bot stops firing continuously
+        BotIntent.Firepower = 0; // Reset firepower so the bot stops firing continuously
     }
 
     internal void Start()
@@ -234,8 +234,7 @@ public sealed class BaseBotInternals
 
     private void SendIntent()
     {
-        LimitTargetSpeedAndTurnRates();
-        socket.SendTextMessage(JsonConvert.SerializeObject(botIntent));
+        socket.SendTextMessage(JsonConvert.SerializeObject(BotIntent));
     }
 
     private void WaitForNextTurn(int turnNumber)
@@ -272,25 +271,6 @@ public sealed class BaseBotInternals
         }
     }
 
-    private void LimitTargetSpeedAndTurnRates()
-    {
-        var targetSpeed = botIntent.TargetSpeed;
-        if (targetSpeed != null)
-            botIntent.TargetSpeed = Math.Clamp((double)targetSpeed, -maxSpeed, maxSpeed);
-
-        var turnRate = botIntent.TurnRate;
-        if (turnRate != null)
-            botIntent.TurnRate = Math.Clamp((double)turnRate, -maxTurnRate, maxTurnRate);
-
-        var gunTurnRate = botIntent.GunTurnRate;
-        if (gunTurnRate != null)
-            botIntent.GunTurnRate = Math.Clamp((double)gunTurnRate, -maxGunTurnRate, maxGunTurnRate);
-
-        var radarTurnRate = botIntent.RadarTurnRate;
-        if (radarTurnRate != null)
-            botIntent.RadarTurnRate = Math.Clamp((double)radarTurnRate, -maxRadarTurnRate, maxRadarTurnRate);
-    }
-
     internal string Variant => ServerHandshake.Variant;
 
     internal string Version => ServerHandshake.Version;
@@ -306,13 +286,7 @@ public sealed class BaseBotInternals
         }
     }
 
-    internal S.BotIntent BotIntent
-    {
-        get
-        {
-            return botIntent;
-        }
-    }
+    internal S.BotIntent BotIntent { get; } = NewBotIntent();
 
     internal E.TickEvent CurrentTick
     {
@@ -347,7 +321,7 @@ public sealed class BaseBotInternals
 
         if (baseBot.Energy < firepower || CurrentTick.BotState.GunHeat > 0)
             return false; // cannot fire yet
-        botIntent.Firepower = firepower;
+        BotIntent.Firepower = firepower;
         return true;
     }
 
@@ -355,12 +329,89 @@ public sealed class BaseBotInternals
 
     internal double Speed => tickEvent == null ? 0 : tickEvent.BotState.Speed;
 
-    internal double TurnRate => tickEvent == null ? 0 : tickEvent.BotState.TurnRate;
+    internal double TurnRate
+    {
+        set
+        {
+            if (IsNaN(value))
+            {
+                throw new ArgumentException("TurnRate cannot be NaN");
+            }
 
-    internal double GunTurnRate => tickEvent == null ? 0 : tickEvent.BotState.GunTurnRate;
+            BotIntent.TurnRate = Math.Clamp(value, -maxTurnRate, maxTurnRate);
+        }
+        get
+        {
+            // if the turn rate was modified during the turn
+            if (BotIntent.TurnRate != null)
+            {
+                return (double)BotIntent.TurnRate;
+            }
 
-    internal double RadarTurnRate => tickEvent == null ? 0 : tickEvent.BotState.RadarTurnRate;
+            return tickEvent == null ? 0 : tickEvent.BotState.TurnRate;
+        }
+    }
 
+    internal double GunTurnRate
+    {
+        set
+        {
+            if (IsNaN(value))
+            {
+                throw new ArgumentException("GunTurnRate cannot be NaN");
+            }
+
+            BotIntent.GunTurnRate = Math.Clamp(value, -maxGunTurnRate, maxGunTurnRate);
+        }
+        get
+        {
+            // if the turn rate was modified during the turn
+            if (BotIntent.GunTurnRate != null)
+            {
+                return (double)BotIntent.GunTurnRate;
+            }
+
+            return tickEvent == null ? 0 : tickEvent.BotState.GunTurnRate;
+        }
+    }
+
+    internal double RadarTurnRate
+    {
+        set
+        {
+            if (IsNaN(value))
+            {
+                throw new ArgumentException("RadarTurnRate cannot be NaN");
+            }
+
+            BotIntent.RadarTurnRate = Math.Clamp(value, -maxRadarTurnRate, maxRadarTurnRate);
+        }
+        get
+        {
+            // if the turn rate was modified during the turn
+            if (BotIntent.RadarTurnRate != null)
+            {
+                return (double)BotIntent.RadarTurnRate;
+            }
+
+            return tickEvent == null ? 0 : tickEvent.BotState.RadarTurnRate;
+        }
+    }
+
+    internal double TargetSpeed
+    {
+        set
+        {
+            if (IsNaN(value))
+            {
+                throw new ArgumentException("TargetSpeed cannot be NaN");
+            }
+
+            BotIntent.TargetSpeed = Math.Clamp(value, -maxSpeed, maxSpeed);
+        }
+        get => BotIntent.TargetSpeed ?? 0d;
+    }
+    
     internal double MaxSpeed
     {
         get => maxSpeed;
@@ -401,10 +452,8 @@ public sealed class BaseBotInternals
         if (distance < 0)
             return -GetNewTargetSpeed(-speed, -distance);
 
-        var targetSpeed = IsPositiveInfinity(distance) ?
-            maxSpeed :
-            Math.Min(GetMaxSpeed(distance), maxSpeed);
-        
+        var targetSpeed = IsPositiveInfinity(distance) ? maxSpeed : Math.Min(GetMaxSpeed(distance), maxSpeed);
+
         return speed >= 0
             ? Math.Clamp(targetSpeed, speed - absDeceleration, speed + Constants.Acceleration)
             : Math.Clamp(targetSpeed, speed - Constants.Acceleration, speed + GetMaxDeceleration(-speed));
@@ -456,15 +505,15 @@ public sealed class BaseBotInternals
 
         IsStopped = true;
 
-        savedTargetSpeed = botIntent.TargetSpeed;
-        savedTurnRate = botIntent.TurnRate;
-        savedGunTurnRate = botIntent.GunTurnRate;
-        savedRadarTurnRate = botIntent.RadarTurnRate;
+        savedTargetSpeed = BotIntent.TargetSpeed;
+        savedTurnRate = BotIntent.TurnRate;
+        savedGunTurnRate = BotIntent.GunTurnRate;
+        savedRadarTurnRate = BotIntent.RadarTurnRate;
 
-        botIntent.TargetSpeed = 0;
-        botIntent.TurnRate = 0;
-        botIntent.GunTurnRate = 0;
-        botIntent.RadarTurnRate = 0;
+        BotIntent.TargetSpeed = 0;
+        BotIntent.TurnRate = 0;
+        BotIntent.GunTurnRate = 0;
+        BotIntent.RadarTurnRate = 0;
 
         stopResumeListener?.OnStop();
     }
@@ -473,10 +522,10 @@ public sealed class BaseBotInternals
     {
         if (!IsStopped) return;
 
-        botIntent.TargetSpeed = savedTargetSpeed;
-        botIntent.TurnRate = savedTurnRate;
-        botIntent.GunTurnRate = savedGunTurnRate;
-        botIntent.RadarTurnRate = savedRadarTurnRate;
+        BotIntent.TargetSpeed = savedTargetSpeed;
+        BotIntent.TurnRate = savedTurnRate;
+        BotIntent.GunTurnRate = savedGunTurnRate;
+        BotIntent.RadarTurnRate = savedRadarTurnRate;
 
         stopResumeListener?.OnResume();
         IsStopped = false; // must be last step
@@ -484,60 +533,63 @@ public sealed class BaseBotInternals
 
     internal bool IsStopped { get; private set; }
 
-    internal int GetPriority(Type eventType) {
-        if (!eventPriorities.ContainsKey(eventType)) {
+    internal int GetPriority(Type eventType)
+    {
+        if (!eventPriorities.ContainsKey(eventType))
+        {
             throw new InvalidOperationException("Could not get event priority for the type: " + eventType.Name);
         }
 
         return eventPriorities[eventType];
     }
 
-    internal void SetPriority(Type eventType, int priority) {
+    internal void SetPriority(Type eventType, int priority)
+    {
         eventPriorities[eventType] = priority;
     }
 
     internal Color BodyColor
     {
         get => tickEvent?.BotState.BodyColor;
-        set => botIntent.BodyColor = ToIntentColor(value);
+        set => BotIntent.BodyColor = ToIntentColor(value);
     }
 
     internal Color TurretColor
     {
         get => tickEvent?.BotState.TurretColor;
-        set => botIntent.TurretColor = ToIntentColor(value);
+        set => BotIntent.TurretColor = ToIntentColor(value);
     }
 
     internal Color RadarColor
     {
         get => tickEvent?.BotState.RadarColor;
-        set => botIntent.RadarColor = ToIntentColor(value);
+        set => BotIntent.RadarColor = ToIntentColor(value);
     }
 
     internal Color BulletColor
     {
         get => tickEvent?.BotState.BulletColor;
-        set => botIntent.BulletColor = ToIntentColor(value);
+        set => BotIntent.BulletColor = ToIntentColor(value);
     }
 
     internal Color ScanColor
     {
         get => tickEvent?.BotState.ScanColor;
-        set => botIntent.ScanColor = ToIntentColor(value);
+        set => BotIntent.ScanColor = ToIntentColor(value);
     }
 
     internal Color TracksColor
     {
         get => tickEvent?.BotState.TracksColor;
-        set => botIntent.TracksColor = ToIntentColor(value);
+        set => BotIntent.TracksColor = ToIntentColor(value);
     }
 
     internal Color GunColor
     {
         get => tickEvent?.BotState.GunColor;
-        set => botIntent.GunColor = ToIntentColor(value);
+        set => BotIntent.GunColor = ToIntentColor(value);
     }
-    
+
     private static string ToIntentColor(Color color) => color == null ? null : "#" + color.ToHex();
 
     internal IEnumerable<BulletState> BulletStates => tickEvent?.BulletStates ?? ImmutableHashSet<BulletState>.Empty;
@@ -645,13 +697,13 @@ public sealed class BaseBotInternals
     private void HandleTick(string json)
     {
         if (eventHandlingDisabled) return;
-        
+
         ticksStart = DateTime.Now.Ticks;
 
         tickEvent = EventMapper.Map(json, myId);
 
-        if (botIntent.Rescan == true)
-            botIntent.Rescan = false;
+        if (BotIntent.Rescan == true)
+            BotIntent.Rescan = false;
 
         eventQueue.AddEventsFromTick(tickEvent);
 
