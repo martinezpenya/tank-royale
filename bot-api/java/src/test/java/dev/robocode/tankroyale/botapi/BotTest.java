@@ -23,7 +23,7 @@ class BotTest extends AbstractBotTest {
         awaitTickEvent();
 
         bot.setTurnRate(7.5);
-        bot.go();
+        assertThat(bot.getTurnRate()).isEqualTo(7.5);
 
         awaitTickEvent();
         assertThat(bot.getTurnRate()).isEqualTo(7.5);
@@ -37,7 +37,7 @@ class BotTest extends AbstractBotTest {
         awaitTickEvent();
 
         bot.setGunTurnRate(17.25);
-        bot.go();
+        assertThat(bot.getGunTurnRate()).isEqualTo(17.25);
 
         awaitTickEvent();
         assertThat(bot.getGunTurnRate()).isEqualTo(17.25);
@@ -51,7 +51,7 @@ class BotTest extends AbstractBotTest {
         awaitTickEvent();
 
         bot.setRadarTurnRate(32.125);
-        bot.go();
+        assertThat(bot.getRadarTurnRate()).isEqualTo(32.125);
 
         awaitTickEvent();
         assertThat(bot.getRadarTurnRate()).isEqualTo(32.125);
@@ -71,11 +71,11 @@ class BotTest extends AbstractBotTest {
     @Description("setTargetSpeed()")
     void givenMockedServer_whenCallingSetTargetSpeed_thenTargetSpeedMustBeUpdatedToNewValue() {
         var bot = start();
-        awaitTickEvent();
         assertThat(bot.getTargetSpeed()).isZero();
+        awaitTickEvent();
 
         bot.setTargetSpeed(7.25);
-        bot.go();
+        assertThat(bot.getTargetSpeed()).isEqualTo(7.25);
 
         awaitTickEvent();
         assertThat(bot.getTargetSpeed()).isEqualTo(7.25);
@@ -86,13 +86,22 @@ class BotTest extends AbstractBotTest {
     void givenMockedServer_whenCallingSetForward_thenForwardMustBeUpdatedToNewValue() {
         var bot = start();
         assertThat(bot.getSpeed()).isZero();
-
         awaitTickEvent();
-        bot.setForward(1000);
-        bot.go();
 
+        bot.setForward(100);
+        assertThat(bot.getDistanceRemaining()).isEqualTo(100);
+        var traveledDistance = bot.getSpeed();
+
+        awaitBotIntent();
         awaitTickEvent();
-        assertThat(bot.getDistanceRemaining()).isEqualTo(1000);
+
+        assertThat(bot.getDistanceRemaining()).isEqualTo(100 - traveledDistance);
+        traveledDistance += bot.getSpeed();
+
+        awaitBotIntent();
+        awaitTickEvent();
+
+        assertThat(bot.getDistanceRemaining()).isEqualTo(100 - traveledDistance);
     }
 
     protected static Bot start() {
