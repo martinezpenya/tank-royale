@@ -555,16 +555,18 @@ internal sealed class BotInternals : IStopResumeListener
     {
         lock (movementLock)
         {
-            if (!overrideTargetSpeed) {
-                if (Math.Abs(distanceRemaining) < Math.Abs(bot.Speed)) {
+            if (!overrideTargetSpeed)
+            {
+                if (Math.Abs(distanceRemaining) < Math.Abs(bot.Speed))
+                {
                     distanceRemaining = 0;
-                } else {
+                }
+                else
+                {
                     distanceRemaining -= bot.Speed;
                 }
-                return;
             }
-
-            if (IsInfinity(DistanceRemaining))
+            else if (IsInfinity(DistanceRemaining))
             {
                 baseBotInternals.BotIntent.TargetSpeed =
                     IsPositiveInfinity(DistanceRemaining) ? Constants.MaxSpeed : -Constants.MaxSpeed;
