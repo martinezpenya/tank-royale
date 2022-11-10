@@ -48,13 +48,18 @@ public class AbstractBotTest
     protected static BaseBot Start()
     {
         var bot = new TestBot();
-        RunAsync(bot);
+        StartAsync(bot);
         return bot;
     }
 
-    protected static void RunAsync(BaseBot bot)
+    protected static void StartAsync(BaseBot bot)
     {
         Task.Run(bot.Start);
+    }
+
+    protected static void GoAsync(BaseBot bot)
+    {
+        Task.Run(bot.Go);
     }
 
     protected BaseBot StartAndAwaitHandshake()

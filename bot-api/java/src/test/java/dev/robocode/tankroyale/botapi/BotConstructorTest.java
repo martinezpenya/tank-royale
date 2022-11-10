@@ -82,7 +82,7 @@ class BotConstructorTest extends AbstractBotTest {
     @ClearEnvironmentVariable(key = SERVER_URL)
     void givenMissingServerUrlEnvVar_callingDefaultConstructorFromThread_thenBotIsCreatedButNotConnectingToServer() {
         var bot = new TestBot();
-        runAsync(bot);
+        startAsync(bot);
         assertThat(server.awaitConnection(1000)).isFalse();
     }
 
@@ -111,14 +111,14 @@ class BotConstructorTest extends AbstractBotTest {
     @Test
     void givenServerUrlWithValidPortAsParameter_whenCallingConstructor_thenBotIsConnectingToServer() throws URISyntaxException {
         var bot = new TestBot(null, new URI("ws://localhost:" + MockedServer.PORT)); // valid port
-        runAsync(bot);
+        startAsync(bot);
         assertThat(server.awaitConnection(1000)).isTrue();
     }
 
     @Test
     void givenServerUrlWithInvalidPortAsParameter_whenCallingConstructor_thenBotIsNotConnectingToServer() throws URISyntaxException {
         var bot = new TestBot(null, new URI("ws://localhost:" + (MockedServer.PORT + 1))); // invalid port
-        runAsync(bot);
+        startAsync(bot);
         assertThat(server.awaitConnection(1000)).isFalse();
     }
 
@@ -126,7 +126,7 @@ class BotConstructorTest extends AbstractBotTest {
     void givenServerSecretConstructor_whenCallingConstructor_thenReturnedBotHandshakeContainsSecret() throws URISyntaxException {
         var secret = UUID.randomUUID().toString();
         var bot = new TestBot(null, new URI("ws://localhost:" + MockedServer.PORT), secret);
-        runAsync(bot);
+        startAsync(bot);
         awaitBotHandshake();
         var botHandshake = server.getBotHandshake();
         assertThat(botHandshake.getSecret()).isEqualTo(secret);

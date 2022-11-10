@@ -106,7 +106,7 @@ class BotTest extends AbstractBotTest {
 
     protected static Bot start() {
         var bot = new TestBot();
-        runAsync(bot);
+        startAsync(bot);
         return bot;
     }
 }

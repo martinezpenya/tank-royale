@@ -21,7 +21,7 @@ public class BaseBotTest : AbstractBotTest
     public void GivenTestBot_whenCallingGo_thenBotIntentIsReceivedAtServer()
     {
         var bot = StartAndAwaitTickEvent();
-        bot.Go();
+        GoAsync(bot);
         AwaitBotIntent();
     }
 
@@ -110,7 +110,7 @@ public class BaseBotTest : AbstractBotTest
     public void GivenMockedServer_whenCallingTimeLeft_thenTimeLeftMustBeLesserThanTurnTimeout()
     {
         var bot = StartAndAwaitGameStarted();
-        bot.Go(); // skip first turn due to initialization, which could take longer than the turn timeout
+        GoAsync(bot); // skip first turn due to initialization, which could take longer than the turn timeout
         AwaitBotIntent();
         Assert.That(bot.TimeLeft, Is.GreaterThan(0));
         Assert.That(bot.TimeLeft, Is.LessThan(MockedServer.TurnTimeout));
@@ -290,7 +290,7 @@ public class BaseBotTest : AbstractBotTest
         bot.TurnRate = 7.25;
         Assert.That(bot.TurnRate, Is.EqualTo(7.25));
 
-        bot.Go();
+        GoAsync(bot);
         AwaitBotIntent();
 
         Assert.That(bot.TurnRate, Is.EqualTo(7.25));
@@ -304,7 +304,7 @@ public class BaseBotTest : AbstractBotTest
         bot.TurnRate = Constants.MaxTurnRate + 1;
         Assert.That(bot.TurnRate, Is.EqualTo(Constants.MaxTurnRate));
 
-        bot.Go();
+        GoAsync(bot);
         AwaitBotIntent();
 
         Assert.That(bot.TurnRate, Is.EqualTo(Constants.MaxTurnRate));
@@ -329,7 +329,7 @@ public class BaseBotTest : AbstractBotTest
         Assert.That(bot.MaxTurnRate, Is.EqualTo(5));
         Assert.That(bot.TurnRate, Is.EqualTo(5));
 
-        bot.Go();
+        GoAsync(bot);
         AwaitBotIntent();
 
         Assert.That(bot.MaxTurnRate, Is.EqualTo(5));
@@ -355,7 +355,7 @@ public class BaseBotTest : AbstractBotTest
         bot.GunTurnRate = 17.25;
         Assert.That(bot.GunTurnRate, Is.EqualTo(17.25));
 
-        bot.Go();
+        GoAsync(bot);
         AwaitBotIntent();
 
         Assert.That(bot.GunTurnRate, Is.EqualTo(17.25));
@@ -369,7 +369,7 @@ public class BaseBotTest : AbstractBotTest
         bot.GunTurnRate = Constants.MaxGunTurnRate + 1;
         Assert.That(bot.GunTurnRate, Is.EqualTo(Constants.MaxGunTurnRate));
 
-        bot.Go();
+        GoAsync(bot);
         AwaitBotIntent();
 
         Assert.That(bot.GunTurnRate, Is.EqualTo(Constants.MaxGunTurnRate));
@@ -394,7 +394,7 @@ public class BaseBotTest : AbstractBotTest
         Assert.That(bot.MaxGunTurnRate, Is.EqualTo(15));
         Assert.That(bot.GunTurnRate, Is.EqualTo(15));
 
-        bot.Go();
+        GoAsync(bot);
         AwaitBotIntent();
 
         Assert.That(bot.MaxGunTurnRate, Is.EqualTo(15));
@@ -420,7 +420,7 @@ public class BaseBotTest : AbstractBotTest
         bot.RadarTurnRate = 37.25;
         Assert.That(bot.RadarTurnRate, Is.EqualTo(37.25));
 
-        bot.Go();
+        GoAsync(bot);
         AwaitBotIntent();
 
         Assert.That(bot.RadarTurnRate, Is.EqualTo(37.25));
@@ -434,7 +434,7 @@ public class BaseBotTest : AbstractBotTest
         bot.RadarTurnRate = Constants.MaxRadarTurnRate + 1;
         Assert.That(bot.RadarTurnRate, Is.EqualTo(Constants.MaxRadarTurnRate));
 
-        bot.Go();
+        GoAsync(bot);
         AwaitBotIntent();
 
         Assert.That(bot.RadarTurnRate, Is.EqualTo(Constants.MaxRadarTurnRate));
@@ -459,7 +459,7 @@ public class BaseBotTest : AbstractBotTest
         Assert.That(bot.MaxRadarTurnRate, Is.EqualTo(25));
         Assert.That(bot.RadarTurnRate, Is.EqualTo(25));
 
-        bot.Go();
+        GoAsync(bot);
         AwaitBotIntent();
 
         Assert.That(bot.MaxRadarTurnRate, Is.EqualTo(25));
@@ -474,7 +474,7 @@ public class BaseBotTest : AbstractBotTest
         bot.TargetSpeed = 5.75;
         Assert.That(bot.TargetSpeed, Is.EqualTo(5.75));
 
-        bot.Go();
+        GoAsync(bot);
         AwaitBotIntent();
 
         Assert.That(bot.TargetSpeed, Is.EqualTo(5.75));
@@ -499,7 +499,7 @@ public class BaseBotTest : AbstractBotTest
         Assert.That(bot.MaxSpeed, Is.EqualTo(4));
         Assert.That(bot.TargetSpeed, Is.EqualTo(4));
 
-        bot.Go();
+        GoAsync(bot);
         AwaitBotIntent();
 
         Assert.That(bot.MaxSpeed, Is.EqualTo(4));

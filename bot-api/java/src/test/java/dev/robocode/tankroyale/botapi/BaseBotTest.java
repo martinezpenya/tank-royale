@@ -35,7 +35,7 @@ class BaseBotTest extends AbstractBotTest {
     @Description("go()")
     void givenTestBot_whenCallingGo_thenBotIntentIsReceivedAtServer() {
         var bot = startAndAwaitTickEvent();
-        bot.go();
+        goAsync(bot);
         awaitBotIntent();
     }
 
@@ -113,8 +113,7 @@ class BaseBotTest extends AbstractBotTest {
     @Description("getTimeLeft()")
     void givenMockedServer_whenCallingGetTimeLeft_thenTimeLeftMustBeLesserThanTurnTimeout() {
         var bot = startAndAwaitGameStarted();
-        bot.go(); // skip first turn due to initialization, which could take longer than the turn timeout
-        awaitBotIntent();
+        goAsync(bot);
         assertThat(bot.getTimeLeft()).isBetween(0, MockedServer.TURN_TIMEOUT);
     }
 
@@ -277,7 +276,7 @@ class BaseBotTest extends AbstractBotTest {
         bot.setTurnRate(7.25);
         assertThat(bot.getTurnRate()).isEqualTo(7.25);
 
-        bot.go();
+        goAsync(bot);
         awaitBotIntent();
 
         assertThat(bot.getTurnRate()).isEqualTo(7.25);
@@ -290,7 +289,7 @@ class BaseBotTest extends AbstractBotTest {
         bot.setTurnRate(MAX_TURN_RATE);
         assertThat(bot.getTurnRate()).isEqualTo(MAX_TURN_RATE);
 
-        bot.go();
+        goAsync(bot);
         awaitBotIntent();
 
         assertThat(bot.getTurnRate()).isEqualTo(MAX_TURN_RATE);
@@ -313,7 +312,7 @@ class BaseBotTest extends AbstractBotTest {
         assertThat(bot.getMaxTurnRate()).isEqualTo(5);
         assertThat(bot.getTurnRate()).isEqualTo(5);
 
-        bot.go();
+        goAsync(bot);
         awaitBotIntent();
 
         assertThat(bot.getMaxTurnRate()).isEqualTo(5);
@@ -337,7 +336,7 @@ class BaseBotTest extends AbstractBotTest {
         bot.setGunTurnRate(17.25);
         assertThat(bot.getGunTurnRate()).isEqualTo(17.25);
 
-        bot.go();
+        goAsync(bot);
         awaitBotIntent();
 
         assertThat(bot.getGunTurnRate()).isEqualTo(17.25);
@@ -350,7 +349,7 @@ class BaseBotTest extends AbstractBotTest {
         bot.setGunTurnRate(MAX_GUN_TURN_RATE + 1);
         assertThat(bot.getGunTurnRate()).isEqualTo(MAX_GUN_TURN_RATE);
 
-        bot.go();
+        goAsync(bot);
         awaitBotIntent();
 
         assertThat(bot.getGunTurnRate()).isEqualTo(MAX_GUN_TURN_RATE);
@@ -373,7 +372,7 @@ class BaseBotTest extends AbstractBotTest {
         assertThat(bot.getMaxGunTurnRate()).isEqualTo(15);
         assertThat(bot.getGunTurnRate()).isEqualTo(15);
 
-        bot.go();
+        goAsync(bot);
         awaitBotIntent();
 
         assertThat(bot.getMaxGunTurnRate()).isEqualTo(15);
@@ -397,7 +396,7 @@ class BaseBotTest extends AbstractBotTest {
         bot.setRadarTurnRate(37.25);
         assertThat(bot.getRadarTurnRate()).isEqualTo(37.25);
 
-        bot.go();
+        goAsync(bot);
         awaitBotIntent();
 
         assertThat(bot.getRadarTurnRate()).isEqualTo(37.25);
@@ -410,7 +409,7 @@ class BaseBotTest extends AbstractBotTest {
         bot.setRadarTurnRate(MAX_RADAR_TURN_RATE + 1);
         assertThat(bot.getRadarTurnRate()).isEqualTo(MAX_RADAR_TURN_RATE);
 
-        bot.go();
+        goAsync(bot);
         awaitBotIntent();
 
         assertThat(bot.getRadarTurnRate()).isEqualTo(MAX_RADAR_TURN_RATE);
@@ -433,7 +432,7 @@ class BaseBotTest extends AbstractBotTest {
         assertThat(bot.getMaxRadarTurnRate()).isEqualTo(25);
         assertThat(bot.getRadarTurnRate()).isEqualTo(25);
 
-        bot.go();
+        goAsync(bot);
         awaitBotIntent();
 
         assertThat(bot.getMaxRadarTurnRate()).isEqualTo(25);
@@ -447,7 +446,7 @@ class BaseBotTest extends AbstractBotTest {
         bot.setTargetSpeed(5.75);
         assertThat(bot.getTargetSpeed()).isEqualTo(5.75);
 
-        bot.go();
+        goAsync(bot);
         awaitBotIntent();
 
         assertThat(bot.getTargetSpeed()).isEqualTo(5.75);
@@ -471,7 +470,7 @@ class BaseBotTest extends AbstractBotTest {
         assertThat(bot.getMaxSpeed()).isEqualTo(4);
         assertThat(bot.getTargetSpeed()).isEqualTo(4);
 
-        bot.go();
+        goAsync(bot);
         awaitBotIntent();
 
         assertThat(bot.getMaxSpeed()).isEqualTo(4);

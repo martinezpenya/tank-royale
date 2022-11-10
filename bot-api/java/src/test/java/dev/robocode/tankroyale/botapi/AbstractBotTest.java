@@ -46,12 +46,16 @@ abstract class AbstractBotTest {
 
     protected static BaseBot start() {
         var bot = new TestBot();
-        runAsync(bot);
+        startAsync(bot);
         return bot;
     }
 
-    protected static void runAsync(BaseBot bot) {
+    protected static void startAsync(BaseBot bot) {
         new Thread(bot::start).start();
+    }
+
+    protected static void goAsync(BaseBot bot) {
+        new Thread(bot::go).start();
     }
 
     protected BaseBot startAndAwaitHandshake() {
