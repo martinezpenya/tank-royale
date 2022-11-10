@@ -54,6 +54,8 @@ public class MockedServer
     private readonly EventWaitHandle _tickEvent = new AutoResetEvent(false);
     private readonly EventWaitHandle _botIntentEvent = new AutoResetEvent(false);
 
+    private readonly EventWaitHandle _botIntentContinueEvent = new AutoResetEvent(false);
+
     private BotIntent _botIntent;
 
     private int _turnNumber = 1;
@@ -155,6 +157,7 @@ public class MockedServer
     {
         try
         {
+            _botIntentContinueEvent.Set();
             return _botIntentEvent.WaitOne(milliSeconds);
         }
         catch (Exception ex)
@@ -207,9 +210,10 @@ public class MockedServer
                 break;
 
             case MessageType.BotIntent:
-                _botIntentEvent.Set();
-
+                _botIntentContinueEvent.WaitOne();
+                
                 _botIntent = JsonConvert.DeserializeObject<BotIntent>(messageJson);
+                _botIntentEvent.Set();
 
                 SendTickEventForBot(conn, _turnNumber++);
                 _tickEvent.Set();

@@ -61,6 +61,8 @@ public final class MockedServer {
     private final CountDownLatch tickEventLatch = new CountDownLatch(1);
     private final CountDownLatch botIntentLatch = new CountDownLatch(1);
 
+    private CountDownLatch botIntentContinueLatch = new CountDownLatch(1);
+
     private final Gson gson = new Gson();
 
     private BotHandshake botHandshake;
@@ -136,6 +138,7 @@ public final class MockedServer {
 
     public boolean awaitBotIntent(int milliSeconds) {
         try {
+            botIntentContinueLatch.countDown();
             return botIntentLatch.await(milliSeconds, TimeUnit.MILLISECONDS);
         } catch (InterruptedException e) {
             System.err.println("awaitBotIntent() was interrupted");
@@ -169,11 +172,11 @@ public final class MockedServer {
 
         @Override
         public void onMessage(WebSocket conn, String text) {
-//            System.out.println("onMessage: " + text);
-
             var message = gson.fromJson(text, Message.class);
             switch (message.getType()) {
                 case BOT_HANDSHAKE:
+//                    System.out.println("BOT_HANDSHAKE");
+
                     botHandshake = gson.fromJson(text, BotHandshake.class);
                     botHandshakeLatch.countDown();
 
@@ -182,6 +185,8 @@ public final class MockedServer {
                     break;
 
                 case BOT_READY:
+//                    System.out.println("BOT_READY");
+
                     sendRoundStarted(conn);
 
                     sendTickEventForBot(conn, turnNumber++);
@@ -189,15 +194,20 @@ public final class MockedServer {
                     break;
 
                 case BOT_INTENT:
+//                    System.out.println("BOT_INTENT");
+
+                    try {
+                        botIntentContinueLatch.await();
+                    } catch (InterruptedException e) {
+                        throw new RuntimeException(e);
+                    }
+                    botIntentContinueLatch = new CountDownLatch(1);
+
                     botIntent = gson.fromJson(text, BotIntent.class);
                     botIntentLatch.countDown();
 
-                    try {
-                        Thread.sleep(5);
-                    } catch (InterruptedException ignore) {
-                    }
-
                     sendTickEventForBot(conn, turnNumber++);
+                    tickEventLatch.countDown();
                     break;
             }
         }
