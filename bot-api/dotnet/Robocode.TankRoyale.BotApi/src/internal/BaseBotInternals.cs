@@ -277,25 +277,11 @@ public sealed class BaseBotInternals
 
     internal int MyId => myId;
 
-    internal GameSetup GameSetup
-    {
-        get
-        {
-            if (gameSetup == null) throw new BotException(GameNotRunningMsg);
-            return gameSetup;
-        }
-    }
+    internal GameSetup GameSetup => gameSetup ?? throw new BotException(GameNotRunningMsg);
 
     internal S.BotIntent BotIntent { get; } = NewBotIntent();
 
-    internal E.TickEvent CurrentTick
-    {
-        get
-        {
-            if (tickEvent == null) throw new BotException(TickNotAvailableMsg);
-            return tickEvent;
-        }
-    }
+    internal E.TickEvent CurrentTick => tickEvent ?? throw new BotException(TickNotAvailableMsg);
 
     private long TicksStart
     {
@@ -760,6 +746,8 @@ public sealed class BaseBotInternals
 
     private void HandleGameStarted(string json)
     {
+        Console.WriteLine("HandleGameStarted");
+        
         var gameStartedEventForBot = JsonConvert.DeserializeObject<S.GameStartedEventForBot>(json);
         if (gameStartedEventForBot == null)
             throw new BotException("GameStartedEventForBot is missing in JSON message from server");
