@@ -90,14 +90,14 @@ public class AbstractBotTest
 
     private void AwaitGameStarted()
     {
-        Sleep(); // must be processed within the bot api first
         Assert.That(Server.AwaitGameStarted(20_000), Is.True);
+        Sleep(); // must be processed within the bot api first
     }
 
     protected void AwaitTickEvent()
     {
-        Sleep(); // must be processed within the bot api first
         Assert.That(Server.AwaitTickEvent(10_000), Is.True);
+        Sleep(); // must be processed within the bot api first
     }
 
     protected void AwaitBotIntent()
