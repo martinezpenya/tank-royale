@@ -1,4 +1,5 @@
-﻿using System.Threading;
+﻿using System;
+using System.Threading;
 using System.Threading.Tasks;
 using NUnit.Framework;
 using Robocode.TankRoyale.BotApi.Tests.Test_utils;
@@ -27,7 +28,7 @@ public class AbstractBotTest
         .Build();
     
     private class TestBot : BaseBot {
-        public TestBot() : base(BotInfo, MockedServer.ServerUrl)
+        public TestBot() : base(BotInfo, (new Uri("ws://127.0.0.1:" + MockedServer.Port)))
         {
         }
     }
@@ -85,24 +86,24 @@ public class AbstractBotTest
 
     protected void AwaitBotHandshake()
     {
-        Assert.That(Server.AwaitBotHandshake(10_000), Is.True);
+        Assert.That(Server.AwaitBotHandshake(2000), Is.True);
     }
 
     private void AwaitGameStarted()
     {
-        Assert.That(Server.AwaitGameStarted(20_000), Is.True);
+        Assert.That(Server.AwaitGameStarted(1000), Is.True);
         Sleep(); // must be processed within the bot api first
     }
 
     protected void AwaitTickEvent()
     {
-        Assert.That(Server.AwaitTickEvent(10_000), Is.True);
+        Assert.That(Server.AwaitTickEvent(1000), Is.True);
         Sleep(); // must be processed within the bot api first
     }
 
     protected void AwaitBotIntent()
     {
-        Assert.That(Server.AwaitBotIntent(10_000), Is.True);
+        Assert.That(Server.AwaitBotIntent(1000), Is.True);
     }
 
     private static void Sleep()
