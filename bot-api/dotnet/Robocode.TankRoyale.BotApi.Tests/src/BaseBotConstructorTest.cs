@@ -38,7 +38,7 @@ public class BaseBotConstructorTest : AbstractBotTest
     public void GivenAllRequiredEnvVarsSet_whenCallingDefaultConstructor_thenBotIsCreated()
     {
         new TestBot();
-        // passed when this point is reached
+        Assert.Pass();
     }
 
     [Test]
@@ -46,7 +46,7 @@ public class BaseBotConstructorTest : AbstractBotTest
     {
         ClearEnvVar(ServerUrl);
         new TestBot();
-        // passed when this point is reached
+        Assert.Pass();
     }
 
     [Test]
