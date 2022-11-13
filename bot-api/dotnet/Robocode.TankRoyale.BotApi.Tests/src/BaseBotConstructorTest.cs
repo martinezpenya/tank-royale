@@ -113,7 +113,7 @@ public class BaseBotConstructorTest : AbstractBotTest
     {
         ClearAllEnvVars();
         new TestBot(BotInfo);
-        // passed when this point is reached
+        Assert.Pass();
     }
 
     [Test]
@@ -135,7 +135,7 @@ public class BaseBotConstructorTest : AbstractBotTest
     public void GivenServerSecretConstructor_whenCallingConstructor_thenReturnedBotHandshakeContainsSecret()
     {
         var secret = Guid.NewGuid().ToString();
-        var bot = new TestBot(null, new Uri("ws://localhost:" + MockedServer.Port), secret);
+        var bot = new TestBot(null, new Uri("ws://127.0.0.1:" + MockedServer.Port), secret);
         StartAsync(bot);
         AwaitBotHandshake();
         var handshake = Server.Handshake;
