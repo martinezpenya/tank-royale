@@ -80,19 +80,29 @@ public class AbstractBotTest
     protected BaseBot StartAndAwaitGameStarted()
     {
         var bot = Start();
-        AwaitGameStarted();
+        AwaitGameStarted(bot);
         return bot;
     }
 
     protected void AwaitBotHandshake()
     {
-        Assert.That(Server.AwaitBotHandshake(2000), Is.True);
+        Assert.That(Server.AwaitBotHandshake(1000), Is.True);
     }
 
-    private void AwaitGameStarted()
+    private void AwaitGameStarted(BaseBot bot)
     {
         Assert.That(Server.AwaitGameStarted(1000), Is.True);
-        Sleep(); // must be processed within the bot api first
+
+        var noException = false;
+        do {
+            try
+            {
+                var energy = bot.Energy;
+                noException = true;
+            } catch (BotException ex) {
+                Thread.Yield();
+            }
+        } while (!noException);
     }
 
     protected void AwaitTick()

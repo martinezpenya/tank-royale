@@ -72,22 +72,31 @@ abstract class AbstractBotTest {
 
     protected BaseBot startAndAwaitGameStarted() {
         var bot = start();
-        awaitGameStarted();
+        awaitGameStarted(bot);
         return bot;
     }
 
     protected void awaitBotHandshake() {
-        assertThat(server.awaitBotHandshake(500)).isTrue();
+        assertThat(server.awaitBotHandshake(1000)).isTrue();
     }
 
-    protected void awaitGameStarted() {
-        sleep(); // must be processed within the bot api first
-        assertThat(server.awaitGameStarted(500)).isTrue();
+    protected void awaitGameStarted(BaseBot bot) {
+        assertThat(server.awaitGameStarted(1000)).isTrue();
+
+        boolean noException = false;
+        do {
+            try {
+                bot.getEnergy();
+                noException = true;
+            } catch (BotException ex) {
+                Thread.yield();
+            }
+        } while (!noException);
     }
 
     protected void awaitTick() {
         sleep(); // must be processed within the bot api first
-        assertThat(server.awaitTick(500)).isTrue();
+        assertThat(server.awaitTick(1000)).isTrue();
     }
 
     protected void awaitBotIntent() {

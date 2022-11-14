@@ -125,28 +125,28 @@ class BaseBotTest extends AbstractBotTest {
     @Test
     @Description("getRoundNumber()")
     void givenMockedServer_whenCallingGetRoundNumber_thenRoundNumberMustBeTheFirst() {
-        var bot = startAndAwaitGameStarted();
+        var bot = startAndAwaitTick();
         assertThat(bot.getRoundNumber()).isEqualTo(1);
     }
 
     @Test
     @Description("getTurnNumber()")
     void givenMockedServer_whenCallingGetTurnNumber_thenTurnNumberMustBeTheFirst() {
-        var bot = startAndAwaitGameStarted();
+        var bot = startAndAwaitTick();
         assertThat(bot.getTurnNumber()).isEqualTo(1);
     }
 
     @Test
     @Description("getEnemyCount()")
     void givenMockedServer_whenCallingGetEnemyCount_thenEnemyCountIsEqualToMockedValue() {
-        var bot = startAndAwaitGameStarted();
+        var bot = startAndAwaitTick();
         assertThat(bot.getEnemyCount()).isEqualTo(MockedServer.BOT_ENEMY_COUNT);
     }
 
     @Test
     @Description("getEnergy()")
     void givenMockedServer_whenCallingGetEnergy_thenEnergyIsEqualToMockedValue() {
-        var bot = startAndAwaitGameStarted();
+        var bot = startAndAwaitTick();
         assertThat(bot.getEnergy()).isEqualTo(MockedServer.BOT_ENERGY);
     }
 
@@ -185,21 +185,21 @@ class BaseBotTest extends AbstractBotTest {
     @Test
     @Description("getDirection()")
     void givenMockedServer_whenCallingGetDirection_thenDirectionIsEqualToMockedValue() {
-        var bot = startAndAwaitGameStarted();
+        var bot = startAndAwaitTick();
         assertThat(bot.getDirection()).isEqualTo(MockedServer.BOT_DIRECTION);
     }
 
     @Test
     @Description("getGunDirection()")
     void givenMockedServer_whenCallingGetGunDirection_thenGunDirectionIsEqualToMockedValue() {
-        var bot = startAndAwaitGameStarted();
+        var bot = startAndAwaitTick();
         assertThat(bot.getGunDirection()).isEqualTo(MockedServer.BOT_GUN_DIRECTION);
     }
 
     @Test
     @Description("getRadarDirection()")
     void givenMockedServer_whenCallingGetRadarDirection_thenRadarDirectionIsEqualToMockedValue() {
-        var bot = startAndAwaitGameStarted();
+        var bot = startAndAwaitTick();
         assertThat(bot.getRadarDirection()).isEqualTo(MockedServer.BOT_RADAR_DIRECTION);
     }
 

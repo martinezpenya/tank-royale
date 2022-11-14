@@ -121,7 +121,7 @@ public class BaseBotTest : AbstractBotTest
     [Test]
     public void GivenMockedServer_whenCallingRoundNumber_thenRoundNumberMustBeTheFirst()
     {
-        var bot = StartAndAwaitGameStarted();
+        var bot = StartAndAwaitTick();
         Assert.That(bot.RoundNumber, Is.EqualTo(1));
     }
 
@@ -129,7 +129,7 @@ public class BaseBotTest : AbstractBotTest
     [Test]
     public void GivenMockedServer_whenCallingTurnNumber_thenTurnNumberMustBeTheFirst()
     {
-        var bot = StartAndAwaitGameStarted();
+        var bot = StartAndAwaitTick();
         Assert.That(bot.TurnNumber, Is.EqualTo(1));
     }
 
@@ -137,7 +137,7 @@ public class BaseBotTest : AbstractBotTest
     [Test]
     public void GivenMockedServer_whenCallingEnemyCount_thenEnemyCountIsEqualToMockedValue()
     {
-        var bot = StartAndAwaitGameStarted();
+        var bot = StartAndAwaitTick();
         Assert.That(bot.EnemyCount, Is.EqualTo(MockedServer.BotEnemyCcount));
     }
 
@@ -145,7 +145,7 @@ public class BaseBotTest : AbstractBotTest
     [Test]
     public void GivenMockedServer_whenCallingEnergy_thenEnergyIsEqualToMockedValue()
     {
-        var bot = StartAndAwaitGameStarted();
+        var bot = StartAndAwaitTick();
         Assert.That(bot.Energy, Is.EqualTo(MockedServer.BotEnergy));
     }
 
@@ -189,7 +189,7 @@ public class BaseBotTest : AbstractBotTest
     [Test]
     public void GivenMockedServer_whenCallingDirection_thenDirectionIsEqualToMockedValue()
     {
-        var bot = StartAndAwaitGameStarted();
+        var bot = StartAndAwaitTick();
         Assert.That(bot.Direction, Is.EqualTo(MockedServer.BotDirection));
     }
 
@@ -205,7 +205,7 @@ public class BaseBotTest : AbstractBotTest
     [Test]
     public void GivenMockedServer_whenCallingRadarDirection_thenRadarDirectionIsEqualToMockedValue()
     {
-        var bot = StartAndAwaitGameStarted();
+        var bot = StartAndAwaitTick();
         Assert.That(bot.RadarDirection, Is.EqualTo(MockedServer.BotRadarDirection));
     }
 
