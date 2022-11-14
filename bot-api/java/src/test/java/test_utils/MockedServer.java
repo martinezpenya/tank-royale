@@ -127,7 +127,7 @@ public final class MockedServer {
         return false;
     }
 
-    public boolean awaitTickEvent(int milliSeconds) {
+    public boolean awaitTick(int milliSeconds) {
         try {
             return tickEventLatch.await(milliSeconds, TimeUnit.MILLISECONDS);
         } catch (InterruptedException e) {

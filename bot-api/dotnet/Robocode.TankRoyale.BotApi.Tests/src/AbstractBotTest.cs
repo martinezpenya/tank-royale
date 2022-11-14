@@ -70,10 +70,10 @@ public class AbstractBotTest
         return bot;
     }
 
-    protected BaseBot StartAndAwaitTickEvent()
+    protected BaseBot StartAndAwaitTick()
     {
         var bot = Start();
-        AwaitTickEvent();
+        AwaitTick();
         return bot;
     }
 
@@ -95,9 +95,9 @@ public class AbstractBotTest
         Sleep(); // must be processed within the bot api first
     }
 
-    protected void AwaitTickEvent()
+    protected void AwaitTick()
     {
-        Assert.That(Server.AwaitTickEvent(1000), Is.True);
+        Assert.That(Server.AwaitTick(1000), Is.True);
         Sleep(); // must be processed within the bot api first
     }
 

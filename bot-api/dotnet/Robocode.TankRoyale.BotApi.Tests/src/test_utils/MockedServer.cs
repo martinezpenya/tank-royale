@@ -139,7 +139,7 @@ public class MockedServer
         return false;
     }
 
-    public bool AwaitTickEvent(int milliSeconds)
+    public bool AwaitTick(int milliSeconds)
     {
         try
         {

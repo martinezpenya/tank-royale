@@ -35,7 +35,7 @@ class BaseBotTest extends AbstractBotTest {
     @Test
     @Description("go()")
     void givenTestBot_whenCallingGo_thenBotIntentIsReceivedAtServer() {
-        var bot = startAndAwaitTickEvent();
+        var bot = startAndAwaitTick();
         goAsync(bot);
         awaitBotIntent();
     }
@@ -155,7 +155,7 @@ class BaseBotTest extends AbstractBotTest {
     void givenMockedServerAndSettingEnergyToNonZero_whenCallingIsDisabled_thenDisabledValueMustBeFalse() {
         var bot = start();
         server.setBotEnergy(0.1);
-        awaitTickEvent();
+        awaitTick();
         assertThat(bot.isDisabled()).isFalse();
     }
 
@@ -164,21 +164,21 @@ class BaseBotTest extends AbstractBotTest {
     void givenMockedServerAndSettingEnergyToZero_whenCallingIsDisabled_thenDisabledValueMustBeTrue() {
         var bot = start();
         server.setBotEnergy(0);
-        awaitTickEvent();
+        awaitTick();
         assertThat(bot.isDisabled()).isTrue();
     }
 
     @Test
     @Description("getX()")
     void givenMockedServer_whenCallingGetX_thenXIsEqualToMockedValue() {
-        var bot = startAndAwaitTickEvent();
+        var bot = startAndAwaitTick();
         assertThat(bot.getX()).isEqualTo(MockedServer.BOT_X);
     }
 
     @Test
     @Description("getY()")
     void givenMockedServer_whenCallingGetY_thenYIsEqualToMockedValue() {
-        var bot = startAndAwaitTickEvent();
+        var bot = startAndAwaitTick();
         assertThat(bot.getY()).isEqualTo(MockedServer.BOT_Y);
     }
 
@@ -209,7 +209,7 @@ class BaseBotTest extends AbstractBotTest {
         var bot = start();
         assertThat(bot.getSpeed()).isZero();
 
-        awaitTickEvent();
+        awaitTick();
         assertThat(bot.getSpeed()).isEqualTo(MockedServer.BOT_SPEED);
     }
 
@@ -219,7 +219,7 @@ class BaseBotTest extends AbstractBotTest {
         var bot = start();
         assertThat(bot.getGunHeat()).isZero();
 
-        awaitTickEvent();
+        awaitTick();
         assertThat(bot.getGunHeat()).isEqualTo(MockedServer.BOT_GUN_HEAT);
     }
 
@@ -229,7 +229,7 @@ class BaseBotTest extends AbstractBotTest {
         var bot = start();
         assertThat(bot.getBulletStates().size()).isZero();
 
-        awaitTickEvent();
+        awaitTick();
 
         var bulletStates = bot.getBulletStates();
         assertThat(bulletStates).isNotNull();
@@ -244,7 +244,7 @@ class BaseBotTest extends AbstractBotTest {
         var bot = start();
         assertThat(bot.getEvents().size()).isZero();
 
-        awaitTickEvent();
+        awaitTick();
 
         var events = bot.getEvents();
         assertThat(events).isNotNull();
@@ -270,14 +270,14 @@ class BaseBotTest extends AbstractBotTest {
         var bot = start();
         assertThat(bot.getTurnRate()).isZero();
 
-        awaitTickEvent();
+        awaitTick();
         assertThat(bot.getTurnRate()).isEqualTo(MockedServer.BOT_TURN_RATE);
     }
 
     @Test
     @Description("setTurnRate() <= max turn rate")
     void givenMockedServer_whenCallingSetTurnRateLowerThanMax_thenTurnRateMustBeUpdatedToNewValue() {
-        var bot = startAndAwaitTickEvent();
+        var bot = startAndAwaitTick();
         bot.setTurnRate(7.25);
         assertThat(bot.getTurnRate()).isEqualTo(7.25);
 
@@ -290,7 +290,7 @@ class BaseBotTest extends AbstractBotTest {
     @Test
     @Description("setTurnRate() > max turn rate")
     void givenMockedServer_whenCallingSetTurnRateLowerGreaterThanMax_thenTurnRateMustBeSetToMaxValue() {
-        var bot = startAndAwaitTickEvent();
+        var bot = startAndAwaitTick();
         bot.setTurnRate(MAX_TURN_RATE);
         assertThat(bot.getTurnRate()).isEqualTo(MAX_TURN_RATE);
 
@@ -310,7 +310,7 @@ class BaseBotTest extends AbstractBotTest {
     @Test
     @Description("setMaxTurnRate()")
     void givenMockedServer_whenCallingSetMaxTurnRate_thenMaxTurnRateMustBeUpdatedToNewValue() {
-        var bot = startAndAwaitTickEvent();
+        var bot = startAndAwaitTick();
         bot.setMaxTurnRate(5);
         bot.setTurnRate(7);
 
@@ -330,14 +330,14 @@ class BaseBotTest extends AbstractBotTest {
         var bot = start();
         assertThat(bot.getGunTurnRate()).isZero();
 
-        awaitTickEvent();
+        awaitTick();
         assertThat(bot.getGunTurnRate()).isEqualTo(MockedServer.BOT_GUN_TURN_RATE);
     }
 
     @Test
     @Description("setGunTurnRate() <= max gun turn rate")
     void givenMockedServer_whenCallingSetGunTurnRateLowerThanMax_thenGunTurnRateMustBeUpdatedToNewValue() {
-        var bot = startAndAwaitTickEvent();
+        var bot = startAndAwaitTick();
         bot.setGunTurnRate(17.25);
         assertThat(bot.getGunTurnRate()).isEqualTo(17.25);
 
@@ -350,7 +350,7 @@ class BaseBotTest extends AbstractBotTest {
     @Test
     @Description("setGunTurnRate() > max gun turn rate")
     void givenMockedServer_whenCallingSetGunTurnRateLowerGreaterThanMax_thenGunTurnRateMustBeSetToMaxValue() {
-        var bot = startAndAwaitTickEvent();
+        var bot = startAndAwaitTick();
         bot.setGunTurnRate(MAX_GUN_TURN_RATE + 1);
         assertThat(bot.getGunTurnRate()).isEqualTo(MAX_GUN_TURN_RATE);
 
@@ -370,7 +370,7 @@ class BaseBotTest extends AbstractBotTest {
     @Test
     @Description("setMaxTurnRate()")
     void givenMockedServer_whenCallingSetGunMaxTurnRate_thenMaxGunTurnRateMustBeUpdatedToNewValue() {
-        var bot = startAndAwaitTickEvent();
+        var bot = startAndAwaitTick();
         bot.setMaxGunTurnRate(15);
         bot.setGunTurnRate(17);
 
@@ -390,14 +390,14 @@ class BaseBotTest extends AbstractBotTest {
         var bot = start();
         assertThat(bot.getRadarTurnRate()).isZero();
 
-        awaitTickEvent();
+        awaitTick();
         assertThat(bot.getRadarTurnRate()).isEqualTo(MockedServer.BOT_RADAR_TURN_RATE);
     }
 
     @Test
     @Description("setRadarTurnRate() <= max radar turn rate")
     void givenMockedServer_whenCallingSetRadarTurnRateLowerThanMax_thenRadarTurnRateMustBeUpdatedToNewValue() {
-        var bot = startAndAwaitTickEvent();
+        var bot = startAndAwaitTick();
         bot.setRadarTurnRate(37.25);
         assertThat(bot.getRadarTurnRate()).isEqualTo(37.25);
 
@@ -410,7 +410,7 @@ class BaseBotTest extends AbstractBotTest {
     @Test
     @Description("setRadarTurnRate() > max radar turn rate")
     void givenMockedServer_whenCallingSetRadarTurnRateLowerGreaterThanMax_thenRadarTurnRateMustBeSetToMaxValue() {
-        var bot = startAndAwaitTickEvent();
+        var bot = startAndAwaitTick();
         bot.setRadarTurnRate(MAX_RADAR_TURN_RATE + 1);
         assertThat(bot.getRadarTurnRate()).isEqualTo(MAX_RADAR_TURN_RATE);
 
@@ -430,7 +430,7 @@ class BaseBotTest extends AbstractBotTest {
     @Test
     @Description("setMaxRadarTurnRate()")
     void givenMockedServer_whenCallingSetMaxRadarTurnRate_thenMaxRadarTurnRateMustBeUpdatedToNewValue() {
-        var bot = startAndAwaitTickEvent();
+        var bot = startAndAwaitTick();
         bot.setMaxRadarTurnRate(25);
         bot.setRadarTurnRate(27);
 
@@ -447,7 +447,7 @@ class BaseBotTest extends AbstractBotTest {
     @Test
     @Description("getTargetSpeed() and setTargetSpeed()")
     void givenMockedServer_whenCallingSetAndGetTargetSpeed_thenTargetSpeedMustBeSetValue() {
-        var bot = startAndAwaitTickEvent();
+        var bot = startAndAwaitTick();
         bot.setTargetSpeed(5.75);
         assertThat(bot.getTargetSpeed()).isEqualTo(5.75);
 
@@ -468,7 +468,7 @@ class BaseBotTest extends AbstractBotTest {
     @Test
     @Description("setMaxSpeed()")
     void givenMockedServer_whenCallingSetMaxSpeed_thenMaxSpeedMustBeUpdatedToNewValue() {
-        var bot = startAndAwaitTickEvent();
+        var bot = startAndAwaitTick();
         bot.setMaxSpeed(4);
         bot.setTargetSpeed(6);
 
@@ -486,7 +486,7 @@ class BaseBotTest extends AbstractBotTest {
     @Description("setFire() when gunHeat > 0")
     void givenMockedServer_whenCallingSetFireAndGunHeatGreaterThanZero_thenReturnFalse() {
         server.setBotGunHeat(0.1);
-        var bot = startAndAwaitTickEvent();
+        var bot = startAndAwaitTick();
         assertThat(bot.setFire(3)).isFalse();
     }
 
@@ -494,7 +494,7 @@ class BaseBotTest extends AbstractBotTest {
     @Description("setFire() when gunHeat = 0")
     void givenMockedServer_whenCallingSetFireAndGunHeatIsZero_thenReturnTrue() {
         server.setBotGunHeat(0);
-        var bot = startAndAwaitTickEvent();
+        var bot = startAndAwaitTick();
         assertThat(bot.setFire(3)).isTrue();
     }
 
@@ -502,7 +502,7 @@ class BaseBotTest extends AbstractBotTest {
     @Description("getFirepower()")
     void givenMockedServer_whenCallingGetFirepowerAfterSetFire_thenReturnSameValueAsFired() {
         server.setBotGunHeat(0);
-        var bot = startAndAwaitTickEvent();
+        var bot = startAndAwaitTick();
         bot.setFire(2.5);
         assertThat(bot.getFirepower()).isEqualTo(2.5);
     }

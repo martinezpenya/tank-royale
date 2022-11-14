@@ -20,12 +20,12 @@ class BotTest extends AbstractBotTest {
     void givenMockedServer_whenCallingSetTurnRate_thenTurnRateMustBeUpdatedToNewValue() {
         var bot = start();
         assertThat(bot.getTurnRate()).isZero();
-        awaitTickEvent();
+        awaitTick();
 
         bot.setTurnRate(7.5);
         assertThat(bot.getTurnRate()).isEqualTo(7.5);
 
-        awaitTickEvent();
+        awaitTick();
         assertThat(bot.getTurnRate()).isEqualTo(7.5);
     }
 
@@ -34,12 +34,12 @@ class BotTest extends AbstractBotTest {
     void givenMockedServer_whenCallingSetGunTurnRate_thenGunTurnRateMustBeUpdatedToNewValue() {
         var bot = start();
         assertThat(bot.getGunTurnRate()).isZero();
-        awaitTickEvent();
+        awaitTick();
 
         bot.setGunTurnRate(17.25);
         assertThat(bot.getGunTurnRate()).isEqualTo(17.25);
 
-        awaitTickEvent();
+        awaitTick();
         assertThat(bot.getGunTurnRate()).isEqualTo(17.25);
     }
 
@@ -48,12 +48,12 @@ class BotTest extends AbstractBotTest {
     void givenMockedServer_whenCallingSetRadarTurnRate_thenRadarTurnRateMustBeUpdatedToNewValue() {
         var bot = start();
         assertThat(bot.getRadarTurnRate()).isZero();
-        awaitTickEvent();
+        awaitTick();
 
         bot.setRadarTurnRate(32.125);
         assertThat(bot.getRadarTurnRate()).isEqualTo(32.125);
 
-        awaitTickEvent();
+        awaitTick();
         assertThat(bot.getRadarTurnRate()).isEqualTo(32.125);
     }
 
@@ -63,7 +63,7 @@ class BotTest extends AbstractBotTest {
         var bot = start();
         assertThat(bot.isRunning()).isFalse();
 
-        awaitTickEvent();
+        awaitTick();
         assertThat(bot.isRunning()).isTrue();
     }
 
@@ -72,12 +72,12 @@ class BotTest extends AbstractBotTest {
     void givenMockedServer_whenCallingSetTargetSpeed_thenTargetSpeedMustBeUpdatedToNewValue() {
         var bot = start();
         assertThat(bot.getTargetSpeed()).isZero();
-        awaitTickEvent();
+        awaitTick();
 
         bot.setTargetSpeed(7.25);
         assertThat(bot.getTargetSpeed()).isEqualTo(7.25);
 
-        awaitTickEvent();
+        awaitTick();
         assertThat(bot.getTargetSpeed()).isEqualTo(7.25);
     }
 
@@ -86,20 +86,20 @@ class BotTest extends AbstractBotTest {
     void givenMockedServer_whenCallingSetForward_thenForwardMustBeUpdatedToNewValue() {
         var bot = start();
         assertThat(bot.getSpeed()).isZero();
-        awaitTickEvent();
+        awaitTick();
 
         bot.setForward(100);
         assertThat(bot.getDistanceRemaining()).isEqualTo(100);
         var traveledDistance = bot.getSpeed();
 
         awaitBotIntent();
-        awaitTickEvent();
+        awaitTick();
 
         assertThat(bot.getDistanceRemaining()).isEqualTo(100 - traveledDistance);
         traveledDistance += bot.getSpeed();
 
         awaitBotIntent();
-        awaitTickEvent();
+        awaitTick();
 
         assertThat(bot.getDistanceRemaining()).isEqualTo(100 - traveledDistance);
     }

@@ -64,9 +64,9 @@ abstract class AbstractBotTest {
         return bot;
     }
 
-    protected BaseBot startAndAwaitTickEvent() {
+    protected BaseBot startAndAwaitTick() {
         var bot = start();
-        awaitTickEvent();
+        awaitTick();
         return bot;
     }
 
@@ -85,9 +85,9 @@ abstract class AbstractBotTest {
         assertThat(server.awaitGameStarted(500)).isTrue();
     }
 
-    protected void awaitTickEvent() {
+    protected void awaitTick() {
         sleep(); // must be processed within the bot api first
-        assertThat(server.awaitTickEvent(500)).isTrue();
+        assertThat(server.awaitTick(500)).isTrue();
     }
 
     protected void awaitBotIntent() {
