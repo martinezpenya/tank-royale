@@ -79,12 +79,6 @@ public class MockedServer
         _clients.Clear();
 
         _server.Dispose();
-
-        _openedEvent.Dispose();
-        _botHandshakeEvent.Dispose();
-        _gameStartedEvent.Dispose();
-        _tickEvent.Dispose();
-        _botIntentEvent.Dispose();
     }
 
     public void SetBotEnergy(double botEnergy)

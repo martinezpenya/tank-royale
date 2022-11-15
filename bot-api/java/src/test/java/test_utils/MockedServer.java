@@ -52,6 +52,7 @@ public final class MockedServer {
 
     private double botEnergy = BOT_ENERGY;
     private double botGunHeat = BOT_GUN_HEAT;
+    private double botSpeed = BOT_SPEED;
 
     private final WebSocketServerImpl server = new WebSocketServerImpl();
 
@@ -92,12 +93,16 @@ public final class MockedServer {
         }
     }
 
-    public void setBotEnergy(double botEnergy) {
-        this.botEnergy = botEnergy;
+    public void setBotEnergy(double energy) {
+        this.botEnergy = energy;
     }
 
-    public void setBotGunHeat(double botGunHeat) {
-        this.botGunHeat = botGunHeat;
+    public void setBotGunHeat(double gunHeat) {
+        this.botGunHeat = gunHeat;
+    }
+
+    public void setBotSpeed(double speed) {
+        this.botSpeed = speed;
     }
 
     public boolean awaitConnection(int milliSeconds) {
@@ -175,7 +180,7 @@ public final class MockedServer {
             var message = gson.fromJson(text, Message.class);
             switch (message.getType()) {
                 case BOT_HANDSHAKE:
-//                    System.out.println("BOT_HANDSHAKE");
+                    System.out.println("BOT_HANDSHAKE");
 
                     botHandshake = gson.fromJson(text, BotHandshake.class);
                     botHandshakeLatch.countDown();
@@ -185,7 +190,7 @@ public final class MockedServer {
                     break;
 
                 case BOT_READY:
-//                    System.out.println("BOT_READY");
+                    System.out.println("BOT_READY");
 
                     sendRoundStarted(conn);
 
@@ -194,7 +199,7 @@ public final class MockedServer {
                     break;
 
                 case BOT_INTENT:
-//                    System.out.println("BOT_INTENT");
+                    System.out.println("BOT_INTENT");
 
                     try {
                         botIntentContinueLatch.await();
@@ -271,7 +276,7 @@ public final class MockedServer {
             state.setGunDirection(BOT_GUN_DIRECTION);
             state.setRadarDirection(BOT_RADAR_DIRECTION);
             state.setRadarSweep(BOT_RADAR_SWEEP);
-            state.setSpeed(BOT_SPEED);
+            state.setSpeed(botSpeed);
             state.setTurnRate(BOT_TURN_RATE);
             state.setGunTurnRate(BOT_GUN_TURN_RATE);
             state.setRadarTurnRate(BOT_RADAR_TURN_RATE);

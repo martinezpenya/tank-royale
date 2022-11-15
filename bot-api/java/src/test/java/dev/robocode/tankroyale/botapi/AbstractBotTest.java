@@ -66,7 +66,7 @@ abstract class AbstractBotTest {
 
     protected BaseBot startAndAwaitTick() {
         var bot = start();
-        awaitTick();
+        awaitTick(bot);
         return bot;
     }
 
@@ -86,6 +86,20 @@ abstract class AbstractBotTest {
         boolean noException = false;
         do {
             try {
+                bot.getGameType();
+                noException = true;
+            } catch (BotException ex) {
+                Thread.yield();
+            }
+        } while (!noException);
+    }
+
+    protected void awaitTick(BaseBot bot) {
+        assertThat(server.awaitTick(1000)).isTrue();
+
+        boolean noException = false;
+        do {
+            try {
                 bot.getEnergy();
                 noException = true;
             } catch (BotException ex) {
@@ -94,21 +108,8 @@ abstract class AbstractBotTest {
         } while (!noException);
     }
 
-    protected void awaitTick() {
-        sleep(); // must be processed within the bot api first
-        assertThat(server.awaitTick(1000)).isTrue();
-    }
-
     protected void awaitBotIntent() {
         assertThat(server.awaitBotIntent(1000)).isTrue();
-    }
-
-    private void sleep() {
-        try {
-            Thread.sleep(500);
-        } catch (InterruptedException e) {
-            throw new RuntimeException(e);
-        }
     }
 
     protected static boolean exceptionContainsEnvVarName(BotException botException, String envVarName) {

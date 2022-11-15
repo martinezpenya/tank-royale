@@ -709,13 +709,15 @@ public final class BaseBotInternals {
             tickStartNanoTime = System.nanoTime();
 
             var tickEventForBot = gson.fromJson(jsonMsg, TickEventForBot.class);
-            tickEvent = EventMapper.map(tickEventForBot, myId);
+
+            var newTickEvent = EventMapper.map(tickEventForBot, myId);
+            eventQueue.addEventsFromTick(newTickEvent);
 
             if (botIntent.getRescan() != null && botIntent.getRescan()) {
                 botIntent.setRescan(false);
             }
 
-            eventQueue.addEventsFromTick(tickEvent);
+            tickEvent = newTickEvent;
 
             // Trigger next turn (not tick-event!)
             botEventHandlers.onNextTurn.publish(tickEvent);

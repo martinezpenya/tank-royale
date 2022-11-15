@@ -155,7 +155,7 @@ public class BaseBotTest : AbstractBotTest
     {
         var bot = Start();
         Server.SetBotEnergy(0.1);
-        AwaitTick();
+        AwaitTick(bot);
         Assert.That(bot.IsDisabled, Is.False);
     }
 
@@ -165,7 +165,7 @@ public class BaseBotTest : AbstractBotTest
     {
         var bot = Start();
         Server.SetBotEnergy(0);
-        AwaitTick();
+        AwaitTick(bot);
         Assert.That(bot.IsDisabled, Is.True);
     }
 
@@ -197,7 +197,7 @@ public class BaseBotTest : AbstractBotTest
     [Test]
     public void GivenMockedServer_whenCallingGunDirection_thenGunDirectionIsEqualToMockedValue()
     {
-        var bot = StartAndAwaitGameStarted();
+        var bot = StartAndAwaitTick();
         Assert.That(bot.GunDirection, Is.EqualTo(MockedServer.BotGunDirection));
     }
 
@@ -216,7 +216,7 @@ public class BaseBotTest : AbstractBotTest
         var bot = Start();
         Assert.That(bot.Speed, Is.Zero);
 
-        AwaitTick();
+        AwaitTick(bot);
         Assert.That(bot.Speed, Is.EqualTo(MockedServer.BotSpeed));
     }
 
@@ -227,7 +227,7 @@ public class BaseBotTest : AbstractBotTest
         var bot = Start();
         Assert.That(bot.GunHeat, Is.Zero);
 
-        AwaitTick();
+        AwaitTick(bot);
         Assert.That(bot.GunHeat, Is.EqualTo(MockedServer.BotGunHeat));
     }
 
@@ -238,7 +238,7 @@ public class BaseBotTest : AbstractBotTest
         var bot = Start();
         Assert.That(bot.BulletStates.Count(), Is.Zero);
 
-        AwaitTick();
+        AwaitTick(bot);
 
         Assert.That(bot.BulletStates, Is.Not.Null);
         Assert.That(bot.BulletStates.Count(), Is.EqualTo(2));
@@ -253,7 +253,7 @@ public class BaseBotTest : AbstractBotTest
         var bot = Start();
         Assert.That(bot.Events.Count, Is.Zero);
 
-        AwaitTick();
+        AwaitTick(bot);
 
         var events = bot.Events;
         Assert.That(events, Is.Not.Null);
@@ -279,7 +279,7 @@ public class BaseBotTest : AbstractBotTest
         var bot = Start();
         Assert.That(bot.TurnRate, Is.Zero);
 
-        AwaitTick();
+        AwaitTick(bot);
         Assert.That(bot.TurnRate, Is.EqualTo(MockedServer.BotTurnRate));
     }
 
@@ -344,7 +344,7 @@ public class BaseBotTest : AbstractBotTest
         var bot = Start();
         Assert.That(bot.GunTurnRate, Is.Zero);
 
-        AwaitTick();
+        AwaitTick(bot);
         Assert.That(bot.GunTurnRate, Is.EqualTo(MockedServer.BotGunTurnRate));
     }
 
@@ -409,7 +409,7 @@ public class BaseBotTest : AbstractBotTest
         var bot = Start();
         Assert.That(bot.RadarTurnRate, Is.Zero);
 
-        AwaitTick();
+        AwaitTick(bot);
         Assert.That(bot.RadarTurnRate, Is.EqualTo(MockedServer.BotRadarTurnRate));
     }
 

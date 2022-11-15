@@ -73,7 +73,7 @@ public class AbstractBotTest
     protected BaseBot StartAndAwaitTick()
     {
         var bot = Start();
-        AwaitTick();
+        AwaitTick(bot);
         return bot;
     }
 
@@ -97,7 +97,7 @@ public class AbstractBotTest
         do {
             try
             {
-                var energy = bot.Energy;
+                var gameType = bot.GameType;
                 noException = true;
             } catch (BotException ex) {
                 Thread.Yield();
@@ -105,10 +105,20 @@ public class AbstractBotTest
         } while (!noException);
     }
 
-    protected void AwaitTick()
+    protected void AwaitTick(BaseBot bot)
     {
         Assert.That(Server.AwaitTick(1000), Is.True);
-        Sleep(); // must be processed within the bot api first
+
+        var noException = false;
+        do {
+            try
+            {
+                var energy = bot.Energy;
+                noException = true;
+            } catch (BotException ex) {
+                Thread.Yield();
+            }
+        } while (!noException);
     }
 
     protected void AwaitBotIntent()

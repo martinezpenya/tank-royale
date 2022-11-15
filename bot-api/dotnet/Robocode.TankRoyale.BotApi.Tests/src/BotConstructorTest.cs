@@ -119,7 +119,7 @@ public class BotConstructorTest : AbstractBotTest
     [Test]
     public void GivenServerUrlWithValidPortAsParameter_whenCallingConstructor_thenBotIsConnectingToServer()
     {
-        var bot = new TestBot(null, new Uri("ws://localhost:" + MockedServer.Port));
+        var bot = new TestBot(null, new Uri("ws://127.0.0.1:" + MockedServer.Port));
         StartAsync(bot);
         Assert.That(Server.AwaitConnection(10_000), Is.True);
     }
@@ -127,7 +127,7 @@ public class BotConstructorTest : AbstractBotTest
     [Test]
     public void GivenServerUrlWithInvalidPortAsParameter_whenCallingConstructor_thenBotIsNotConnectingToServer()
     {
-        var bot = new TestBot(null, new Uri("ws://localhost:" + (MockedServer.Port + 1)));
+        var bot = new TestBot(null, new Uri("ws://127.0.0.1:" + (MockedServer.Port + 1)));
         Assert.Throws<BotException>(() => bot.Start());
     }
 
@@ -135,7 +135,7 @@ public class BotConstructorTest : AbstractBotTest
     public void GivenServerSecretConstructor_whenCallingConstructor_thenReturnedBotHandshakeContainsSecret()
     {
         var secret = Guid.NewGuid().ToString();
-        var bot = new TestBot(null, new Uri("ws://localhost:" + MockedServer.Port), secret);
+        var bot = new TestBot(null, new Uri("ws://127.0.0.1:" + MockedServer.Port), secret);
         StartAsync(bot);
         AwaitBotHandshake();
         var handshake = Server.Handshake;

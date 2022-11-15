@@ -714,12 +714,13 @@ public sealed class BaseBotInternals
 
         ticksStart = DateTime.Now.Ticks;
 
-        tickEvent = EventMapper.Map(json, myId);
-
         if (BotIntent.Rescan == true)
             BotIntent.Rescan = false;
 
-        eventQueue.AddEventsFromTick(tickEvent);
+        var newTickEvent = EventMapper.Map(json, myId);
+        eventQueue.AddEventsFromTick(newTickEvent);
+
+        tickEvent = newTickEvent;
 
         // Trigger next turn (not tick-event!)
         BotEventHandlers.FireNextTurn(tickEvent);
