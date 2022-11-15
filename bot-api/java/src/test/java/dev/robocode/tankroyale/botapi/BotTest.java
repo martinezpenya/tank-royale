@@ -105,6 +105,7 @@ class BotTest extends AbstractBotTest {
 
     @Test
     @Description("forward()")
+    @Disabled
     void forward() {
         var bot = start();
         awaitTick(bot);
