@@ -475,7 +475,6 @@ public final class BotInternals implements IStopResumeListener {
             } else if (Double.isInfinite(distanceRemaining)) {
                 baseBotInternals.getBotIntent().setTargetSpeed(
                         (double) (distanceRemaining == Double.POSITIVE_INFINITY ? MAX_SPEED : -MAX_SPEED));
-
             } else {
                 double distance = distanceRemaining;
 
