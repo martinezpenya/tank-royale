@@ -95,7 +95,7 @@ public final class BaseBotInternals {
     private Double savedGunTurnRate;
     private Double savedRadarTurnRate;
 
-    private final double absDeceleration = abs(DECELERATION);
+    private final double ABS_DECELERATION = abs(DECELERATION);
 
     private final Gson gson;
 
@@ -449,25 +449,25 @@ public final class BaseBotInternals {
             maxSpeed : min(maxSpeed, getMaxSpeed(distance));
 
         return (speed >= 0) ?
-            clamp(targetSpeed, speed - absDeceleration, speed + ACCELERATION) :
+            clamp(targetSpeed, speed - ABS_DECELERATION, speed + ACCELERATION) :
             clamp(targetSpeed, speed - ACCELERATION, speed + getMaxDeceleration(-speed));
     }
 
     private double getMaxSpeed(double distance) {
         double decelerationTime =
-                max(1, Math.ceil((Math.sqrt((4 * 2 / absDeceleration) * distance + 1) - 1) / 2));
+                max(1, Math.ceil((Math.sqrt((4 * 2 / ABS_DECELERATION) * distance + 1) - 1) / 2));
         if (decelerationTime == Double.POSITIVE_INFINITY) {
             return MAX_SPEED;
         }
-        double decelerationDistance = (decelerationTime / 2) * (decelerationTime - 1) * absDeceleration;
-        return ((decelerationTime - 1) * absDeceleration) + ((distance - decelerationDistance) / decelerationTime);
+        double decelerationDistance = (decelerationTime / 2) * (decelerationTime - 1) * ABS_DECELERATION;
+        return ((decelerationTime - 1) * ABS_DECELERATION) + ((distance - decelerationDistance) / decelerationTime);
     }
 
     private double getMaxDeceleration(double speed) {
-        double decelerationTime = speed / absDeceleration;
+        double decelerationTime = speed / ABS_DECELERATION;
         double accelerationTime = 1 - decelerationTime;
 
-        return min(1, decelerationTime) * absDeceleration + max(0, accelerationTime) * ACCELERATION;
+        return min(1, decelerationTime) * ABS_DECELERATION + max(0, accelerationTime) * ACCELERATION;
     }
 
     double getDistanceTraveledUntilStop(double speed) {
