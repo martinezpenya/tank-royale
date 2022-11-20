@@ -1,5 +1,4 @@
 using System;
-using System.IO;
 using System.Threading;
 using Robocode.TankRoyale.BotApi.Events;
 using static System.Double;
@@ -22,11 +21,6 @@ internal sealed class BotInternals : IStopResumeListener
     private double previousGunDirection;
     private double previousRadarDirection;
 
-    private double distanceRemaining;
-    private double turnRemaining;
-    private double gunTurnRemaining;
-    private double radarTurnRemaining;
-
     private bool isOverDriving;
 
     private double savedPreviousDirection;
@@ -37,11 +31,6 @@ internal sealed class BotInternals : IStopResumeListener
     private double savedTurnRemaining;
     private double savedGunTurnRemaining;
     private double savedRadarTurnRemaining;
-
-    private readonly object movementLock = new();
-    private readonly object turnLock = new();
-    private readonly object gunTurnLock = new();
-    private readonly object radarTurnLock = new();
 
     public BotInternals(IBot bot, BaseBotInternals baseBotInternals)
     {
@@ -241,77 +230,13 @@ internal sealed class BotInternals : IStopResumeListener
         };
     }
 
-    internal double DistanceRemaining
-    {
-        get
-        {
-            lock (movementLock)
-            {
-                return distanceRemaining;
-            }
-        }
-        private set
-        {
-            lock (movementLock)
-            {
-                distanceRemaining = value;
-            }
-        }
-    }
+    internal double DistanceRemaining { get; private set; }
 
-    internal double TurnRemaining
-    {
-        get
-        {
-            lock (turnLock)
-            {
-                return turnRemaining;
-            }
-        }
-        private set
-        {
-            lock (turnLock)
-            {
-                turnRemaining = value;
-            }
-        }
-    }
+    internal double TurnRemaining { get; private set; }
 
-    internal double GunTurnRemaining
-    {
-        get
-        {
-            lock (gunTurnLock)
-            {
-                return gunTurnRemaining;
-            }
-        }
-        private set
-        {
-            lock (gunTurnLock)
-            {
-                gunTurnRemaining = value;
-            }
-        }
-    }
+    internal double GunTurnRemaining { get; private set; }
 
-    internal double RadarTurnRemaining
-    {
-        get
-        {
-            lock (radarTurnLock)
-            {
-                return radarTurnRemaining;
-            }
-        }
-        private set
-        {
-            lock (radarTurnLock)
-            {
-                radarTurnRemaining = value;
-            }
-        }
-    }
+    internal double RadarTurnRemaining { get; private set; }
 
     internal void SetTargetSpeed(double targetSpeed)
     {
@@ -487,22 +412,19 @@ internal sealed class BotInternals : IStopResumeListener
         if (!overrideTurnRate)
             return;
 
-        lock (turnLock)
+        var delta = bot.CalcDeltaAngle(bot.Direction, previousDirection);
+        previousDirection = bot.Direction;
+
+        if (Math.Abs(TurnRemaining) <= Math.Abs(delta))
+            TurnRemaining = 0;
+        else
         {
-            var delta = bot.CalcDeltaAngle(bot.Direction, previousDirection);
-            previousDirection = bot.Direction;
-
-            if (Math.Abs(TurnRemaining) <= Math.Abs(delta))
+            TurnRemaining -= delta;
+            if (IsNearZero(TurnRemaining))
                 TurnRemaining = 0;
-            else
-            {
-                TurnRemaining -= delta;
-                if (IsNearZero(TurnRemaining))
-                    TurnRemaining = 0;
-            }
-
-            baseBotInternals.BotIntent.TurnRate = TurnRemaining;
         }
+
+        baseBotInternals.BotIntent.TurnRate = TurnRemaining;
     }
 
     private void UpdateGunTurnRemaining()
@@ -510,22 +432,19 @@ internal sealed class BotInternals : IStopResumeListener
         if (!overrideGunTurnRate)
             return;
 
-        lock (gunTurnLock)
+        var delta = bot.CalcDeltaAngle(bot.GunDirection, previousGunDirection);
+        previousGunDirection = bot.GunDirection;
+
+        if (Math.Abs(GunTurnRemaining) <= Math.Abs(delta))
+            GunTurnRemaining = 0;
+        else
         {
-            var delta = bot.CalcDeltaAngle(bot.GunDirection, previousGunDirection);
-            previousGunDirection = bot.GunDirection;
-
-            if (Math.Abs(GunTurnRemaining) <= Math.Abs(delta))
+            GunTurnRemaining -= delta;
+            if (IsNearZero(GunTurnRemaining))
                 GunTurnRemaining = 0;
-            else
-            {
-                GunTurnRemaining -= delta;
-                if (IsNearZero(GunTurnRemaining))
-                    GunTurnRemaining = 0;
-            }
-
-            baseBotInternals.BotIntent.GunTurnRate = GunTurnRemaining;
         }
+
+        baseBotInternals.BotIntent.GunTurnRate = GunTurnRemaining;
     }
 
     private void UpdateRadarTurnRemaining()
@@ -533,67 +452,61 @@ internal sealed class BotInternals : IStopResumeListener
         if (!overrideRadarTurnRate)
             return;
 
-        lock (radarTurnLock)
+        var delta = bot.CalcDeltaAngle(bot.RadarDirection, previousRadarDirection);
+        previousRadarDirection = bot.RadarDirection;
+
+        if (Math.Abs(RadarTurnRemaining) <= Math.Abs(delta))
+            RadarTurnRemaining = 0;
+        else
         {
-            var delta = bot.CalcDeltaAngle(bot.RadarDirection, previousRadarDirection);
-            previousRadarDirection = bot.RadarDirection;
-
-            if (Math.Abs(RadarTurnRemaining) <= Math.Abs(delta))
+            RadarTurnRemaining -= delta;
+            if (IsNearZero(RadarTurnRemaining))
                 RadarTurnRemaining = 0;
-            else
-            {
-                RadarTurnRemaining -= delta;
-                if (IsNearZero(RadarTurnRemaining))
-                    RadarTurnRemaining = 0;
-            }
-
-            baseBotInternals.BotIntent.RadarTurnRate = RadarTurnRemaining;
         }
+
+        baseBotInternals.BotIntent.RadarTurnRate = RadarTurnRemaining;
     }
 
     private void UpdateMovement()
     {
-        lock (movementLock)
+        if (!overrideTargetSpeed)
         {
-            if (!overrideTargetSpeed)
+            if (Math.Abs(DistanceRemaining) < Math.Abs(bot.Speed))
             {
-                if (Math.Abs(distanceRemaining) < Math.Abs(bot.Speed))
-                {
-                    distanceRemaining = 0;
-                }
-                else
-                {
-                    distanceRemaining -= bot.Speed;
-                }
-            }
-            else if (IsInfinity(DistanceRemaining))
-            {
-                baseBotInternals.BotIntent.TargetSpeed =
-                    IsPositiveInfinity(DistanceRemaining) ? Constants.MaxSpeed : -Constants.MaxSpeed;
+                DistanceRemaining = 0;
             }
             else
             {
-                var distance = DistanceRemaining;
-
-                // This is Nat Pavasant's method described here:
-                // https://robowiki.net/wiki/User:Positive/Optimal_Velocity#Nat.27s_updateMovement
-                var speed = baseBotInternals.GetNewTargetSpeed(bot.Speed, distance);
-                baseBotInternals.BotIntent.TargetSpeed = speed;
-
-                // If we are over-driving our distance and we are now at velocity=0 then we stopped
-                if (IsNearZero(speed) && isOverDriving)
-                {
-                    DistanceRemaining = 0;
-                    distance = 0;
-                    isOverDriving = false;
-                }
-
-                // the overdrive flag
-                if (Math.Sign(distance * speed) != -1)
-                    isOverDriving = baseBotInternals.GetDistanceTraveledUntilStop(speed) > Math.Abs(distance);
-
-                DistanceRemaining = distance - speed;
+                DistanceRemaining -= bot.Speed;
             }
+        }
+        else if (IsInfinity(DistanceRemaining))
+        {
+            baseBotInternals.BotIntent.TargetSpeed =
+                IsPositiveInfinity(DistanceRemaining) ? Constants.MaxSpeed : -Constants.MaxSpeed;
+        }
+        else
+        {
+            var distance = DistanceRemaining;
+
+            // This is Nat Pavasant's method described here:
+            // https://robowiki.net/wiki/User:Positive/Optimal_Velocity#Nat.27s_updateMovement
+            var speed = baseBotInternals.GetNewTargetSpeed(bot.Speed, distance);
+            baseBotInternals.BotIntent.TargetSpeed = speed;
+
+            // If we are over-driving our distance and we are now at velocity=0 then we stopped
+            if (IsNearZero(speed) && isOverDriving)
+            {
+                DistanceRemaining = 0;
+                distance = 0;
+                isOverDriving = false;
+            }
+
+            // the overdrive flag
+            if (Math.Sign(distance * speed) != -1)
+                isOverDriving = baseBotInternals.GetDistanceTraveledUntilStop(speed) > Math.Abs(distance);
+
+            DistanceRemaining = distance - speed;
         }
     }
 

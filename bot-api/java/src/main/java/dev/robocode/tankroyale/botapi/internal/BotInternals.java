@@ -38,11 +38,6 @@ public final class BotInternals implements IStopResumeListener {
     private double savedGunTurnRemaining;
     private double savedRadarTurnRemaining;
 
-    private final Object movementMonitor = new Object();
-    private final Object turnMonitor = new Object();
-    private final Object gunTurnMonitor = new Object();
-    private final Object radarTurnMonitor = new Object();
-
     public BotInternals(Bot bot, BaseBotInternals baseBotInternals) {
         this.bot = bot;
         this.baseBotInternals = baseBotInternals;
@@ -74,10 +69,10 @@ public final class BotInternals implements IStopResumeListener {
     }
 
     private void clearRemaining() {
-        setDistanceRemaining(0);
-        setTurnRemaining(0);
-        setGunTurnRemaining(0);
-        setRadarTurnRemaining(0);
+        distanceRemaining = 0;
+        turnRemaining = 0;
+        gunTurnRemaining = 0;
+        radarTurnRemaining = 0;
 
         previousDirection = bot.getDirection();
         previousGunDirection = bot.getGunDirection();
@@ -152,12 +147,12 @@ public final class BotInternals implements IStopResumeListener {
     }
 
     private void onHitWall() {
-        setDistanceRemaining(0);
+        distanceRemaining = 0;
     }
 
     private void onHitBot(HitBotEvent e) {
         if (e.isRammed()) {
-            setDistanceRemaining(0);
+            distanceRemaining = 0;
         }
     }
 
@@ -175,7 +170,7 @@ public final class BotInternals implements IStopResumeListener {
             throw new IllegalArgumentException("turnRate cannot be NaN");
         }
         baseBotInternals.getBotIntent().setTurnRate(turnRate);
-        setTurnRemaining(toInfiniteValue(turnRate));
+        turnRemaining = toInfiniteValue(turnRate);
     }
 
     public void setGunTurnRate(double gunTurnRate) {
@@ -184,7 +179,7 @@ public final class BotInternals implements IStopResumeListener {
             throw new IllegalArgumentException("gunTurnRate cannot be NaN");
         }
         baseBotInternals.getBotIntent().setGunTurnRate(gunTurnRate);
-        setGunTurnRemaining(toInfiniteValue(gunTurnRate));
+        gunTurnRemaining = toInfiniteValue(gunTurnRate);
     }
 
     public void setRadarTurnRate(double radarTurnRate) {
@@ -193,7 +188,7 @@ public final class BotInternals implements IStopResumeListener {
             throw new IllegalArgumentException("radarTurnRate cannot be NaN");
         }
         baseBotInternals.getBotIntent().setRadarTurnRate(radarTurnRate);
-        setRadarTurnRemaining(toInfiniteValue(radarTurnRate));
+        radarTurnRemaining = toInfiniteValue(radarTurnRate);
     }
 
     private static double toInfiniteValue(double turnRate) {
@@ -206,52 +201,20 @@ public final class BotInternals implements IStopResumeListener {
         return 0;
     }
 
-    private void setDistanceRemaining(double newDistanceRemaining) {
-        synchronized (movementMonitor) {
-            distanceRemaining = newDistanceRemaining;
-        }
-    }
-
     public double getDistanceRemaining() {
-        synchronized (movementMonitor) {
-            return distanceRemaining;
-        }
-    }
-
-    private void setTurnRemaining(double newTurnRemaining) {
-        synchronized (turnMonitor) {
-            turnRemaining = newTurnRemaining;
-        }
+        return distanceRemaining;
     }
 
     public double getTurnRemaining() {
-        synchronized (turnMonitor) {
-            return turnRemaining;
-        }
-    }
-
-    private void setGunTurnRemaining(double newGunTurnRemaining) {
-        synchronized (gunTurnMonitor) {
-            gunTurnRemaining = newGunTurnRemaining;
-        }
+        return turnRemaining;
     }
 
     public double getGunTurnRemaining() {
-        synchronized (gunTurnMonitor) {
-            return gunTurnRemaining;
-        }
-    }
-
-    private void setRadarTurnRemaining(double newRadarTurnRemaining) {
-        synchronized (radarTurnMonitor) {
-            radarTurnRemaining = newRadarTurnRemaining;
-        }
+        return gunTurnRemaining;
     }
 
     public double getRadarTurnRemaining() {
-        synchronized (radarTurnMonitor) {
-            return radarTurnRemaining;
-        }
+        return radarTurnRemaining;
     }
 
     public void setTargetSpeed(double targetSpeed) {
@@ -259,7 +222,6 @@ public final class BotInternals implements IStopResumeListener {
         if (Double.isNaN(targetSpeed)) {
             throw new IllegalArgumentException("targetSpeed cannot be NaN");
         }
-        double distanceRemaining;
         if (targetSpeed > 0) {
             distanceRemaining = Double.POSITIVE_INFINITY;
         } else if (targetSpeed < 0) {
@@ -267,7 +229,6 @@ public final class BotInternals implements IStopResumeListener {
         } else {
             distanceRemaining = 0;
         }
-        setDistanceRemaining(distanceRemaining);
 
         baseBotInternals.getBotIntent().setTargetSpeed(targetSpeed);
     }
@@ -280,7 +241,7 @@ public final class BotInternals implements IStopResumeListener {
         double speed = baseBotInternals.getNewTargetSpeed(bot.getSpeed(), distance);
         baseBotInternals.getBotIntent().setTargetSpeed(speed);
 
-        setDistanceRemaining(distance);
+        distanceRemaining = distance;
     }
 
     public void forward(double distance) {
@@ -299,7 +260,7 @@ public final class BotInternals implements IStopResumeListener {
         if (Double.isNaN(degrees)) {
             throw new IllegalArgumentException("degrees cannot be NaN");
         }
-        setTurnRemaining(degrees);
+        turnRemaining = degrees;
         baseBotInternals.getBotIntent().setTurnRate(degrees);
     }
 
@@ -319,7 +280,7 @@ public final class BotInternals implements IStopResumeListener {
         if (Double.isNaN(degrees)) {
             throw new IllegalArgumentException("degrees cannot be NaN");
         }
-        setGunTurnRemaining(degrees);
+        gunTurnRemaining = degrees;
         baseBotInternals.getBotIntent().setGunTurnRate(degrees);
     }
 
@@ -339,7 +300,7 @@ public final class BotInternals implements IStopResumeListener {
         if (Double.isNaN(degrees)) {
             throw new IllegalArgumentException("degrees cannot be NaN");
         }
-        setRadarTurnRemaining(degrees);
+        radarTurnRemaining = degrees;
         baseBotInternals.getBotIntent().setRadarTurnRate(degrees);
     }
 
@@ -398,104 +359,96 @@ public final class BotInternals implements IStopResumeListener {
         previousGunDirection = savedPreviousGunDirection;
         previousRadarDirection = savedPreviousRadarDirection;
 
-        setDistanceRemaining(savedDistanceRemaining);
-        setTurnRemaining(savedTurnRemaining);
-        setGunTurnRemaining(savedGunTurnRemaining);
-        setRadarTurnRemaining(savedRadarTurnRemaining);
+        distanceRemaining = savedDistanceRemaining;
+        turnRemaining = savedTurnRemaining;
+        gunTurnRemaining = savedGunTurnRemaining;
+        radarTurnRemaining = savedRadarTurnRemaining;
     }
 
     private void updateTurnRemaining() {
         if (!overrideTurnRate) {
             return;
         }
-        synchronized (turnMonitor) {
-            double delta = bot.calcDeltaAngle(bot.getDirection(), previousDirection);
-            previousDirection = bot.getDirection();
+        double delta = bot.calcDeltaAngle(bot.getDirection(), previousDirection);
+        previousDirection = bot.getDirection();
 
-            if (abs(turnRemaining) <= abs(delta)) {
+        if (abs(turnRemaining) <= abs(delta)) {
+            turnRemaining = 0;
+        } else {
+            turnRemaining -= delta;
+            if (isNearZero(turnRemaining)) {
                 turnRemaining = 0;
-            } else {
-                turnRemaining -= delta;
-                if (isNearZero(turnRemaining)) {
-                    turnRemaining = 0;
-                }
             }
-            baseBotInternals.getBotIntent().setTurnRate(turnRemaining);
         }
+        baseBotInternals.getBotIntent().setTurnRate(turnRemaining);
     }
 
     private void updateGunTurnRemaining() {
         if (!overrideGunTurnRate) {
             return;
         }
-        synchronized (gunTurnMonitor) {
-            double delta = bot.calcDeltaAngle(bot.getGunDirection(), previousGunDirection);
-            previousGunDirection = bot.getGunDirection();
+        double delta = bot.calcDeltaAngle(bot.getGunDirection(), previousGunDirection);
+        previousGunDirection = bot.getGunDirection();
 
-            if (abs(gunTurnRemaining) <= abs(delta)) {
+        if (abs(gunTurnRemaining) <= abs(delta)) {
+            gunTurnRemaining = 0;
+        } else {
+            gunTurnRemaining -= delta;
+            if (isNearZero(gunTurnRemaining)) {
                 gunTurnRemaining = 0;
-            } else {
-                gunTurnRemaining -= delta;
-                if (isNearZero(gunTurnRemaining)) {
-                    gunTurnRemaining = 0;
-                }
             }
-            baseBotInternals.getBotIntent().setGunTurnRate(gunTurnRemaining);
         }
+        baseBotInternals.getBotIntent().setGunTurnRate(gunTurnRemaining);
     }
 
     private void updateRadarTurnRemaining() {
         if (!overrideRadarTurnRate) {
             return;
         }
-        synchronized (radarTurnMonitor) {
-            double delta = bot.calcDeltaAngle(bot.getRadarDirection(), previousRadarDirection);
-            previousRadarDirection = bot.getRadarDirection();
+        double delta = bot.calcDeltaAngle(bot.getRadarDirection(), previousRadarDirection);
+        previousRadarDirection = bot.getRadarDirection();
 
-            if (abs(radarTurnRemaining) <= abs(delta)) {
+        if (abs(radarTurnRemaining) <= abs(delta)) {
+            radarTurnRemaining = 0;
+        } else {
+            radarTurnRemaining -= delta;
+            if (isNearZero(radarTurnRemaining)) {
                 radarTurnRemaining = 0;
-            } else {
-                radarTurnRemaining -= delta;
-                if (isNearZero(radarTurnRemaining)) {
-                    radarTurnRemaining = 0;
-                }
             }
-            baseBotInternals.getBotIntent().setRadarTurnRate(radarTurnRemaining);
         }
+        baseBotInternals.getBotIntent().setRadarTurnRate(radarTurnRemaining);
     }
 
     private void updateMovement() {
-        synchronized (movementMonitor) {
-            if (!overrideTargetSpeed) {
-                if (abs(distanceRemaining) < abs(bot.getSpeed())) {
-                    distanceRemaining = 0;
-                } else {
-                    distanceRemaining -= bot.getSpeed();
-                }
-            } else if (Double.isInfinite(distanceRemaining)) {
-                baseBotInternals.getBotIntent().setTargetSpeed(
-                        (double) (distanceRemaining == Double.POSITIVE_INFINITY ? MAX_SPEED : -MAX_SPEED));
+        if (!overrideTargetSpeed) {
+            if (abs(distanceRemaining) < abs(bot.getSpeed())) {
+                distanceRemaining = 0;
             } else {
-                double distance = distanceRemaining;
-
-                // This is Nat Pavasant's method described here:
-                // https://robowiki.net/wiki/User:Positive/Optimal_Velocity#Nat.27s_updateMovement
-                double newSpeed = baseBotInternals.getNewTargetSpeed(bot.getSpeed(), distance);
-                baseBotInternals.getBotIntent().setTargetSpeed(newSpeed);
-
-                // If we are over-driving our distance, and we are now at speed=0 then we stopped
-                if (isNearZero(newSpeed) && isOverDriving) {
-                    distance = 0;
-                    isOverDriving = false;
-                }
-
-                // the overdrive flag
-                if (Math.signum(distance * newSpeed) != -1) {
-                    isOverDriving = baseBotInternals.getDistanceTraveledUntilStop(newSpeed) > abs(distance);
-                }
-
-                distanceRemaining = distance - newSpeed;
+                distanceRemaining -= bot.getSpeed();
             }
+        } else if (Double.isInfinite(distanceRemaining)) {
+            baseBotInternals.getBotIntent().setTargetSpeed(
+                    (double) (distanceRemaining == Double.POSITIVE_INFINITY ? MAX_SPEED : -MAX_SPEED));
+        } else {
+            double distance = distanceRemaining;
+
+            // This is Nat Pavasant's method described here:
+            // https://robowiki.net/wiki/User:Positive/Optimal_Velocity#Nat.27s_updateMovement
+            double newSpeed = baseBotInternals.getNewTargetSpeed(bot.getSpeed(), distance);
+            baseBotInternals.getBotIntent().setTargetSpeed(newSpeed);
+
+            // If we are over-driving our distance, and we are now at speed=0 then we stopped
+            if (isNearZero(newSpeed) && isOverDriving) {
+                distance = 0;
+                isOverDriving = false;
+            }
+
+            // the overdrive flag
+            if (Math.signum(distance * newSpeed) != -1) {
+                isOverDriving = baseBotInternals.getDistanceTraveledUntilStop(newSpeed) > abs(distance);
+            }
+
+            distanceRemaining = distance - newSpeed;
         }
     }
 
