@@ -99,7 +99,7 @@ public class AbstractBotTest
             {
                 var gameType = bot.GameType;
                 noException = true;
-            } catch (BotException ex) {
+            } catch (BotException) {
                 Thread.Yield();
             }
         } while (!noException);
@@ -115,7 +115,7 @@ public class AbstractBotTest
             {
                 var energy = bot.Energy;
                 noException = true;
-            } catch (BotException ex) {
+            } catch (BotException) {
                 Thread.Yield();
             }
         } while (!noException);
@@ -124,11 +124,6 @@ public class AbstractBotTest
     protected void AwaitBotIntent()
     {
         Assert.That(Server.AwaitBotIntent(1000), Is.True);
-    }
-
-    private static void Sleep()
-    {
-        Thread.Sleep(500);
     }
     
     protected static bool ExceptionContainsEnvVarName(BotException botException, string envVarName) =>
