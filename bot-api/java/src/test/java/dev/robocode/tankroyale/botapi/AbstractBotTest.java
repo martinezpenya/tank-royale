@@ -85,7 +85,7 @@ abstract class AbstractBotTest {
     protected void awaitGameStarted(BaseBot bot) {
         assertThat(server.awaitGameStarted(1000)).isTrue();
 
-        long startTime = System.currentTimeMillis();
+        long startMillis = System.currentTimeMillis();
         boolean noException = false;
         do {
             try {
@@ -94,13 +94,13 @@ abstract class AbstractBotTest {
             } catch (BotException ex) {
                 Thread.yield();
             }
-        } while (!noException && System.currentTimeMillis() - startTime < 1000);
+        } while (!noException && System.currentTimeMillis() - startMillis < 1000);
     }
 
     protected void awaitTick(BaseBot bot) {
         assertThat(server.awaitTick(1000)).isTrue();
 
-        long startTime = System.currentTimeMillis();
+        long startMillis = System.currentTimeMillis();
         boolean noException = false;
         do {
             try {
@@ -109,7 +109,7 @@ abstract class AbstractBotTest {
             } catch (BotException ex) {
                 Thread.yield();
             }
-        } while (!noException && System.currentTimeMillis() - startTime < 1000);
+        } while (!noException && System.currentTimeMillis() - startMillis < 1000);
     }
 
     protected void awaitBotIntent() {

@@ -28,7 +28,7 @@ public class AbstractBotTest
         .Build();
     
     private class TestBot : BaseBot {
-        public TestBot() : base(BotInfo, (new Uri("ws://127.0.0.1:" + MockedServer.Port)))
+        public TestBot() : base(BotInfo, MockedServer.ServerUrl)
         {
         }
     }
@@ -93,6 +93,7 @@ public class AbstractBotTest
     {
         Assert.That(Server.AwaitGameStarted(1000), Is.True);
 
+        var startMillis = DateTimeOffset.Now.ToUnixTimeMilliseconds();
         var noException = false;
         do {
             try
@@ -102,13 +103,14 @@ public class AbstractBotTest
             } catch (BotException) {
                 Thread.Yield();
             }
-        } while (!noException);
+        } while (!noException && DateTimeOffset.Now.ToUnixTimeMilliseconds() - startMillis < 1000);
     }
 
     protected void AwaitTick(BaseBot bot)
     {
         Assert.That(Server.AwaitTick(1000), Is.True);
 
+        var startMillis = DateTimeOffset.Now.ToUnixTimeMilliseconds();
         var noException = false;
         do {
             try
@@ -118,7 +120,7 @@ public class AbstractBotTest
             } catch (BotException) {
                 Thread.Yield();
             }
-        } while (!noException);
+        } while (!noException && DateTimeOffset.Now.ToUnixTimeMilliseconds() - startMillis < 1000);
     }
 
     protected void AwaitBotIntent()
