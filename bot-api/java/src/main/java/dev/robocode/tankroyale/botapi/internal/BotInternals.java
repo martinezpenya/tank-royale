@@ -251,7 +251,7 @@ public final class BotInternals implements IStopResumeListener {
             setForward(distance);
             do {
                 bot.go();
-            } while (isRunning() && (getDistanceRemaining() != 0 || bot.getSpeed() != 0));
+            } while (isRunning() && (distanceRemaining != 0 || bot.getSpeed() != 0));
         }
     }
 
@@ -348,10 +348,10 @@ public final class BotInternals implements IStopResumeListener {
         savedPreviousGunDirection = previousGunDirection;
         savedPreviousRadarDirection = previousRadarDirection;
 
-        savedDistanceRemaining = getDistanceRemaining();
-        savedTurnRemaining = getTurnRemaining();
-        savedGunTurnRemaining = getGunTurnRemaining();
-        savedRadarTurnRemaining = getRadarTurnRemaining();
+        savedDistanceRemaining = distanceRemaining;
+        savedTurnRemaining = turnRemaining;
+        savedGunTurnRemaining = gunTurnRemaining;
+        savedRadarTurnRemaining = radarTurnRemaining;
     }
 
     public void onResume() {
@@ -429,7 +429,7 @@ public final class BotInternals implements IStopResumeListener {
         } else if (Double.isInfinite(distanceRemaining)) {
             baseBotInternals.getBotIntent().setTargetSpeed(
                     (double) (distanceRemaining == Double.POSITIVE_INFINITY ? MAX_SPEED : -MAX_SPEED));
-        } else {
+        } else if (distanceRemaining != 0) {
             double distance = distanceRemaining;
 
             // This is Nat Pavasant's method described here:
