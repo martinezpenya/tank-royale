@@ -138,7 +138,7 @@ public class BaseBotTest : AbstractBotTest
     public void GivenMockedServer_whenCallingEnemyCount_thenEnemyCountIsEqualToMockedValue()
     {
         var bot = StartAndAwaitTick();
-        Assert.That(bot.EnemyCount, Is.EqualTo(MockedServer.BotEnemyCcount));
+        Assert.That(bot.EnemyCount, Is.EqualTo(MockedServer.BotEnemyCount));
     }
 
     // Energy
