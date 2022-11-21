@@ -2,11 +2,9 @@ package dev.robocode.tankroyale.botapi;
 
 
 import jdk.jfr.Description;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import test_utils.MockedServer;
 
-import static dev.robocode.tankroyale.botapi.Constants.MAX_SPEED;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 
 class BotTest extends AbstractBotTest {
@@ -66,6 +64,7 @@ class BotTest extends AbstractBotTest {
         assertThat(bot.isRunning()).isFalse();
 
         awaitTick(bot);
+        awaitCondition(bot::isRunning, 1000);
         assertThat(bot.isRunning()).isTrue();
     }
 
@@ -85,30 +84,28 @@ class BotTest extends AbstractBotTest {
 
     @Test
     @Description("setForward()")
-    @Disabled
     void givenMockedServer_whenCallingSetForward_thenDistanceRemainingMustBeUpdatedToNewValue() {
         var bot = start();
         assertThat(bot.getSpeed()).isZero();
         awaitTick(bot);
 
         bot.setForward(100);
-        awaitDistanceRemainingChanged(bot);
-        assertThat(bot.getDistanceRemaining()).isEqualTo(100);
 
-        awaitDistanceRemainingChanged(bot);
-
-        int traveledDistance = MAX_SPEED;
+        assertThat(awaitDistanceRemainingChanged(bot)).isTrue();
+        double traveledDistance = bot.getTargetSpeed();
         assertThat(bot.getDistanceRemaining()).isEqualTo(100 - traveledDistance);
 
-        awaitDistanceRemainingChanged(bot);
+        assertThat(awaitDistanceRemainingChanged(bot)).isTrue();
+        traveledDistance += bot.getTargetSpeed();
+        assertThat(bot.getDistanceRemaining()).isEqualTo(100 - traveledDistance);
 
-        traveledDistance += MAX_SPEED;
+        assertThat(awaitDistanceRemainingChanged(bot)).isTrue();
+        traveledDistance += bot.getTargetSpeed();
         assertThat(bot.getDistanceRemaining()).isEqualTo(100 - traveledDistance);
     }
 
     @Test
     @Description("forward()")
-    @Disabled
     void givenMockedServer_whenCallingForward_thenDistanceRemainingMustEventuallyReachZero() {
         var bot = start();
         awaitTick(bot);
@@ -120,30 +117,30 @@ class BotTest extends AbstractBotTest {
             }
         }).start();
 
-        bot.forward(8 + 8 + 7 + 6 + 5 + 4 + 3 + 2 + 1);
+        bot.forward(8 + 7 + 6 + 5 + 4 + 3 + 2 + 1);
 
         assertThat(bot.getDistanceRemaining()).isZero();
     }
 
     @Test
     @Description("setBack()")
-    @Disabled
-    void givenMockedServer_whenCallingSetBack_thenDistanceRemainingMustBeUpdatedToNewValue() throws InterruptedException {
+    void givenMockedServer_whenCallingSetBack_thenDistanceRemainingMustBeUpdatedToNewValue() {
         var bot = start();
         assertThat(bot.getSpeed()).isZero();
         awaitTick(bot);
 
         bot.setBack(100);
-        assertThat(bot.getDistanceRemaining()).isEqualTo(-100);
-        var traveledDistance = bot.getSpeed();
 
-        awaitDistanceRemainingChanged(bot);
-
+        assertThat(awaitDistanceRemainingChanged(bot)).isTrue();
+        var traveledDistance = bot.getTargetSpeed();
         assertThat(bot.getDistanceRemaining()).isEqualTo(-100 - traveledDistance);
-        traveledDistance += bot.getSpeed();
 
-        awaitDistanceRemainingChanged(bot);
+        assertThat(awaitDistanceRemainingChanged(bot)).isTrue();
+        traveledDistance += bot.getTargetSpeed();
+        assertThat(bot.getDistanceRemaining()).isEqualTo(-100 - traveledDistance);
 
+        assertThat(awaitDistanceRemainingChanged(bot)).isTrue();
+        traveledDistance += bot.getTargetSpeed();
         assertThat(bot.getDistanceRemaining()).isEqualTo(-100 - traveledDistance);
     }
 
@@ -153,13 +150,10 @@ class BotTest extends AbstractBotTest {
         return bot;
     }
 
-    private void awaitDistanceRemainingChanged(Bot bot) {
+    private boolean awaitDistanceRemainingChanged(Bot bot) {
+        final double initialDistanceRemaining = bot.getDistanceRemaining();
         awaitBotIntent();
         awaitTick(bot);
-
-        double distanceRemain = bot.getDistanceRemaining();
-        do {
-            Thread.yield();
-        } while (bot.getDistanceRemaining() == distanceRemain);
+        return awaitCondition(() -> initialDistanceRemaining != bot.getDistanceRemaining(), 100_000);
     }
 }

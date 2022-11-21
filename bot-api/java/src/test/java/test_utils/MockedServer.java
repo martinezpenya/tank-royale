@@ -53,7 +53,7 @@ public final class MockedServer {
 
     private double botEnergy = BOT_ENERGY;
     private double botGunHeat = BOT_GUN_HEAT;
-    private double botSpeed = BOT_SPEED;
+    private volatile double botSpeed = BOT_SPEED;
 
     private final WebSocketServerImpl server = new WebSocketServerImpl();
 
@@ -198,6 +198,10 @@ public final class MockedServer {
                 case BOT_INTENT:
                     System.out.println("BOT_INTENT");
 
+                    if (--botSpeed < 0) {
+                        return;
+                    }
+
                     try {
                         botIntentContinueLatch.await();
                     } catch (InterruptedException e) {
@@ -210,8 +214,6 @@ public final class MockedServer {
 
                     sendTickEventForBot(conn, turnNumber++);
                     tickEventLatch.countDown();
-
-                    botSpeed--;
                     break;
             }
         }
