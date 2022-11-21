@@ -4,6 +4,8 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import test_utils.MockedServer;
 
+import java.util.function.BooleanSupplier;
+
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 
 abstract class AbstractBotTest {
@@ -83,6 +85,7 @@ abstract class AbstractBotTest {
     protected void awaitGameStarted(BaseBot bot) {
         assertThat(server.awaitGameStarted(1000)).isTrue();
 
+        long startTime = System.currentTimeMillis();
         boolean noException = false;
         do {
             try {
@@ -91,12 +94,13 @@ abstract class AbstractBotTest {
             } catch (BotException ex) {
                 Thread.yield();
             }
-        } while (!noException);
+        } while (!noException && System.currentTimeMillis() - startTime < 1000);
     }
 
     protected void awaitTick(BaseBot bot) {
         assertThat(server.awaitTick(1000)).isTrue();
 
+        long startTime = System.currentTimeMillis();
         boolean noException = false;
         do {
             try {
@@ -105,7 +109,7 @@ abstract class AbstractBotTest {
             } catch (BotException ex) {
                 Thread.yield();
             }
-        } while (!noException);
+        } while (!noException && System.currentTimeMillis() - startTime < 1000);
     }
 
     protected void awaitBotIntent() {
@@ -114,5 +118,19 @@ abstract class AbstractBotTest {
 
     protected static boolean exceptionContainsEnvVarName(BotException botException, String envVarName) {
         return botException.getMessage().toUpperCase().contains(envVarName);
+    }
+
+    protected boolean awaitCondition(BooleanSupplier condition, int milliSeconds) {
+        long startTime = System.currentTimeMillis();
+        do {
+            try {
+                if (condition.getAsBoolean()) {
+                    return true;
+                }
+            } catch (BotException ignore) {
+            }
+            Thread.yield();
+        } while (System.currentTimeMillis() - startTime < milliSeconds);
+        return false;
     }
 }
