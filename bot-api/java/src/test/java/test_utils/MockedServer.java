@@ -211,15 +211,11 @@ public final class MockedServer {
                     botIntent = gson.fromJson(text, BotIntent.class);
                     botIntentLatch.countDown();
 
-                    if (botIntent.getTargetSpeed() == 0) {
-                        break;
-                    }
-
                     sendTickEventForBot(conn, turnNumber++);
+
                     tickEventLatch.countDown();
 
                     botSpeed--;
-
                     break;
             }
         }
