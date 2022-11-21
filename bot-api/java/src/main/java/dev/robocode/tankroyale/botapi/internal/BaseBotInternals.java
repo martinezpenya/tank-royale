@@ -653,10 +653,6 @@ public final class BaseBotInternals {
         public void onError(WebSocket websocket, Throwable error) {
             botEventHandlers.onConnectionError.publish(new ConnectionErrorEvent(serverUrl, error));
             closedLatch.countDown();
-
-            // Terminate
-            System.out.println("Exiting");
-            System.exit(1);
         }
 
         @Override
