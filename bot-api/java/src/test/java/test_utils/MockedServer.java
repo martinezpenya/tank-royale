@@ -20,6 +20,7 @@ import static dev.robocode.tankroyale.schema.Message.Type.*;
 public final class MockedServer {
 
     public static final int PORT = 7913;
+    public static final String SERVER_URL = "ws://localhost:" + PORT;
 
     public static String SESSION_ID = "123abc";
     public static String NAME = MockedServer.class.getSimpleName();
@@ -74,7 +75,7 @@ public final class MockedServer {
 
     public static URI getServerUrl() {
         try {
-            return new URI("ws://localhost:" + PORT);
+            return new URI(SERVER_URL);
         } catch (URISyntaxException ex) {
             throw new RuntimeException(ex);
         }
@@ -99,10 +100,6 @@ public final class MockedServer {
 
     public void setBotGunHeat(double gunHeat) {
         this.botGunHeat = gunHeat;
-    }
-
-    public void setBotSpeed(double speed) {
-        this.botSpeed = speed;
     }
 
     public boolean awaitConnection(int milliSeconds) {
@@ -212,7 +209,6 @@ public final class MockedServer {
                     botIntentLatch.countDown();
 
                     sendTickEventForBot(conn, turnNumber++);
-
                     tickEventLatch.countDown();
 
                     botSpeed--;
@@ -244,6 +240,7 @@ public final class MockedServer {
             var gameStarted = new GameStartedEventForBot();
             gameStarted.setType(GAME_STARTED_EVENT_FOR_BOT);
             gameStarted.setMyId(MY_ID);
+
             var gameSetup = new GameSetup();
             gameSetup.setGameType(GAME_TYPE);
             gameSetup.setArenaWidth(ARENA_WIDTH);
@@ -254,6 +251,7 @@ public final class MockedServer {
             gameSetup.setTurnTimeout(TURN_TIMEOUT);
             gameSetup.setReadyTimeout(READY_TIMEOUT);
             gameStarted.setGameSetup(gameSetup);
+
             send(conn, gameStarted);
         }
 

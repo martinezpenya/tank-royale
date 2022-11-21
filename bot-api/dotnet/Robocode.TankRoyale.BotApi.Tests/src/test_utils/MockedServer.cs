@@ -10,8 +10,8 @@ namespace Robocode.TankRoyale.BotApi.Tests.Test_utils;
 
 public class MockedServer
 {
-    public static Uri ServerUrl => new($"ws://127.0.0.1:{Port}");
     public const int Port = 7913;
+    public static Uri ServerUrl => new($"ws://127.0.0.1:{Port}");
 
     public static string SessionId = "123abc";
     public static string Name = nameof(MockedServer);
@@ -28,7 +28,7 @@ public class MockedServer
     public static int TurnTimeout = 30_000;
     public static int ReadyTimeout = 1_000_000;
 
-    public static int BotEnemyCcount = 7;
+    public static int BotEnemyCount = 7;
     public static double BotEnergy = 99.7;
     public static double BotX = 44.5;
     public static double BotY = 721.34;
@@ -44,9 +44,10 @@ public class MockedServer
 
     private double _botEnergy = BotEnergy;
     private double _botGunHeat = BotGunHeat;
+    private double _botSpeed = BotSpeed;
 
     private WebSocketServer _server;
-    private readonly ISet<IWebSocketConnection> _clients = new HashSet<IWebSocketConnection>();
+//    private readonly ISet<IWebSocketConnection> _clients = new HashSet<IWebSocketConnection>();
 
     private readonly EventWaitHandle _openedEvent = new AutoResetEvent(false);
     private readonly EventWaitHandle _botHandshakeEvent = new AutoResetEvent(false);
@@ -75,8 +76,8 @@ public class MockedServer
 
     public void Stop()
     {
-        foreach (var client in _clients) client.Close();
-        _clients.Clear();
+//        foreach (var client in _clients) client.Close();
+//        _clients.Clear();
 
         _server.Dispose();
     }
@@ -167,7 +168,7 @@ public class MockedServer
 
     private void OnOpen(IWebSocketConnection conn)
     {
-        _clients.Add(conn);
+//        _clients.Add(conn);
         
         _openedEvent.Set();
         SendServerHandshake(conn);
@@ -175,7 +176,7 @@ public class MockedServer
     
     private void OnClose(IWebSocketConnection conn)
     {
-        _clients.Remove(conn);
+//        _clients.Remove(conn);
     }
 
     private void OnMessage(IWebSocketConnection conn, string messageJson)
@@ -211,6 +212,8 @@ public class MockedServer
 
                 SendTickEventForBot(conn, _turnNumber++);
                 _tickEvent.Set();
+
+                _botSpeed--;
                 break;
         }
     }
@@ -273,7 +276,7 @@ public class MockedServer
             Type = EnumUtil.GetEnumMemberAttrValue(MessageType.TickEventForBot),
             RoundNumber = 1,
             TurnNumber = turnNumber,
-            EnemyCount = BotEnemyCcount
+            EnemyCount = BotEnemyCount
         };
 
         var turnRate = BotTurnRate;
