@@ -111,13 +111,13 @@ class BotTest extends AbstractBotTest {
         awaitTick(bot);
 
         new Thread(() -> {
-            for (int i = 0; i <= 9; i++) {
+            for (int i = 0; i <= 4; i++) {
                 awaitDistanceRemainingChanged(bot);
                 System.out.println(bot.getDistanceRemaining() + ", " + bot.getSpeed());
             }
         }).start();
 
-        bot.forward(8 + 7 + 6 + 5 + 4 + 3 + 2 + 1);
+        bot.forward(8 + 6 + 4 + 2);
 
         assertThat(bot.getDistanceRemaining()).isZero();
     }

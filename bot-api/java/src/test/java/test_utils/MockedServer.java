@@ -53,7 +53,7 @@ public final class MockedServer {
 
     private double botEnergy = BOT_ENERGY;
     private double botGunHeat = BOT_GUN_HEAT;
-    private volatile double botSpeed = BOT_SPEED;
+    private double botSpeed = BOT_SPEED;
 
     private final WebSocketServerImpl server = new WebSocketServerImpl();
 
@@ -198,7 +198,7 @@ public final class MockedServer {
                 case BOT_INTENT:
                     System.out.println("BOT_INTENT");
 
-                    if (--botSpeed < 0) {
+                    if (botSpeed < 0) {
                         return;
                     }
 
@@ -214,6 +214,8 @@ public final class MockedServer {
 
                     sendTickEventForBot(conn, turnNumber++);
                     tickEventLatch.countDown();
+
+                    botSpeed -= 2;
                     break;
             }
         }
