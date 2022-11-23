@@ -187,37 +187,22 @@ internal sealed class BotInternals : IStopResumeListener
     public void SetTurnRate(double turnRate)
     {
         overrideTurnRate = false;
-        if (IsNaN(turnRate))
-        {
-            throw new ArgumentException("turnRate cannot be NaN");
-        }
-
-        baseBotInternals.BotIntent.TurnRate = turnRate;
         TurnRemaining = ToInfiniteValue(turnRate);
+        baseBotInternals.TurnRate = turnRate;
     }
 
     public void SetGunTurnRate(double gunTurnRate)
     {
         overrideGunTurnRate = false;
-        if (IsNaN(gunTurnRate))
-        {
-            throw new ArgumentException("gunTurnRate cannot be NaN");
-        }
-
-        baseBotInternals.BotIntent.GunTurnRate = gunTurnRate;
         GunTurnRemaining = ToInfiniteValue(gunTurnRate);
+        baseBotInternals.GunTurnRate = gunTurnRate;
     }
 
     public void SetRadarTurnRate(double radarTurnRate)
     {
         overrideRadarTurnRate = false;
-        if (IsNaN(radarTurnRate))
-        {
-            throw new ArgumentException("radarTurnRate cannot be NaN");
-        }
-
-        baseBotInternals.BotIntent.RadarTurnRate = radarTurnRate;
         RadarTurnRemaining = ToInfiniteValue(radarTurnRate);
+        baseBotInternals.RadarTurnRate = radarTurnRate;
     }
 
     private static double ToInfiniteValue(double turnRate)
@@ -249,7 +234,7 @@ internal sealed class BotInternals : IStopResumeListener
             _ => 0
         };
 
-        baseBotInternals.BotIntent.TargetSpeed = targetSpeed;
+        baseBotInternals.TargetSpeed = targetSpeed;
     }
 
     internal void SetForward(double distance)
@@ -257,10 +242,7 @@ internal sealed class BotInternals : IStopResumeListener
         overrideTargetSpeed = true;
         if (IsNaN(distance))
             throw new ArgumentException("distance cannot be NaN");
-
-        var speed = baseBotInternals.GetNewTargetSpeed(bot.Speed, distance);
-        baseBotInternals.BotIntent.TargetSpeed = speed;
-
+        GetAndSetNewTargetSpeed(distance);
         DistanceRemaining = distance;
     }
 
@@ -281,11 +263,8 @@ internal sealed class BotInternals : IStopResumeListener
     internal void SetTurnLeft(double degrees)
     {
         overrideTurnRate = true;
-        if (IsNaN(degrees))
-            throw new ArgumentException("degrees cannot be NaN");
-
         TurnRemaining = degrees;
-        baseBotInternals.BotIntent.TurnRate = degrees;
+        baseBotInternals.TurnRate = degrees;
     }
 
     internal void TurnLeft(double degrees)
@@ -305,11 +284,8 @@ internal sealed class BotInternals : IStopResumeListener
     internal void SetTurnGunLeft(double degrees)
     {
         overrideGunTurnRate = true;
-        if (IsNaN(degrees))
-            throw new ArgumentException("degrees cannot be NaN");
-
         GunTurnRemaining = degrees;
-        baseBotInternals.BotIntent.GunTurnRate = degrees;
+        baseBotInternals.GunTurnRate = degrees;
     }
 
     internal void TurnGunLeft(double degrees)
@@ -329,11 +305,8 @@ internal sealed class BotInternals : IStopResumeListener
     internal void SetTurnRadarLeft(double degrees)
     {
         overrideRadarTurnRate = true;
-        if (IsNaN(degrees))
-            throw new ArgumentException("degrees cannot be NaN");
-
         RadarTurnRemaining = degrees;
-        baseBotInternals.BotIntent.RadarTurnRate = degrees;
+        baseBotInternals.RadarTurnRate = degrees;
     }
 
     internal void TurnRadarLeft(double degrees)
@@ -424,7 +397,7 @@ internal sealed class BotInternals : IStopResumeListener
                 TurnRemaining = 0;
         }
 
-        baseBotInternals.BotIntent.TurnRate = TurnRemaining;
+        baseBotInternals.TurnRate = TurnRemaining;
     }
 
     private void UpdateGunTurnRemaining()
@@ -444,7 +417,7 @@ internal sealed class BotInternals : IStopResumeListener
                 GunTurnRemaining = 0;
         }
 
-        baseBotInternals.BotIntent.GunTurnRate = GunTurnRemaining;
+        baseBotInternals.GunTurnRate = GunTurnRemaining;
     }
 
     private void UpdateRadarTurnRemaining()
@@ -464,7 +437,7 @@ internal sealed class BotInternals : IStopResumeListener
                 RadarTurnRemaining = 0;
         }
 
-        baseBotInternals.BotIntent.RadarTurnRate = RadarTurnRemaining;
+        baseBotInternals.RadarTurnRate = RadarTurnRemaining;
     }
 
     private void UpdateMovement()
@@ -482,7 +455,7 @@ internal sealed class BotInternals : IStopResumeListener
         }
         else if (IsInfinity(DistanceRemaining))
         {
-            baseBotInternals.BotIntent.TargetSpeed =
+            baseBotInternals.TargetSpeed =
                 IsPositiveInfinity(DistanceRemaining) ? Constants.MaxSpeed : -Constants.MaxSpeed;
         }
         else if (DistanceRemaining != 0)
@@ -491,11 +464,10 @@ internal sealed class BotInternals : IStopResumeListener
 
             // This is Nat Pavasant's method described here:
             // https://robowiki.net/wiki/User:Positive/Optimal_Velocity#Nat.27s_updateMovement
-            var speed = baseBotInternals.GetNewTargetSpeed(bot.Speed, distance);
-            baseBotInternals.BotIntent.TargetSpeed = speed;
+            var newSpeed = GetAndSetNewTargetSpeed(distance);
 
             // If we are over-driving our distance and we are now at velocity=0 then we stopped
-            if (IsNearZero(speed) && isOverDriving)
+            if (IsNearZero(newSpeed) && isOverDriving)
             {
                 DistanceRemaining = 0;
                 distance = 0;
@@ -503,11 +475,18 @@ internal sealed class BotInternals : IStopResumeListener
             }
 
             // the overdrive flag
-            if (Math.Sign(distance * speed) != -1)
-                isOverDriving = baseBotInternals.GetDistanceTraveledUntilStop(speed) > Math.Abs(distance);
+            if (Math.Sign(distance * newSpeed) != -1)
+                isOverDriving = baseBotInternals.GetDistanceTraveledUntilStop(newSpeed) > Math.Abs(distance);
 
-            DistanceRemaining = distance - speed;
+            DistanceRemaining = distance - newSpeed;
         }
+    }
+
+    private double GetAndSetNewTargetSpeed(double distance)
+    {
+        var speed = baseBotInternals.GetNewTargetSpeed(bot.Speed, distance);
+        baseBotInternals.TargetSpeed = speed;
+        return speed;
     }
 
     private static bool IsNearZero(double value) => Math.Abs(value) < .00001;
