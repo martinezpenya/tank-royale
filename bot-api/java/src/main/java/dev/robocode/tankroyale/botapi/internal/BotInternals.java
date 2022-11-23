@@ -271,7 +271,7 @@ public final class BotInternals implements IStopResumeListener {
             setTurnLeft(degrees);
             do {
                 bot.go();
-            } while (isRunning() && getTurnRemaining() != 0);
+            } while (isRunning() && turnRemaining != 0);
         }
     }
 
@@ -291,7 +291,7 @@ public final class BotInternals implements IStopResumeListener {
             setTurnGunLeft(degrees);
             do {
                 bot.go();
-            } while (isRunning() && getGunTurnRemaining() != 0);
+            } while (isRunning() && gunTurnRemaining != 0);
         }
     }
 
@@ -311,7 +311,7 @@ public final class BotInternals implements IStopResumeListener {
             setTurnRadarLeft(degrees);
             do {
                 bot.go();
-            } while (isRunning() && getRadarTurnRemaining() != 0);
+            } while (isRunning() && radarTurnRemaining != 0);
         }
     }
 
@@ -449,6 +449,8 @@ public final class BotInternals implements IStopResumeListener {
             }
 
             distanceRemaining = distance - newSpeed;
+
+//            System.out.println("distanceRemaining: " + distanceRemaining + ", distance: " + distance + ", newSpeed: " + newSpeed);
         }
     }
 
