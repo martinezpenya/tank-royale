@@ -11,6 +11,8 @@ import java.net.URI;
  */
 public abstract class Bot extends BaseBot implements IBot {
 
+    // TODO: check that setMaxSpeed, setTurnRate, setMaxGunRate, setMaxRadarRate works with forward, turnLeft, turnGunLeft, turnRadarLeft
+
     private final BotInternals __botInternals = new BotInternals(this, super.__baseBotInternals);
 
     /**
