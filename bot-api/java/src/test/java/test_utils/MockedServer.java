@@ -51,9 +51,19 @@ public final class MockedServer {
     public static double BOT_RADAR_TURN_RATE = 34.1;
     public static double BOT_GUN_HEAT = 7.6;
 
-    private double botEnergy = BOT_ENERGY;
-    private double botGunHeat = BOT_GUN_HEAT;
-    private double botSpeed = BOT_SPEED;
+    private int turnNumber = 1;
+    private double energy = BOT_ENERGY;
+    private double gunHeat = BOT_GUN_HEAT;
+    private double speed = BOT_SPEED;
+    private double direction = BOT_DIRECTION;
+
+    private double speedIncrement;
+    private double turnIncrement;
+
+    private Double speedMinLimit;
+    private Double speedMaxLimit;
+    private Double directionMinLimit;
+    private Double directionMaxLimit;
 
     private final WebSocketServerImpl server = new WebSocketServerImpl();
 
@@ -69,8 +79,6 @@ public final class MockedServer {
 
     private BotHandshake botHandshake;
     private BotIntent botIntent;
-
-    private int turnNumber = 1;
 
 
     public static URI getServerUrl() {
@@ -94,12 +102,36 @@ public final class MockedServer {
         }
     }
 
-    public void setBotEnergy(double energy) {
-        this.botEnergy = energy;
+    public void setEnergy(double energy) {
+        this.energy = energy;
     }
 
-    public void setBotGunHeat(double gunHeat) {
-        this.botGunHeat = gunHeat;
+    public void setGunHeat(double gunHeat) {
+        this.gunHeat = gunHeat;
+    }
+
+    public void setSpeedIncrement(double increment) {
+        this.speedIncrement = increment;
+    }
+
+    public void setTurnIncrement(double increment) {
+        this.turnIncrement = increment;
+    }
+
+    public void setSpeedMinLimit(double minLimit) {
+        this.speedMinLimit = minLimit;
+    }
+
+    public void setSpeedMaxLimit(double maxLimit) {
+        this.speedMaxLimit = maxLimit;
+    }
+
+    public void setDirectionMinLimit(double minLimit) {
+        this.directionMinLimit = minLimit;
+    }
+
+    public void setDirectionMaxLimit(double maxLimit) {
+        this.directionMaxLimit = maxLimit;
     }
 
     public boolean awaitConnection(int milliSeconds) {
@@ -198,9 +230,11 @@ public final class MockedServer {
                 case BOT_INTENT:
                     System.out.println("BOT_INTENT");
 
-                    if (botSpeed < 0) {
-                        return;
-                    }
+                    if (speedMinLimit != null && speed < speedMinLimit) return;
+                    if (speedMaxLimit != null && speed > speedMaxLimit) return;
+
+                    if (directionMinLimit != null && direction < directionMinLimit) return;
+                    if (directionMaxLimit != null && direction > directionMaxLimit) return;
 
                     try {
                         botIntentContinueLatch.await();
@@ -215,7 +249,9 @@ public final class MockedServer {
                     sendTickEventForBot(conn, turnNumber++);
                     tickEventLatch.countDown();
 
-                    botSpeed -= 2;
+                    // Update states
+                    speed += speedIncrement;
+                    direction += turnIncrement;
                     break;
             }
         }
@@ -274,18 +310,18 @@ public final class MockedServer {
             tickEvent.setEnemyCount(BOT_ENEMY_COUNT);
 
             var state = new BotState();
-            state.setEnergy(botEnergy);
+            state.setEnergy(energy);
             state.setX(BOT_X);
             state.setY(BOT_Y);
-            state.setDirection(BOT_DIRECTION);
+            state.setDirection(direction);
             state.setGunDirection(BOT_GUN_DIRECTION);
             state.setRadarDirection(BOT_RADAR_DIRECTION);
             state.setRadarSweep(BOT_RADAR_SWEEP);
-            state.setSpeed(botSpeed);
+            state.setSpeed(speed);
             state.setTurnRate(BOT_TURN_RATE);
             state.setGunTurnRate(BOT_GUN_TURN_RATE);
             state.setRadarTurnRate(BOT_RADAR_TURN_RATE);
-            state.setGunHeat(botGunHeat);
+            state.setGunHeat(gunHeat);
             tickEvent.setBotState(state);
 
             if (botIntent != null) {

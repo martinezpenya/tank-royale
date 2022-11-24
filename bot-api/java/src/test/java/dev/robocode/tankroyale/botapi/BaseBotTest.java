@@ -154,7 +154,7 @@ class BaseBotTest extends AbstractBotTest {
     @Description("isDisabled() = false")
     void givenMockedServerAndSettingEnergyToNonZero_whenCallingIsDisabled_thenDisabledValueMustBeFalse() {
         var bot = start();
-        server.setBotEnergy(0.1);
+        server.setEnergy(0.1);
         awaitTick(bot);
         assertThat(bot.isDisabled()).isFalse();
     }
@@ -163,7 +163,7 @@ class BaseBotTest extends AbstractBotTest {
     @Description("isDisabled() = true")
     void givenMockedServerAndSettingEnergyToZero_whenCallingIsDisabled_thenDisabledValueMustBeTrue() {
         var bot = start();
-        server.setBotEnergy(0);
+        server.setEnergy(0);
         awaitTick(bot);
         assertThat(bot.isDisabled()).isTrue();
     }
@@ -485,7 +485,7 @@ class BaseBotTest extends AbstractBotTest {
     @Test
     @Description("setFire() when gunHeat > 0")
     void givenMockedServer_whenCallingSetFireAndGunHeatGreaterThanZero_thenReturnFalse() {
-        server.setBotGunHeat(0.1);
+        server.setGunHeat(0.1);
         var bot = startAndAwaitTick();
         assertThat(bot.setFire(3)).isFalse();
     }
@@ -493,7 +493,7 @@ class BaseBotTest extends AbstractBotTest {
     @Test
     @Description("setFire() when gunHeat = 0")
     void givenMockedServer_whenCallingSetFireAndGunHeatIsZero_thenReturnTrue() {
-        server.setBotGunHeat(0);
+        server.setGunHeat(0);
         var bot = startAndAwaitTick();
         assertThat(bot.setFire(3)).isTrue();
     }
@@ -501,7 +501,7 @@ class BaseBotTest extends AbstractBotTest {
     @Test
     @Description("getFirepower()")
     void givenMockedServer_whenCallingGetFirepowerAfterSetFire_thenReturnSameValueAsFired() {
-        server.setBotGunHeat(0);
+        server.setGunHeat(0);
         var bot = startAndAwaitTick();
         bot.setFire(2.5);
         assertThat(bot.getFirepower()).isEqualTo(2.5);

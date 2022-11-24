@@ -42,9 +42,19 @@ public class MockedServer
     public static double BotRadarTurnRate = 34.1;
     public static double BotGunHeat = 7.6;
 
-    private double _botEnergy = BotEnergy;
-    private double _botGunHeat = BotGunHeat;
-    private double _botSpeed = BotSpeed;
+    private int _turnNumber = 1;
+    private double _energy = BotEnergy;
+    private double _gunHeat = BotGunHeat;
+    private double _speed = BotSpeed;
+    private double _direction = BotDirection;
+
+    private double _speedIncrement;
+    private double _turnIncrement;
+    
+    private double? _speedMinLimit;
+    private double? _speedMaxLimit;
+    private double? _directionMinLimit;
+    private double? _directionMaxLimit;
 
     private WebSocketServer _server;
 //    private readonly ISet<IWebSocketConnection> _clients = new HashSet<IWebSocketConnection>();
@@ -58,8 +68,6 @@ public class MockedServer
     private readonly EventWaitHandle _botIntentContinueEvent = new AutoResetEvent(false);
 
     private BotIntent _botIntent;
-
-    private int _turnNumber = 1;
     
 
     public void Start()
@@ -82,14 +90,38 @@ public class MockedServer
         _server.Dispose();
     }
 
-    public void SetBotEnergy(double botEnergy)
+    public void SetEnergy(double energy)
     {
-        _botEnergy = botEnergy;
+        _energy = energy;
     }
 
-    public void SetBotGunHeat(double botGunHeat)
+    public void SetGunHeat(double gunHeat)
     {
-        _botGunHeat = botGunHeat;
+        _gunHeat = gunHeat;
+    }
+
+    public void SetSpeedIncrement(double increment) {
+        _speedIncrement = increment;
+    }
+
+    public void SetTurnIncrement(double increment) {
+        _turnIncrement = increment;
+    }
+
+    public void SetSpeedMinLimit(double minLimit) {
+        _speedMinLimit = minLimit;
+    }
+
+    public void SetSpeedMaxLimit(double maxLimit) {
+        _speedMaxLimit = maxLimit;
+    }
+    
+    public void SetDirectionMinLimit(double minLimit) {
+        _directionMinLimit = minLimit;
+    }
+
+    public void SetDirectionMaxLimit(double maxLimit) {
+        _directionMaxLimit = maxLimit;
     }
 
     public bool AwaitConnection(int milliSeconds)
@@ -206,14 +238,22 @@ public class MockedServer
 
             case MessageType.BotIntent:
                 _botIntentContinueEvent.WaitOne();
-                
+
+                if (_speedMinLimit != null && _speed < _speedMinLimit) return;
+                if (_speedMaxLimit != null && _speed > _speedMaxLimit) return;
+
+                if (_directionMinLimit != null && _direction < _directionMinLimit) return;
+                if (_directionMaxLimit != null && _direction > _directionMaxLimit) return;
+
                 _botIntent = JsonConvert.DeserializeObject<BotIntent>(messageJson);
                 _botIntentEvent.Set();
 
                 SendTickEventForBot(conn, _turnNumber++);
                 _tickEvent.Set();
 
-                _botSpeed--;
+                // Update states
+                _speed += _speedIncrement;
+                _direction += _turnIncrement;
                 break;
         }
     }
@@ -292,18 +332,18 @@ public class MockedServer
 
         var state = new Schema.BotState
         {
-            Energy = _botEnergy,
+            Energy = _energy,
             X = BotX,
             Y = BotY,
-            Direction = BotDirection,
+            Direction = _direction,
             GunDirection = BotGunDirection,
             RadarDirection = BotRadarDirection,
             RadarSweep = BotRadarSweep,
-            Speed = BotSpeed,
+            Speed = _speed,
             TurnRate = turnRate,
             GunTurnRate = gunTurnRate,
             RadarTurnRate = radarTurnRate,
-            GunHeat = _botGunHeat
+            GunHeat = _gunHeat
         };
         tickEvent.BotState = state;
 

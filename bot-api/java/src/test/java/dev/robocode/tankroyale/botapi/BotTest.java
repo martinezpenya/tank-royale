@@ -2,6 +2,7 @@ package dev.robocode.tankroyale.botapi;
 
 
 import jdk.jfr.Description;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import test_utils.MockedServer;
 
@@ -85,11 +86,15 @@ class BotTest extends AbstractBotTest {
     @Test
     @Description("setForward()")
     void givenMockedServer_whenCallingSetForward_thenDistanceRemainingMustBeUpdatedToNewValue() {
+        server.setSpeedIncrement(-2);
+        server.setSpeedMinLimit(0);
+
         var bot = start();
         assertThat(bot.getSpeed()).isZero();
         awaitTick(bot);
 
         bot.setForward(100);
+        assertThat(bot.getDistanceRemaining()).isEqualTo(100);
 
         assertThat(awaitDistanceRemainingChanged(bot)).isTrue();
         double traveledDistance = bot.getTargetSpeed();
@@ -107,24 +112,31 @@ class BotTest extends AbstractBotTest {
     @Test
     @Description("forward()")
     void givenMockedServer_whenCallingForward_thenDistanceRemainingMustEventuallyReachZero() {
+        server.setSpeedIncrement(-2);
+        server.setSpeedMinLimit(0);
+
         var bot = start();
         awaitTick(bot);
 
         new Thread(() -> {
             for (int i = 0; i <= 4; i++) {
-                awaitDistanceRemainingChanged(bot);
-                System.out.println(bot.getDistanceRemaining() + ", " + bot.getSpeed());
+                assertThat(awaitDistanceRemainingChanged(bot)).isTrue();
+                sleep(5);
+//                System.out.println(bot.getDistanceRemaining() + ", " + bot.getSpeed());
             }
         }).start();
 
         bot.forward(8 + 6 + 4 + 2);
-
         assertThat(bot.getDistanceRemaining()).isZero();
+        assertThat(bot.getSpeed()).isZero();
     }
 
     @Test
     @Description("setBack()")
     void givenMockedServer_whenCallingSetBack_thenDistanceRemainingMustBeUpdatedToNewValue() {
+        server.setSpeedIncrement(-2);
+        server.setSpeedMinLimit(0);
+
         var bot = start();
         assertThat(bot.getSpeed()).isZero();
         awaitTick(bot);
@@ -144,16 +156,97 @@ class BotTest extends AbstractBotTest {
         assertThat(bot.getDistanceRemaining()).isEqualTo(-100 - traveledDistance);
     }
 
+    @Test
+    @Description("back()")
+    @Disabled("does not work yet. Probably because MockedServer stops at getSpeed() < 0")
+    void givenMockedServer_whenCallingBack_thenDistanceRemainingMustEventuallyReachZero() {
+        var bot = start();
+        awaitTick(bot);
+
+        new Thread(() -> {
+            for (int i = 0; i <= 7; i++) {
+                assertThat(awaitDistanceRemainingChanged(bot)).isTrue();
+                sleep(5);
+//                System.out.println(bot.getDistanceRemaining() + ", " + bot.getSpeed());
+            }
+        }).start();
+
+        bot.back(8 + 6 + 4 + 2 + 0 + 1 + 2);
+
+        assertThat(bot.getDistanceRemaining()).isZero();
+    }
+
+    @Test
+    @Description("getDistanceRemaining()")
+    void givenTestBot_whenCallingGetDistanceRemaining_thenReturnTheDistanceRemainingJustSet() {
+        var bot = start();
+        awaitTick(bot);
+
+        bot.setForward(100);
+        assertThat(bot.getDistanceRemaining()).isEqualTo(100);
+    }
+
+    @Test
+    @Description("setTurnLeft()")
+    void givenTestBot_whenCallingSetTurnLeft_thenTurnRemainingMustBeEqualToTheSetValue() {
+        var bot = start();
+        awaitBotIntent();
+
+        bot.setTurnLeft(97);
+
+        assertThat(bot.getTurnRemaining()).isEqualTo(97);
+    }
+
+    @Test
+    @Description("turnLeft()")
+    void givenTestBot_whenCallingTurnLeft_thenBotMustHaveTurnThisValue() {
+        final int degreesToTurn = 7 * 10;
+        server.setTurnIncrement(10);
+        server.setDirectionMaxLimit(MockedServer.BOT_DIRECTION + degreesToTurn);
+
+        var bot = start();
+        awaitTick(bot);
+
+        new Thread(() -> {
+            for (int i = 0; i <= 7; i++) {
+                awaitDirectionChanged(bot);
+                sleep(5);
+//                System.out.println(bot.getDirection() + ", " + bot.getTurnRate());
+            }
+        }).start();
+
+        double startDirection = bot.getDirection();
+        bot.turnLeft(degreesToTurn);
+
+        assertThat(bot.getDirection()).isEqualTo(bot.normalizeAbsoluteAngle(startDirection + degreesToTurn));
+        assertThat(bot.getTurnRemaining()).isZero();
+    }
+
     protected static Bot start() {
         var bot = new TestBot();
         startAsync(bot);
         return bot;
     }
 
+    private void sleep(int millis) {
+        try {
+            Thread.sleep(millis);
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
     private boolean awaitDistanceRemainingChanged(Bot bot) {
         final double initialDistanceRemaining = bot.getDistanceRemaining();
         awaitBotIntent();
         awaitTick(bot);
-        return awaitCondition(() -> initialDistanceRemaining != bot.getDistanceRemaining(), 100_000);
+        return awaitCondition(() -> initialDistanceRemaining != bot.getDistanceRemaining(), 1000);
     }
+
+    private boolean awaitDirectionChanged(Bot bot) {
+        final double initialDirection = bot.getDirection();
+        awaitBotIntent();
+        awaitTick(bot);
+        return awaitCondition(() -> initialDirection != bot.getDirection(), 1000);
+   }
 }

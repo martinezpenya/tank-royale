@@ -154,7 +154,7 @@ public class BaseBotTest : AbstractBotTest
     public void GivenMockedServerAndSettingEnergyToNonZero_whenCallingIsDisabled_thenDisabledValueMustBeFalse()
     {
         var bot = Start();
-        Server.SetBotEnergy(0.1);
+        Server.SetEnergy(0.1);
         AwaitTick(bot);
         Assert.That(bot.IsDisabled, Is.False);
     }
@@ -164,7 +164,7 @@ public class BaseBotTest : AbstractBotTest
     public void GivenMockedServerAndSettingEnergyToZero_whenCallingIsDisabled_thenDisabledValueMustBeTrue()
     {
         var bot = Start();
-        Server.SetBotEnergy(0);
+        Server.SetEnergy(0);
         AwaitTick(bot);
         Assert.That(bot.IsDisabled, Is.True);
     }
@@ -511,7 +511,7 @@ public class BaseBotTest : AbstractBotTest
     [Test]
     public void GivenMockedServer_whenCallingSetFireAndGunHeatGreaterThanZero_thenReturnFalse()
     {
-        Server.SetBotGunHeat(0.1);
+        Server.SetGunHeat(0.1);
         var bot = StartAndAwaitTick();
         Assert.That(bot.SetFire(3), Is.False);
     }
@@ -520,7 +520,7 @@ public class BaseBotTest : AbstractBotTest
     [Test]
     public void GivenMockedServer_whenCallingSetFireAndGunHeatIsZero_thenReturnTrue()
     {
-        Server.SetBotGunHeat(0);
+        Server.SetGunHeat(0);
         var bot = StartAndAwaitTick();
         Assert.That(bot.SetFire(3), Is.True);
     }
@@ -529,7 +529,7 @@ public class BaseBotTest : AbstractBotTest
     [Test]
     public void GivenMockedServer_whenCallingFirepowerAfterSetFire_thenReturnSameValueAsFired()
     {
-        Server.SetBotGunHeat(0);
+        Server.SetGunHeat(0);
         var bot = StartAndAwaitTick();
         bot.SetFire(2.5);
         Assert.That(bot.Firepower, Is.EqualTo(2.5));
