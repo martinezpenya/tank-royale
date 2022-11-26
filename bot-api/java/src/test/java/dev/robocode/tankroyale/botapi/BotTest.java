@@ -2,7 +2,6 @@ package dev.robocode.tankroyale.botapi;
 
 
 import jdk.jfr.Description;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import test_utils.MockedServer;
 
@@ -158,22 +157,25 @@ class BotTest extends AbstractBotTest {
 
     @Test
     @Description("back()")
-    @Disabled("does not work yet. Probably because MockedServer stops at getSpeed() < 0")
     void givenMockedServer_whenCallingBack_thenDistanceRemainingMustEventuallyReachZero() {
+        server.setSpeed(-8);
+        server.setSpeedIncrement(1);
+        server.setSpeedMaxLimit(0);
+
         var bot = start();
         awaitTick(bot);
 
         new Thread(() -> {
-            for (int i = 0; i <= 7; i++) {
-                assertThat(awaitDistanceRemainingChanged(bot)).isTrue();
+            for (int i = 0; i <= 8; i++) {
+                awaitDistanceRemainingChanged(bot);
                 sleep(5);
-//                System.out.println(bot.getDistanceRemaining() + ", " + bot.getSpeed());
+                System.out.println(bot.getDistanceRemaining() + ", " + bot.getSpeed());
             }
         }).start();
 
-        bot.back(8 + 6 + 4 + 2 + 0 + 1 + 2);
-
+        bot.back(8 + 7 + 6 + 5 + 4 + 3 + 2 + 1);
         assertThat(bot.getDistanceRemaining()).isZero();
+        assertThat(bot.getSpeed()).isZero();
     }
 
     @Test

@@ -53,8 +53,8 @@ public final class MockedServer {
 
     private int turnNumber = 1;
     private double energy = BOT_ENERGY;
-    private double gunHeat = BOT_GUN_HEAT;
     private double speed = BOT_SPEED;
+    private double gunHeat = BOT_GUN_HEAT;
     private double direction = BOT_DIRECTION;
 
     private double speedIncrement;
@@ -104,6 +104,10 @@ public final class MockedServer {
 
     public void setEnergy(double energy) {
         this.energy = energy;
+    }
+
+    public void setSpeed(double speed) {
+        this.speed = speed;
     }
 
     public void setGunHeat(double gunHeat) {
