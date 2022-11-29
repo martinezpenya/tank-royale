@@ -19,6 +19,16 @@
       method.
     - Added more test units, which did show bugs within the Bot API for both Java and .Net.
 
+#### 🪲 Bug Fixes
+
+- Rendering issues on Windows (and Linux?) when using accelerated hardware, by setting these Java properties:
+    * `sun.java2d.d3d=false` (turn off use of Direct3D)
+    * `sun.java2d.ddoffscreen=false` (turn of Direct Draw off-screen)
+    * `sun.java2d.noddraw=true` (no use of Direct Draw)
+    * `sun.java2d.opengl=true` (turn on OpenGL)
+
+#### ⚡ Changes:
+
 - Bot API: The event priority order was reversed to match the order used with the original Robocode.
 
 ## 📦 0.17.4 - Maintenance - 16-Oct-2022
