@@ -12,7 +12,6 @@
       had been set for the current turn.
 - Rendering issues on Windows (and Linux?) when using accelerated hardware, by setting these Java properties:
     - `sun.java2d.d3d=false` (turn off use of Direct3D)
-    - `sun.java2d.ddoffscreen=false` (turn of Direct Draw off-screen)
     - `sun.java2d.noddraw=true` (no use of Direct Draw)
     - `sun.java2d.opengl=true` (turn on OpenGL)
 
