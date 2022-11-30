@@ -169,7 +169,7 @@ class BotTest extends AbstractBotTest {
             for (int i = 0; i <= 8; i++) {
                 awaitDistanceRemainingChanged(bot);
                 sleep(5);
-                System.out.println(bot.getDistanceRemaining() + ", " + bot.getSpeed());
+//                System.out.println(bot.getDistanceRemaining() + ", " + bot.getSpeed());
             }
         }).start();
 
@@ -186,6 +186,9 @@ class BotTest extends AbstractBotTest {
 
         bot.setForward(100);
         assertThat(bot.getDistanceRemaining()).isEqualTo(100);
+
+        bot.setForward(-201);
+        assertThat(bot.getDistanceRemaining()).isEqualTo(-201);
     }
 
     @Test
@@ -224,6 +227,178 @@ class BotTest extends AbstractBotTest {
         assertThat(bot.getTurnRemaining()).isZero();
     }
 
+    @Test
+    @Description("setTurnGunLeft()")
+    void givenTestBot_whenCallingSetTurnGunLeft_thenGunTurnRemainingMustBeEqualToTheSetValue() {
+        var bot = start();
+        awaitBotIntent();
+
+        bot.setTurnLeft(88);
+
+        assertThat(bot.getTurnRemaining()).isEqualTo(88);
+    }
+
+    @Test
+    @Description("turnGunLeft()")
+    void givenTestBot_whenCallingTurnGunLeft_thenGunMustHaveTurnedThisValue() {
+        final int degreesToTurn = 6 * 8;
+        server.setGunTurnIncrement(8);
+        server.setGunDirectionMaxLimit(MockedServer.BOT_GUN_DIRECTION + degreesToTurn);
+
+        var bot = start();
+        awaitTick(bot);
+
+        new Thread(() -> {
+            for (int i = 0; i <= 6; i++) {
+                awaitGunDirectionChanged(bot);
+                sleep(5);
+//                System.out.println(bot.getGunDirection() + ", " + bot.getGunTurnRate());
+            }
+        }).start();
+
+        double startDirection = bot.getGunDirection();
+        bot.turnGunLeft(degreesToTurn);
+
+        assertThat(bot.getGunDirection()).isEqualTo(bot.normalizeAbsoluteAngle(startDirection + degreesToTurn));
+        assertThat(bot.getGunTurnRemaining()).isZero();
+    }
+
+    @Test
+    @Description("setTurnGunRight()")
+    void givenTestBot_whenCallingSetTurnGunRight_thenGunTurnRemainingMustBeEqualToTheSetValue() {
+        var bot = start();
+        awaitBotIntent();
+
+        bot.setTurnGunRight(52);
+
+        assertThat(bot.getGunTurnRemaining()).isEqualTo(-52);
+    }
+
+    @Test
+    @Description("turnGunRight()")
+    void givenTestBot_whenCallingTurnGunRight_thenGunMustHaveTurnedThisValue() {
+        var bot = start();
+
+        final int degreesToTurn = 8 * 7;
+        server.setGunTurnIncrement(-7);
+        server.setGunDirectionMinLimit(MockedServer.BOT_GUN_DIRECTION - degreesToTurn);
+
+        awaitTick(bot);
+
+        new Thread(() -> {
+            for (int i = 0; i <= 8; i++) {
+                awaitGunDirectionChanged(bot);
+                sleep(5);
+//                System.out.println(bot.getGunDirection() + ", " + bot.getGunTurnRate());
+            }
+        }).start();
+
+        double startDirection = bot.getGunDirection();
+        bot.turnGunRight(degreesToTurn);
+
+        assertThat(bot.getGunDirection()).isEqualTo(startDirection - degreesToTurn);
+        assertThat(bot.getGunTurnRemaining()).isZero();
+    }
+
+    @Test
+    @Description("getGunTurnRemaining()")
+    void givenTestBot_whenCallingGetGunTurnRemaining_thenReturnTheGunRemainingJustSet() {
+        var bot = start();
+        awaitTick(bot);
+
+        bot.setTurnGunLeft(77);
+        assertThat(bot.getGunTurnRemaining()).isEqualTo(77);
+
+        bot.setTurnGunLeft(-124);
+        assertThat(bot.getGunTurnRemaining()).isEqualTo(-124);
+    }
+
+    @Test
+    @Description("setTurnRadarLeft()")
+    void givenTestBot_whenCallingSetTurnRadarLeft_thenRadarTurnRemainingMustBeEqualToTheSetValue() {
+        var bot = start();
+        awaitBotIntent();
+
+        bot.setTurnRadarLeft(106);
+
+        assertThat(bot.getRadarTurnRemaining()).isEqualTo(106);
+    }
+
+    @Test
+    @Description("turnRadarLeft()")
+    void givenTestBot_whenCallingTurnRadarLeft_thenRadarMustHaveTurnedThisValue() {
+        final int degreesToTurn = 5 * 7;
+        server.setRadarTurnIncrement(7);
+        server.setRadarDirectionMaxLimit(MockedServer.BOT_RADAR_DIRECTION + degreesToTurn);
+
+        var bot = start();
+        awaitTick(bot);
+
+        new Thread(() -> {
+            for (int i = 0; i <= 5; i++) {
+                awaitRadarDirectionChanged(bot);
+                sleep(5);
+//                System.out.println(bot.getRadarDirection() + ", " + bot.getRadarTurnRate());
+            }
+        }).start();
+
+        double startDirection = bot.getRadarDirection();
+        bot.turnRadarLeft(degreesToTurn);
+
+        assertThat(bot.getRadarDirection()).isEqualTo(bot.normalizeAbsoluteAngle(startDirection + degreesToTurn));
+        assertThat(bot.getRadarTurnRemaining()).isZero();
+    }
+
+    @Test
+    @Description("setTurnRadarRight()")
+    void givenTestBot_whenCallingSetTurnRadarRight_thenRadarTurnRemainingMustBeEqualToTheSetValue() {
+        var bot = start();
+        awaitBotIntent();
+
+        bot.setTurnRadarRight(130);
+
+        assertThat(bot.getRadarTurnRemaining()).isEqualTo(-130);
+    }
+
+    @Test
+    @Description("turnRadarRight()")
+    void givenTestBot_whenCallingTurnRadarRight_thenRadarMustHaveTurnedThisValue() {
+        var bot = start();
+
+        final int degreesToTurn = 9 * 7;
+        server.setRadarTurnIncrement(-7);
+        server.setRadarDirectionMinLimit(MockedServer.BOT_RADAR_DIRECTION - degreesToTurn);
+
+        awaitTick(bot);
+
+        new Thread(() -> {
+            for (int i = 0; i <= 9; i++) {
+                awaitRadarDirectionChanged(bot);
+                sleep(5);
+//                System.out.println(bot.getRadarDirection() + ", " + bot.getRadarTurnRate());
+            }
+        }).start();
+
+        double startDirection = bot.getRadarDirection();
+        bot.turnRadarRight(degreesToTurn);
+
+        assertThat(bot.getRadarDirection()).isEqualTo(startDirection - degreesToTurn);
+        assertThat(bot.getRadarTurnRemaining()).isZero();
+    }
+
+    @Test
+    @Description("getRadarTurnRemaining()")
+    void givenTestBot_whenCallingGetRadarTurnRemaining_thenReturnTheRadarRemainingJustSet() {
+        var bot = start();
+        awaitTick(bot);
+
+        bot.setTurnRadarLeft(56);
+        assertThat(bot.getRadarTurnRemaining()).isEqualTo(56);
+
+        bot.setTurnRadarLeft(-123);
+        assertThat(bot.getRadarTurnRemaining()).isEqualTo(-123);
+    }
+
     protected static Bot start() {
         var bot = new TestBot();
         startAsync(bot);
@@ -245,10 +420,24 @@ class BotTest extends AbstractBotTest {
         return awaitCondition(() -> initialDistanceRemaining != bot.getDistanceRemaining(), 1000);
     }
 
-    private boolean awaitDirectionChanged(Bot bot) {
+    private void awaitDirectionChanged(Bot bot) {
         final double initialDirection = bot.getDirection();
         awaitBotIntent();
         awaitTick(bot);
-        return awaitCondition(() -> initialDirection != bot.getDirection(), 1000);
+        awaitCondition(() -> initialDirection != bot.getDirection(), 1000);
    }
+
+    private void awaitGunDirectionChanged(Bot bot) {
+        final double initialGunDirection = bot.getGunDirection();
+        awaitBotIntent();
+        awaitTick(bot);
+        awaitCondition(() -> initialGunDirection != bot.getGunDirection(), 1000);
+    }
+
+    private void awaitRadarDirectionChanged(Bot bot) {
+        final double initialRadarDirection = bot.getRadarDirection();
+        awaitBotIntent();
+        awaitTick(bot);
+        awaitCondition(() -> initialRadarDirection != bot.getRadarDirection(), 1000);
+    }
 }

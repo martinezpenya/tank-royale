@@ -1,8 +1,5 @@
-package dev.robocode.tankroyale.server.math
+package dev.robocode.tankroyale.server.model
 
-import dev.robocode.tankroyale.server.model.IPoint
-import dev.robocode.tankroyale.server.model.Line
-import dev.robocode.tankroyale.server.model.Point
 import kotlin.math.abs
 import kotlin.math.atan2
 import kotlin.math.cos

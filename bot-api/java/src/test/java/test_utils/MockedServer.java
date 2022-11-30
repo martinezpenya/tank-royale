@@ -42,8 +42,8 @@ public final class MockedServer {
     public static double BOT_X = 44.5;
     public static double BOT_Y = 721.34;
     public static double BOT_DIRECTION = 120.1;
-    public static double BOT_GUN_DIRECTION = 3.45;
-    public static double BOT_RADAR_DIRECTION = 653.3;
+    public static double BOT_GUN_DIRECTION = 103.45;
+    public static double BOT_RADAR_DIRECTION = 253.3;
     public static double BOT_RADAR_SWEEP = 13.5;
     public static double BOT_SPEED = 8.0;
     public static double BOT_TURN_RATE = 5.1;
@@ -56,14 +56,22 @@ public final class MockedServer {
     private double speed = BOT_SPEED;
     private double gunHeat = BOT_GUN_HEAT;
     private double direction = BOT_DIRECTION;
+    private double gunDirection = BOT_GUN_DIRECTION;
+    private double radarDirection = BOT_RADAR_DIRECTION;
 
     private double speedIncrement;
     private double turnIncrement;
+    private double gunTurnIncrement;
+    private double radarTurnIncrement;
 
     private Double speedMinLimit;
     private Double speedMaxLimit;
     private Double directionMinLimit;
     private Double directionMaxLimit;
+    private Double gunDirectionMinLimit;
+    private Double gunDirectionMaxLimit;
+    private Double radarDirectionMinLimit;
+    private Double radarDirectionMaxLimit;
 
     private final WebSocketServerImpl server = new WebSocketServerImpl();
 
@@ -122,6 +130,14 @@ public final class MockedServer {
         this.turnIncrement = increment;
     }
 
+    public void setGunTurnIncrement(double increment) {
+        this.gunTurnIncrement = increment;
+    }
+
+    public void setRadarTurnIncrement(double increment) {
+        this.radarTurnIncrement = increment;
+    }
+
     public void setSpeedMinLimit(double minLimit) {
         this.speedMinLimit = minLimit;
     }
@@ -136,6 +152,22 @@ public final class MockedServer {
 
     public void setDirectionMaxLimit(double maxLimit) {
         this.directionMaxLimit = maxLimit;
+    }
+
+    public void setGunDirectionMinLimit(double minLimit) {
+        this.gunDirectionMinLimit = minLimit;
+    }
+
+    public void setGunDirectionMaxLimit(double maxLimit) {
+        this.gunDirectionMaxLimit = maxLimit;
+    }
+
+    public void setRadarDirectionMinLimit(double minLimit) {
+        this.radarDirectionMinLimit = minLimit;
+    }
+
+    public void setRadarDirectionMaxLimit(double maxLimit) {
+        this.radarDirectionMaxLimit = maxLimit;
     }
 
     public boolean awaitConnection(int milliSeconds) {
@@ -240,6 +272,12 @@ public final class MockedServer {
                     if (directionMinLimit != null && direction < directionMinLimit) return;
                     if (directionMaxLimit != null && direction > directionMaxLimit) return;
 
+                    if (gunDirectionMinLimit != null && gunDirection < gunDirectionMinLimit) return;
+                    if (gunDirectionMaxLimit != null && gunDirection > gunDirectionMaxLimit) return;
+
+                    if (radarDirectionMinLimit != null && radarDirection < radarDirectionMinLimit) return;
+                    if (radarDirectionMaxLimit != null && radarDirection > radarDirectionMaxLimit) return;
+
                     try {
                         botIntentContinueLatch.await();
                     } catch (InterruptedException e) {
@@ -256,6 +294,8 @@ public final class MockedServer {
                     // Update states
                     speed += speedIncrement;
                     direction += turnIncrement;
+                    gunDirection += gunTurnIncrement;
+                    radarDirection += radarTurnIncrement;
                     break;
             }
         }
@@ -318,8 +358,8 @@ public final class MockedServer {
             state.setX(BOT_X);
             state.setY(BOT_Y);
             state.setDirection(direction);
-            state.setGunDirection(BOT_GUN_DIRECTION);
-            state.setRadarDirection(BOT_RADAR_DIRECTION);
+            state.setGunDirection(gunDirection);
+            state.setRadarDirection(radarDirection);
             state.setRadarSweep(BOT_RADAR_SWEEP);
             state.setSpeed(speed);
             state.setTurnRate(BOT_TURN_RATE);
