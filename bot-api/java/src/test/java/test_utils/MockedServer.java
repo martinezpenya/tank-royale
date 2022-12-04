@@ -378,6 +378,10 @@ public final class MockedServer {
                 if (botIntent.getRadarTurnRate() != null) {
                     state.setRadarTurnRate(botIntent.getRadarTurnRate());
                 }
+
+                if (botIntent.getFirepower() != null) {
+                    tickEvent.getEvents().add(new BulletFiredEvent()); // bullet event is completely empty
+                }
             }
 
             var bulletState1 = createBulletState(1);

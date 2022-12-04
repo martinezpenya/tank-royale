@@ -182,7 +182,6 @@ class BotTest extends AbstractBotTest {
     @Description("getDistanceRemaining()")
     void givenTestBot_whenCallingGetDistanceRemaining_thenReturnTheDistanceRemainingJustSet() {
         var bot = start();
-        awaitTick(bot);
 
         bot.setForward(100);
         assertThat(bot.getDistanceRemaining()).isEqualTo(100);
@@ -195,11 +194,12 @@ class BotTest extends AbstractBotTest {
     @Description("setTurnLeft()")
     void givenTestBot_whenCallingSetTurnLeft_thenTurnRemainingMustBeEqualToTheSetValue() {
         var bot = start();
-        awaitBotIntent();
 
         bot.setTurnLeft(97);
-
         assertThat(bot.getTurnRemaining()).isEqualTo(97);
+
+        bot.setTurnLeft(-45);
+        assertThat(bot.getTurnRemaining()).isEqualTo(-45);
     }
 
     @Test
@@ -228,14 +228,65 @@ class BotTest extends AbstractBotTest {
     }
 
     @Test
+    @Description("setTurnRight()")
+    void givenTestBot_whenCallingSetTurnRight_thenTurnRemainingMustBeEqualToTheSetValue() {
+        var bot = start();
+
+        bot.setTurnRight(88);
+        assertThat(bot.getTurnRemaining()).isEqualTo(-88);
+
+        bot.setTurnRight(-44);
+        assertThat(bot.getTurnRemaining()).isEqualTo(44);
+    }
+
+    @Test
+    @Description("turnRight()")
+    void givenTestBot_whenCallingTurnRight_thenBotMustHaveTurnedThisValue() {
+        var bot = start();
+
+        final int degreesToTurn = 6 * 8;
+        server.setTurnIncrement(-8);
+        server.setDirectionMinLimit(MockedServer.BOT_DIRECTION - degreesToTurn);
+
+        awaitTick(bot);
+
+        new Thread(() -> {
+            for (int i = 0; i <= 6; i++) {
+                awaitDirectionChanged(bot);
+                sleep(5);
+//                System.out.println(bot.getDirection() + ", " + bot.getTurnRate());
+            }
+        }).start();
+
+        double startDirection = bot.getDirection();
+        bot.turnRight(degreesToTurn);
+
+        assertThat(bot.getDirection()).isEqualTo(startDirection - degreesToTurn);
+        assertThat(bot.getTurnRemaining()).isZero();
+    }
+
+    @Test
+    @Description("getTurnRemaining()")
+    void givenTestBot_whenCallingGetTurnRemaining_thenReturnTheTurnRemainingJustSet() {
+        var bot = start();
+
+        bot.setTurnLeft(77);
+        assertThat(bot.getTurnRemaining()).isEqualTo(77);
+
+        bot.setTurnLeft(-124);
+        assertThat(bot.getTurnRemaining()).isEqualTo(-124);
+    }
+
+    @Test
     @Description("setTurnGunLeft()")
     void givenTestBot_whenCallingSetTurnGunLeft_thenGunTurnRemainingMustBeEqualToTheSetValue() {
         var bot = start();
-        awaitBotIntent();
 
         bot.setTurnLeft(88);
-
         assertThat(bot.getTurnRemaining()).isEqualTo(88);
+
+        bot.setTurnLeft(-53);
+        assertThat(bot.getTurnRemaining()).isEqualTo(-53);
     }
 
     @Test
@@ -267,11 +318,12 @@ class BotTest extends AbstractBotTest {
     @Description("setTurnGunRight()")
     void givenTestBot_whenCallingSetTurnGunRight_thenGunTurnRemainingMustBeEqualToTheSetValue() {
         var bot = start();
-        awaitBotIntent();
 
         bot.setTurnGunRight(52);
-
         assertThat(bot.getGunTurnRemaining()).isEqualTo(-52);
+
+        bot.setTurnGunRight(-109);
+        assertThat(bot.getGunTurnRemaining()).isEqualTo(109);
     }
 
     @Test
@@ -302,9 +354,8 @@ class BotTest extends AbstractBotTest {
 
     @Test
     @Description("getGunTurnRemaining()")
-    void givenTestBot_whenCallingGetGunTurnRemaining_thenReturnTheGunRemainingJustSet() {
+    void givenTestBot_whenCallingGetGunTurnRemaining_thenReturnTheGunTurnRemainingJustSet() {
         var bot = start();
-        awaitTick(bot);
 
         bot.setTurnGunLeft(77);
         assertThat(bot.getGunTurnRemaining()).isEqualTo(77);
@@ -317,11 +368,12 @@ class BotTest extends AbstractBotTest {
     @Description("setTurnRadarLeft()")
     void givenTestBot_whenCallingSetTurnRadarLeft_thenRadarTurnRemainingMustBeEqualToTheSetValue() {
         var bot = start();
-        awaitBotIntent();
 
         bot.setTurnRadarLeft(106);
-
         assertThat(bot.getRadarTurnRemaining()).isEqualTo(106);
+
+        bot.setTurnRadarLeft(-63);
+        assertThat(bot.getRadarTurnRemaining()).isEqualTo(-63);
     }
 
     @Test
@@ -353,11 +405,12 @@ class BotTest extends AbstractBotTest {
     @Description("setTurnRadarRight()")
     void givenTestBot_whenCallingSetTurnRadarRight_thenRadarTurnRemainingMustBeEqualToTheSetValue() {
         var bot = start();
-        awaitBotIntent();
 
         bot.setTurnRadarRight(130);
-
         assertThat(bot.getRadarTurnRemaining()).isEqualTo(-130);
+
+        bot.setTurnRadarRight(-21);
+        assertThat(bot.getRadarTurnRemaining()).isEqualTo(21);
     }
 
     @Test
@@ -388,15 +441,33 @@ class BotTest extends AbstractBotTest {
 
     @Test
     @Description("getRadarTurnRemaining()")
-    void givenTestBot_whenCallingGetRadarTurnRemaining_thenReturnTheRadarRemainingJustSet() {
+    void givenTestBot_whenCallingGetRadarTurnRemaining_thenReturnTheRadarTurnRemainingJustSet() {
         var bot = start();
-        awaitTick(bot);
 
         bot.setTurnRadarLeft(56);
         assertThat(bot.getRadarTurnRemaining()).isEqualTo(56);
 
         bot.setTurnRadarLeft(-123);
         assertThat(bot.getRadarTurnRemaining()).isEqualTo(-123);
+    }
+
+    @Test
+    @Description("fire()")
+    void testFire() {
+        server.setGunHeat(0);
+
+        var bot = start();
+        awaitTick(bot);
+
+        new Thread(() -> {
+            awaitBotIntent();
+            awaitTick(bot);
+            awaitCondition(() -> bot.getFirepower() != 0, 1000);
+            sleep(5);
+        }).start();
+
+        bot.fire(2.25);
+        assertThat(bot.getFirepower()).isEqualTo(2.25);
     }
 
     protected static Bot start() {
