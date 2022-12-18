@@ -9,7 +9,7 @@
       "output": {
         ".html": {
           "relative_path": "api/Robocode.TankRoyale.BotApi.BaseBot.html",
-          "hash": "ZCAu7xEdym3ay4Re6EzBRJ+xFdEAU0aX9UmCWkA6np8="
+          "hash": "R8OiH/iNhA/cly+5DFJl52V+Ac1BcYhqlk74KNHvGAs="
         }
       },
       "is_incremental": false,
@@ -21,7 +21,7 @@
       "output": {
         ".html": {
           "relative_path": "api/Robocode.TankRoyale.BotApi.Bot.html",
-          "hash": "TdX0nIVkXA1nlzF+zTaAD2wt9XrYnTWEka55L+NwA/Y="
+          "hash": "ptzFqBXfegi9liNnnoALqDZ5I+L2689y2u+V5qnjw0c="
         }
       },
       "is_incremental": false,
@@ -45,7 +45,7 @@
       "output": {
         ".html": {
           "relative_path": "api/Robocode.TankRoyale.BotApi.BotInfo.IBuilder.html",
-          "hash": "ug/rzqHE2MGWaNPupx7riHLHRHWAWHyjDSV+z3+ZZIQ="
+          "hash": "Kam989RXbYmehDBVNa9a/wZCtIZ/AE20TbBSlGCCYBg="
         }
       },
       "is_incremental": true,
@@ -201,7 +201,7 @@
       "output": {
         ".html": {
           "relative_path": "api/Robocode.TankRoyale.BotApi.Events.Condition.html",
-          "hash": "Lj5dzxO4Odyq+SwAonZPbsB0spvfZIDVfLb/dxRfPVs="
+          "hash": "iSbVBCIVkaOZE0hYkKa3t5ENpXg3DJocW2LsOjWtFko="
         }
       },
       "is_incremental": false,
@@ -273,7 +273,7 @@
       "output": {
         ".html": {
           "relative_path": "api/Robocode.TankRoyale.BotApi.Events.DefaultEventPriority.html",
-          "hash": "0/3pXS4MnR86Evz3O8qHarcopHvKf20nJPl7L1jq7Lo="
+          "hash": "1WnICqDsNZY9x1F2ST7x3tIgIUkQu50+qocklDlXT0k="
         }
       },
       "is_incremental": false,
@@ -489,7 +489,7 @@
       "output": {
         ".html": {
           "relative_path": "api/Robocode.TankRoyale.BotApi.IBaseBot.html",
-          "hash": "dHpx+CSDJ4SP32WfiNRdtD5RApEnFdkkI0wN6ZaHk2A="
+          "hash": "T0LZR5N6PuFCfvJpe/favsi1AO1g8bmFIv19xxwN8rc="
         }
       },
       "is_incremental": false,

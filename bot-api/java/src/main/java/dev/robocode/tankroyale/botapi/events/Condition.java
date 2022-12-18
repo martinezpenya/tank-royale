@@ -53,7 +53,7 @@ import java.util.concurrent.Callable;
  *      }
  *    }
  * </code></pre>
- */
+½½ */
 public class Condition {
 
     // Optional name of the condition.
