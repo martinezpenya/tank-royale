@@ -48,12 +48,12 @@ import java.util.concurrent.Callable;
  *      while (isRunning()) {
  *        ...
  *        setTurnRight(90);
- *        waitFor(new Condition(() -> getTurnRemaining() == 0));
+ *        waitFor(new Condition(() -&gt; getTurnRemaining() == 0));
  *        ...
  *      }
  *    }
  * </code></pre>
-½½ */
+ */
 public class Condition {
 
     // Optional name of the condition.
