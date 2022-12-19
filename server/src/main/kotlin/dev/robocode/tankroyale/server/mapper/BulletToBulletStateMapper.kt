@@ -1,8 +1,8 @@
 package dev.robocode.tankroyale.server.mapper
 
 import dev.robocode.tankroyale.schema.BulletState
-import dev.robocode.tankroyale.server.model.IBullet
 import dev.robocode.tankroyale.server.model.normalizeAbsoluteDegrees
+import dev.robocode.tankroyale.server.model.IBullet
 
 object BulletToBulletStateMapper {
     fun map(bullet: IBullet): BulletState {

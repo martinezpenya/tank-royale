@@ -34,8 +34,8 @@ fun normalizeRelativeDegrees(angle: Double): Double {
 /**
  * Tests if a `double` value is near to another 'double' value. It is recommended to use this method instead of testing
  * if the two doubles are equal using an expression like this: `value1 == value2`. The reason is that this expression
- * might never become `true` due to the precision of double values. Whether or not, the specified doubles are close
- * enough to be considered as equal, is defined by the following expression:
+ * might never become `true` due to the precision of double values. Whether, the specified doubles are close enough to
+ * be considered as equal, is defined by the following expression:
  * `abs(value1 - value2) < epsilon`, where epsilon is defined to be 1E-6.
  *
  * @param value the `double` value to compare to this double.
