@@ -743,8 +743,6 @@ public sealed class BaseBotInternals
 
     private void HandleGameStarted(string json)
     {
-        Console.WriteLine("HandleGameStarted");
-        
         var gameStartedEventForBot = JsonConvert.DeserializeObject<S.GameStartedEventForBot>(json);
         if (gameStartedEventForBot == null)
             throw new BotException("GameStartedEventForBot is missing in JSON message from server");
