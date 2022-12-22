@@ -404,7 +404,7 @@ public final class BotInternals implements IStopResumeListener {
             }
         } else if (Double.isInfinite(distanceRemaining)) {
             baseBotInternals.setTargetSpeed(distanceRemaining == Double.POSITIVE_INFINITY ? MAX_SPEED : -MAX_SPEED);
-        } else if (distanceRemaining != 0) {
+        } else {
             double distance = distanceRemaining;
 
             // This is Nat Pavasant's method described here:
@@ -423,8 +423,6 @@ public final class BotInternals implements IStopResumeListener {
             }
 
             distanceRemaining = distance - newSpeed;
-
-//            System.out.println("distanceRemaining: " + distanceRemaining + ", distance: " + distance + ", newSpeed: " + newSpeed);
         }
     }
 

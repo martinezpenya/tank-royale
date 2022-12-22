@@ -287,13 +287,13 @@ fun isCircleIntersectingCircleSector(
 
 /**
  * Checks if vector v1 is clockwise to vector v2 compared to a shared starting point.
- * @param v1_x is the x coordinate of vector v1.
- * @param v1_y is the y coordinate of vector v1.
- * @param v2_x is the x coordinate of vector v2.
- * @param v2_y is the y coordinate of vector v2.
+ * @param v1x is the x coordinate of vector v1.
+ * @param v1y is the y coordinate of vector v1.
+ * @param v2x is the x coordinate of vector v2.
+ * @param v2y is the y coordinate of vector v2.
  * @return `true` if v1 is clockwise to v2; `false` otherwise.
  */
-fun isClockwise(v1_x: Double, v1_y: Double, v2_x: Double, v2_y: Double): Boolean = v1_x * v2_y <= v1_y * v2_x
+fun isClockwise(v1x: Double, v1y: Double, v2x: Double, v2y: Double): Boolean = v1x * v2y <= v1y * v2x
 
 /**
  * Returns a random direction in the range 0 up to 360 degrees.

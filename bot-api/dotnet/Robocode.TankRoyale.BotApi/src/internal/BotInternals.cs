@@ -458,7 +458,7 @@ internal sealed class BotInternals : IStopResumeListener
             baseBotInternals.TargetSpeed =
                 IsPositiveInfinity(DistanceRemaining) ? Constants.MaxSpeed : -Constants.MaxSpeed;
         }
-        else if (DistanceRemaining != 0)
+        else
         {
             var distance = DistanceRemaining;
 
