@@ -54,11 +54,15 @@ public class Program
             schema.AllowAdditionalProperties = false;
 
             // Prepare a C# code generator with our settings
-            var settings = new CSharpGeneratorSettings();
+            var settings = new CSharpGeneratorSettings()
+            {
+                Namespace = "Robocode.TankRoyale.Schema",
+                JsonLibrary = CSharpJsonLibrary.SystemTextJson
+            };
+
             var typeResolver = new CustomizedCSharpTypeResolver(settings);
 
             var generator = new CSharpGenerator(schema, settings, typeResolver);
-            settings.Namespace = "Robocode.TankRoyale.Schema";
 
             // Generate and output source file
             var text = generator.GenerateFile();

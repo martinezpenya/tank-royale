@@ -3,9 +3,10 @@ using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.IO;
 using System.Linq;
+using System.Text.Json;
 using System.Threading;
 using System.Web;
-using Newtonsoft.Json;
+using System.Text.Json.Serialization;
 using S = Robocode.TankRoyale.Schema;
 using E = Robocode.TankRoyale.BotApi.Events;
 using Robocode.TankRoyale.BotApi.Mapper;
@@ -273,7 +274,7 @@ public sealed class BaseBotInternals
     private void SendIntent()
     {
         TransferStdOutToBotIntent();
-        socket.SendTextMessage(JsonConvert.SerializeObject(BotIntent));
+        socket.SendTextMessage(JsonSerializer.Serialize(BotIntent));
     }
 
     private void TransferStdOutToBotIntent()
@@ -717,7 +718,7 @@ public sealed class BaseBotInternals
 
     private void HandleTextMessage(string json)
     {
-        var jsonMsg = JsonConvert.DeserializeObject<Dictionary<string, object>>(json);
+        var jsonMsg = JsonSerializer.Deserialize<Dictionary<string, object>>(json);
         try
         {
             var type = (string)jsonMsg?["type"];
@@ -782,7 +783,7 @@ public sealed class BaseBotInternals
 
     private void HandleRoundStarted(string json)
     {
-        var roundStartedEvent = JsonConvert.DeserializeObject<S.RoundStartedEvent>(json);
+        var roundStartedEvent = JsonSerializer.Deserialize<S.RoundStartedEvent>(json);
         if (roundStartedEvent == null)
             throw new BotException("RoundStartedEvent is missing in JSON message from server");
 
@@ -791,7 +792,7 @@ public sealed class BaseBotInternals
 
     private void HandleRoundEnded(string json)
     {
-        var roundEndedEventForBot = JsonConvert.DeserializeObject<S.RoundEndedEventForBot>(json);
+        var roundEndedEventForBot = JsonSerializer.Deserialize<S.RoundEndedEventForBot>(json);
         if (roundEndedEventForBot == null)
             throw new BotException("RoundEndedEventForBot is missing in JSON message from server");
 
@@ -802,7 +803,7 @@ public sealed class BaseBotInternals
 
     private void HandleGameStarted(string json)
     {
-        var gameStartedEventForBot = JsonConvert.DeserializeObject<S.GameStartedEventForBot>(json);
+        var gameStartedEventForBot = JsonSerializer.Deserialize<S.GameStartedEventForBot>(json);
         if (gameStartedEventForBot == null)
             throw new BotException("GameStartedEventForBot is missing in JSON message from server");
 
@@ -815,7 +816,7 @@ public sealed class BaseBotInternals
             Type = EnumUtil.GetEnumMemberAttrValue(S.MessageType.BotReady)
         };
 
-        var msg = JsonConvert.SerializeObject(ready);
+        var msg = JsonSerializer.Serialize(ready);
         socket.SendTextMessage(msg);
 
         BotEventHandlers.FireGameStartedEvent(new E.GameStartedEvent(myId, gameSetup));
@@ -824,7 +825,7 @@ public sealed class BaseBotInternals
     private void HandleGameEnded(string json)
     {
         // Send the game ended event
-        var gameEndedEventForBot = JsonConvert.DeserializeObject<S.GameEndedEventForBot>(json);
+        var gameEndedEventForBot = JsonSerializer.Deserialize<S.GameEndedEventForBot>(json);
         if (gameEndedEventForBot == null)
             throw new BotException("GameEndedEventForBot is missing in JSON message from server");
 
@@ -839,12 +840,12 @@ public sealed class BaseBotInternals
 
     private void HandleServerHandshake(string json)
     {
-        serverHandshake = JsonConvert.DeserializeObject<S.ServerHandshake>(json);
+        serverHandshake = JsonSerializer.Deserialize<S.ServerHandshake>(json);
 
         // Reply by sending bot handshake
         var botHandshake = BotHandshakeFactory.Create(serverHandshake?.SessionId, botInfo, serverSecret);
         botHandshake.Type = EnumUtil.GetEnumMemberAttrValue(S.MessageType.BotHandshake);
-        var text = JsonConvert.SerializeObject(botHandshake);
+        var text = JsonSerializer.Serialize(botHandshake);
 
         socket.SendTextMessage(text);
     }
@@ -853,7 +854,7 @@ public sealed class BaseBotInternals
     {
         if (eventHandlingDisabled) return;
 
-        var skippedTurnEvent = JsonConvert.DeserializeObject<Schema.SkippedTurnEvent>(json);
+        var skippedTurnEvent = JsonSerializer.Deserialize<Schema.SkippedTurnEvent>(json);
         BotEventHandlers.FireSkippedTurnEvent(EventMapper.Map(skippedTurnEvent));
     }
 }
