@@ -6,7 +6,6 @@ using System.Linq;
 using System.Text.Json;
 using System.Threading;
 using System.Web;
-using System.Text.Json.Serialization;
 using S = Robocode.TankRoyale.Schema;
 using E = Robocode.TankRoyale.BotApi.Events;
 using Robocode.TankRoyale.BotApi.Mapper;
