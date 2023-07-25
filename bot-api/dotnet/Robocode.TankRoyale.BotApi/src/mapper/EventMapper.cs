@@ -16,7 +16,7 @@ public static class EventMapper
         if (jsonTickEvent == null)
             throw new BotException("TickEventForBot dictionary is missing in JSON message from server");
 
-        var events = (ICollection<Schema.Event>)jsonTickEvent["events"];
+        var events = (IEnumerable<Schema.Event>)jsonTickEvent["events"];
         return new TickEvent(
             tickEvent.TurnNumber,
             tickEvent.RoundNumber,
@@ -27,7 +27,7 @@ public static class EventMapper
         );
     }
 
-    private static IEnumerable<BotEvent> Map(ICollection<Schema.Event> events, int myBotId)
+    private static IEnumerable<BotEvent> Map(IEnumerable<Schema.Event> events, int myBotId)
     {
         var gameEvents = new HashSet<BotEvent>();
         foreach (var evt in events)
