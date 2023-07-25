@@ -6,8 +6,6 @@ using System.Linq;
 using System.Text.Json;
 using System.Threading;
 using System.Web;
-using S = Robocode.TankRoyale.Schema;
-using E = Robocode.TankRoyale.BotApi.Events;
 using Robocode.TankRoyale.BotApi.Mapper;
 using Robocode.TankRoyale.BotApi.Util;
 using static Robocode.TankRoyale.BotApi.Events.DefaultEventPriority;
@@ -30,7 +28,7 @@ public sealed class BaseBotInternals
 
     private readonly string serverSecret;
     private WebSocketClient socket;
-    private S.ServerHandshake serverHandshake;
+    private Schema.ServerHandshake serverHandshake;
     private readonly EventWaitHandle closedEvent = new ManualResetEvent(false);
 
     private readonly IBaseBot baseBot;
@@ -39,7 +37,7 @@ public sealed class BaseBotInternals
     private int myId;
     private GameSetup gameSetup;
 
-    private E.TickEvent tickEvent;
+    private Events.TickEvent tickEvent;
     private long? ticksStart;
 
     private readonly EventQueue eventQueue;
@@ -116,20 +114,20 @@ public sealed class BaseBotInternals
 
     private void InitializeEventPriorities()
     {
-        eventPriorities[typeof(E.TickEvent)] = Tick;
-        eventPriorities[typeof(E.WonRoundEvent)] = WonRound;
-        eventPriorities[typeof(E.SkippedTurnEvent)] = SkippedTurn;
-        eventPriorities[typeof(E.CustomEvent)] = Custom;
-        eventPriorities[typeof(E.BotDeathEvent)] = BotDeath;
-        eventPriorities[typeof(E.BulletFiredEvent)] = BulletFired;
-        eventPriorities[typeof(E.BulletHitWallEvent)] = BulletHitWall;
-        eventPriorities[typeof(E.BulletHitBulletEvent)] = BulletHitBullet;
-        eventPriorities[typeof(E.BulletHitBotEvent)] = BulletHitBot;
-        eventPriorities[typeof(E.HitByBulletEvent)] = HitByBullet;
-        eventPriorities[typeof(E.HitWallEvent)] = HitWall;
-        eventPriorities[typeof(E.HitBotEvent)] = HitBot;
-        eventPriorities[typeof(E.ScannedBotEvent)] = ScannedBot;
-        eventPriorities[typeof(E.DeathEvent)] = Death;
+        eventPriorities[typeof(Events.TickEvent)] = Tick;
+        eventPriorities[typeof(Events.WonRoundEvent)] = WonRound;
+        eventPriorities[typeof(Events.SkippedTurnEvent)] = SkippedTurn;
+        eventPriorities[typeof(Events.CustomEvent)] = Custom;
+        eventPriorities[typeof(Events.BotDeathEvent)] = BotDeath;
+        eventPriorities[typeof(Events.BulletFiredEvent)] = BulletFired;
+        eventPriorities[typeof(Events.BulletHitWallEvent)] = BulletHitWall;
+        eventPriorities[typeof(Events.BulletHitBulletEvent)] = BulletHitBullet;
+        eventPriorities[typeof(Events.BulletHitBotEvent)] = BulletHitBot;
+        eventPriorities[typeof(Events.HitByBulletEvent)] = HitByBullet;
+        eventPriorities[typeof(Events.HitWallEvent)] = HitWall;
+        eventPriorities[typeof(Events.HitBotEvent)] = HitBot;
+        eventPriorities[typeof(Events.ScannedBotEvent)] = ScannedBot;
+        eventPriorities[typeof(Events.DeathEvent)] = Death;
     }
 
     private void SubscribeToEvents()
@@ -167,11 +165,11 @@ public sealed class BaseBotInternals
         stopResumeListener = listener;
     }
 
-    private static S.BotIntent NewBotIntent()
+    private static Schema.BotIntent NewBotIntent()
     {
-        var botIntent = new S.BotIntent
+        var botIntent = new Schema.BotIntent
         {
-            Type = EnumUtil.GetEnumMemberAttrValue(S.MessageType.BotIntent) // must be set
+            Type = EnumUtil.GetEnumMemberAttrValue(Schema.MessageType.BotIntent) // must be set
         };
         return botIntent;
     }
@@ -187,7 +185,7 @@ public sealed class BaseBotInternals
 
     internal BotEventHandlers BotEventHandlers { get; }
 
-    internal IList<E.BotEvent> Events => eventQueue.Events;
+    internal IList<Events.BotEvent> Events => eventQueue.Events;
 
     internal void ClearEvents()
     {
@@ -201,12 +199,12 @@ public sealed class BaseBotInternals
 
     internal void SetScannedBotEventInterruptible()
     {
-        eventQueue.SetInterruptible(typeof(E.ScannedBotEvent), true);
+        eventQueue.SetInterruptible(typeof(Events.ScannedBotEvent), true);
     }
 
     internal ISet<Events.Condition> Conditions { get; } = new HashSet<Events.Condition>();
 
-    private void OnRoundStarted(E.RoundStartedEvent e)
+    private void OnRoundStarted(Events.RoundStartedEvent e)
     {
         ResetMovement();
         eventQueue.Clear();
@@ -214,7 +212,7 @@ public sealed class BaseBotInternals
         eventHandlingDisabled = false;
     }
 
-    private void OnNextTurn(E.TickEvent e)
+    private void OnNextTurn(Events.TickEvent e)
     {
         lock (nextTurnMonitor)
         {
@@ -223,7 +221,7 @@ public sealed class BaseBotInternals
         }
     }
 
-    private void OnBulletFired(E.BulletFiredEvent e)
+    private void OnBulletFired(Events.BulletFiredEvent e)
     {
         BotIntent.Firepower = 0; // Reset firepower so the bot stops firing continuously
     }
@@ -333,9 +331,9 @@ public sealed class BaseBotInternals
 
     internal GameSetup GameSetup => gameSetup ?? throw new BotException(GameNotRunningMsg);
 
-    internal S.BotIntent BotIntent { get; } = NewBotIntent();
+    internal Schema.BotIntent BotIntent { get; } = NewBotIntent();
 
-    internal E.TickEvent CurrentTick => tickEvent ?? throw new BotException(TickNotAvailableMsg);
+    internal Events.TickEvent CurrentTick => tickEvent ?? throw new BotException(TickNotAvailableMsg);
 
     private long TicksStart
     {
@@ -666,7 +664,7 @@ public sealed class BaseBotInternals
 
     internal IEnumerable<BulletState> BulletStates => tickEvent?.BulletStates ?? ImmutableHashSet<BulletState>.Empty;
 
-    private S.ServerHandshake ServerHandshake
+    private Schema.ServerHandshake ServerHandshake
     {
         get
         {
@@ -698,20 +696,20 @@ public sealed class BaseBotInternals
 
     private void HandleConnected()
     {
-        BotEventHandlers.FireConnectedEvent(new E.ConnectedEvent(socket.ServerUri));
+        BotEventHandlers.FireConnectedEvent(new Events.ConnectedEvent(socket.ServerUri));
     }
 
     private void HandleDisconnected(bool remote, int? statusCode, string reason)
     {
         BotEventHandlers.FireDisconnectedEvent(
-            new E.DisconnectedEvent(socket.ServerUri, remote, statusCode, reason));
+            new Events.DisconnectedEvent(socket.ServerUri, remote, statusCode, reason));
 
         closedEvent.Set();
     }
 
     private void HandleConnectionError(Exception cause)
     {
-        BotEventHandlers.FireConnectionErrorEvent(new E.ConnectionErrorEvent(socket.ServerUri,
+        BotEventHandlers.FireConnectionErrorEvent(new Events.ConnectionErrorEvent(socket.ServerUri,
             new Exception(cause.Message)));
     }
 
@@ -723,31 +721,31 @@ public sealed class BaseBotInternals
             var type = (string)jsonMsg?["type"];
             if (string.IsNullOrWhiteSpace(type)) return;
 
-            var msgType = (S.MessageType)Enum.Parse(typeof(S.MessageType), type);
+            var msgType = (Schema.MessageType)Enum.Parse(typeof(Schema.MessageType), type);
             switch (msgType)
             {
-                case S.MessageType.TickEventForBot:
+                case Schema.MessageType.TickEventForBot:
                     HandleTick(json);
                     break;
-                case S.MessageType.RoundStartedEvent:
+                case Schema.MessageType.RoundStartedEvent:
                     HandleRoundStarted(json);
                     break;
-                case S.MessageType.RoundEndedEventForBot:
+                case Schema.MessageType.RoundEndedEventForBot:
                     HandleRoundEnded(json);
                     break;
-                case S.MessageType.GameStartedEventForBot:
+                case Schema.MessageType.GameStartedEventForBot:
                     HandleGameStarted(json);
                     break;
-                case S.MessageType.GameEndedEventForBot:
+                case Schema.MessageType.GameEndedEventForBot:
                     HandleGameEnded(json);
                     break;
-                case S.MessageType.SkippedTurnEvent:
+                case Schema.MessageType.SkippedTurnEvent:
                     HandleSkippedTurn(json);
                     break;
-                case S.MessageType.ServerHandshake:
+                case Schema.MessageType.ServerHandshake:
                     HandleServerHandshake(json);
                     break;
-                case S.MessageType.GameAbortedEvent:
+                case Schema.MessageType.GameAbortedEvent:
                     HandleGameAborted();
                     break;
                 default:
@@ -782,27 +780,27 @@ public sealed class BaseBotInternals
 
     private void HandleRoundStarted(string json)
     {
-        var roundStartedEvent = JsonSerializer.Deserialize<S.RoundStartedEvent>(json);
+        var roundStartedEvent = JsonSerializer.Deserialize<Schema.RoundStartedEvent>(json);
         if (roundStartedEvent == null)
             throw new BotException("RoundStartedEvent is missing in JSON message from server");
 
-        BotEventHandlers.FireRoundStartedEvent(new E.RoundStartedEvent(roundStartedEvent.RoundNumber));
+        BotEventHandlers.FireRoundStartedEvent(new Events.RoundStartedEvent(roundStartedEvent.RoundNumber));
     }
 
     private void HandleRoundEnded(string json)
     {
-        var roundEndedEventForBot = JsonSerializer.Deserialize<S.RoundEndedEventForBot>(json);
+        var roundEndedEventForBot = JsonSerializer.Deserialize<Schema.RoundEndedEventForBot>(json);
         if (roundEndedEventForBot == null)
             throw new BotException("RoundEndedEventForBot is missing in JSON message from server");
 
         var botResults = ResultsMapper.Map(roundEndedEventForBot.Results);
-        BotEventHandlers.FireRoundEndedEvent(new E.RoundEndedEvent(roundEndedEventForBot.RoundNumber,
+        BotEventHandlers.FireRoundEndedEvent(new Events.RoundEndedEvent(roundEndedEventForBot.RoundNumber,
             roundEndedEventForBot.TurnNumber, botResults));
     }
 
     private void HandleGameStarted(string json)
     {
-        var gameStartedEventForBot = JsonSerializer.Deserialize<S.GameStartedEventForBot>(json);
+        var gameStartedEventForBot = JsonSerializer.Deserialize<Schema.GameStartedEventForBot>(json);
         if (gameStartedEventForBot == null)
             throw new BotException("GameStartedEventForBot is missing in JSON message from server");
 
@@ -810,26 +808,26 @@ public sealed class BaseBotInternals
         gameSetup = GameSetupMapper.Map(gameStartedEventForBot.GameSetup);
 
         // Send ready signal
-        var ready = new S.BotReady
+        var ready = new Schema.BotReady
         {
-            Type = EnumUtil.GetEnumMemberAttrValue(S.MessageType.BotReady)
+            Type = EnumUtil.GetEnumMemberAttrValue(Schema.MessageType.BotReady)
         };
 
         var msg = JsonSerializer.Serialize(ready);
         socket.SendTextMessage(msg);
 
-        BotEventHandlers.FireGameStartedEvent(new E.GameStartedEvent(myId, gameSetup));
+        BotEventHandlers.FireGameStartedEvent(new Events.GameStartedEvent(myId, gameSetup));
     }
 
     private void HandleGameEnded(string json)
     {
         // Send the game ended event
-        var gameEndedEventForBot = JsonSerializer.Deserialize<S.GameEndedEventForBot>(json);
+        var gameEndedEventForBot = JsonSerializer.Deserialize<Schema.GameEndedEventForBot>(json);
         if (gameEndedEventForBot == null)
             throw new BotException("GameEndedEventForBot is missing in JSON message from server");
 
         var results = ResultsMapper.Map(gameEndedEventForBot.Results);
-        BotEventHandlers.FireGameEndedEvent(new E.GameEndedEvent(gameEndedEventForBot.NumberOfRounds, results));
+        BotEventHandlers.FireGameEndedEvent(new Events.GameEndedEvent(gameEndedEventForBot.NumberOfRounds, results));
     }
 
     private void HandleGameAborted()
@@ -839,11 +837,11 @@ public sealed class BaseBotInternals
 
     private void HandleServerHandshake(string json)
     {
-        serverHandshake = JsonSerializer.Deserialize<S.ServerHandshake>(json);
+        serverHandshake = JsonSerializer.Deserialize<Schema.ServerHandshake>(json);
 
         // Reply by sending bot handshake
         var botHandshake = BotHandshakeFactory.Create(serverHandshake?.SessionId, botInfo, serverSecret);
-        botHandshake.Type = EnumUtil.GetEnumMemberAttrValue(S.MessageType.BotHandshake);
+        botHandshake.Type = EnumUtil.GetEnumMemberAttrValue(Schema.MessageType.BotHandshake);
         var text = JsonSerializer.Serialize(botHandshake);
 
         socket.SendTextMessage(text);
