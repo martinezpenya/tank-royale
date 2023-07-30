@@ -1,5 +1,7 @@
+using System;
 using System.Collections.Generic;
 using System.Text.Json;
+using System.Text.Json.Serialization;
 using Robocode.TankRoyale.BotApi.Events;
 
 namespace Robocode.TankRoyale.BotApi.Mapper;
@@ -8,15 +10,19 @@ public static class EventMapper
 {
     public static TickEvent Map(string json, int myBotId)
     {
-        var tickEvent = JsonSerializer.Deserialize<Schema.TickEventForBot>(json);
+        Console.WriteLine("JSON: " + json);
+
+        var options = new JsonSerializerOptions
+        {
+            Converters = { new EventJsonConverter() },
+        };
+        
+        var tickEvent = JsonSerializer.Deserialize<Schema.TickEventForBot>(json, options);
         if (tickEvent == null)
             throw new BotException("TickEventForBot is missing in JSON message from server");
 
-        var jsonTickEvent = JsonSerializer.Deserialize<Dictionary<string, object>>(json);
-        if (jsonTickEvent == null)
-            throw new BotException("TickEventForBot dictionary is missing in JSON message from server");
+        var events = tickEvent.Events;
 
-        var events = (IEnumerable<Schema.Event>)jsonTickEvent["events"];
         return new TickEvent(
             tickEvent.TurnNumber,
             tickEvent.RoundNumber,
@@ -38,8 +44,11 @@ public static class EventMapper
         return gameEvents;
     }
 
-    private static BotEvent Map(Schema.Event evt, int myBotId) =>
-        evt.Type switch
+    private static BotEvent Map(Schema.Event evt, int myBotId)
+    {
+        Console.WriteLine("Event: " + evt);
+
+        return evt.Type switch
         {
             "BotDeathEvent" => Map((Schema.BotDeathEvent)evt, myBotId),
             "BotHitBotEvent" => Map((Schema.BotHitBotEvent)evt),
@@ -53,6 +62,7 @@ public static class EventMapper
             "WonRoundEvent" => Map((Schema.WonRoundEvent)evt),
             _ => throw new BotException("No mapping exists for event type: " + evt.Type)
         };
+    }
 
     private static BotEvent Map(Schema.BotDeathEvent source, int myBotId)
     {
@@ -131,4 +141,22 @@ public static class EventMapper
 
     private static WonRoundEvent Map(Schema.WonRoundEvent source) =>
         new(source.TurnNumber);
+
+
+    private class EventJsonConverter : JsonConverter<Schema.Event>
+    {
+        public override bool CanConvert(Type typeToConvert) =>
+            typeof(Schema.Event).IsAssignableFrom(typeToConvert);
+
+        public override Schema.Event Read(ref Utf8JsonReader reader,
+            Type typeToConvert, JsonSerializerOptions options)
+        {
+        }
+
+        public override void Write(Utf8JsonWriter writer,
+            Schema.Event member, JsonSerializerOptions options)
+        {
+            throw new NotImplementedException();
+        }
+    }
 }

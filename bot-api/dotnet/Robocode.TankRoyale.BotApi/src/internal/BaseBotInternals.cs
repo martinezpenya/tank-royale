@@ -715,10 +715,10 @@ public sealed class BaseBotInternals
 
     private void HandleTextMessage(string json)
     {
-        var jsonMsg = JsonSerializer.Deserialize<Dictionary<string, object>>(json);
+        var message = JsonSerializer.Deserialize<Schema.Message>(json);
         try
         {
-            var type = (string)jsonMsg?["type"];
+            var type = message.Type;
             if (string.IsNullOrWhiteSpace(type)) return;
 
             var msgType = (Schema.MessageType)Enum.Parse(typeof(Schema.MessageType), type);
@@ -754,14 +754,20 @@ public sealed class BaseBotInternals
         }
         catch (KeyNotFoundException)
         {
-            Console.Error.WriteLine(jsonMsg);
+            Console.Error.WriteLine(message);
 
             throw new BotException($"'type' is missing on the JSON message: {json}");
+        }
+        catch (Exception ex)
+        {
+            Console.Error.WriteLine(ex);
         }
     }
 
     private void HandleTick(string json)
     {
+        Console.Error.WriteLine("HandleTick #1");
+
         if (eventHandlingDisabled) return;
 
         ticksStart = DateTime.Now.Ticks;
@@ -776,13 +782,13 @@ public sealed class BaseBotInternals
 
         // Trigger next turn (not tick-event!)
         BotEventHandlers.FireNextTurn(tickEvent);
+        
+        Console.Error.WriteLine("HandleTick #2");
     }
 
     private void HandleRoundStarted(string json)
     {
         var roundStartedEvent = JsonSerializer.Deserialize<Schema.RoundStartedEvent>(json);
-        if (roundStartedEvent == null)
-            throw new BotException("RoundStartedEvent is missing in JSON message from server");
 
         BotEventHandlers.FireRoundStartedEvent(new Events.RoundStartedEvent(roundStartedEvent.RoundNumber));
     }
@@ -790,8 +796,6 @@ public sealed class BaseBotInternals
     private void HandleRoundEnded(string json)
     {
         var roundEndedEventForBot = JsonSerializer.Deserialize<Schema.RoundEndedEventForBot>(json);
-        if (roundEndedEventForBot == null)
-            throw new BotException("RoundEndedEventForBot is missing in JSON message from server");
 
         var botResults = ResultsMapper.Map(roundEndedEventForBot.Results);
         BotEventHandlers.FireRoundEndedEvent(new Events.RoundEndedEvent(roundEndedEventForBot.RoundNumber,
@@ -801,8 +805,6 @@ public sealed class BaseBotInternals
     private void HandleGameStarted(string json)
     {
         var gameStartedEventForBot = JsonSerializer.Deserialize<Schema.GameStartedEventForBot>(json);
-        if (gameStartedEventForBot == null)
-            throw new BotException("GameStartedEventForBot is missing in JSON message from server");
 
         myId = gameStartedEventForBot.MyId;
         gameSetup = GameSetupMapper.Map(gameStartedEventForBot.GameSetup);
@@ -823,8 +825,6 @@ public sealed class BaseBotInternals
     {
         // Send the game ended event
         var gameEndedEventForBot = JsonSerializer.Deserialize<Schema.GameEndedEventForBot>(json);
-        if (gameEndedEventForBot == null)
-            throw new BotException("GameEndedEventForBot is missing in JSON message from server");
 
         var results = ResultsMapper.Map(gameEndedEventForBot.Results);
         BotEventHandlers.FireGameEndedEvent(new Events.GameEndedEvent(gameEndedEventForBot.NumberOfRounds, results));
@@ -837,12 +837,16 @@ public sealed class BaseBotInternals
 
     private void HandleServerHandshake(string json)
     {
+        Console.Error.WriteLine("HandleServerHandshake #1");
+    
         serverHandshake = JsonSerializer.Deserialize<Schema.ServerHandshake>(json);
 
         // Reply by sending bot handshake
         var botHandshake = BotHandshakeFactory.Create(serverHandshake?.SessionId, botInfo, serverSecret);
         botHandshake.Type = EnumUtil.GetEnumMemberAttrValue(Schema.MessageType.BotHandshake);
         var text = JsonSerializer.Serialize(botHandshake);
+
+        Console.Error.WriteLine("HandleServerHandshake #2");
 
         socket.SendTextMessage(text);
     }
